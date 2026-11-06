@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gemini 3-Agent Hub</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --primary: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --agent1: #818cf8;
+      --agent2: #34d399;
+      --agent3: #f472b6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 12px; font-size: 14px; }
+    
+    header { text-align: center; margin-bottom: 12px; }
+    header h1 { font-size: 18px; color: var(--primary); }
+    header p { font-size: 12px; color: var(--muted); }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+    input, textarea, select, button { width: 100%; border-radius: 8px; border: 1px solid var(--border); background: #0b1120; color: var(--text); padding: 10px; font-size: 14px; margin-bottom: 8px; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+
+    .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+    .tab-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 8px; cursor: pointer; border-radius: 8px; flex: 1; text-align: center; font-size: 13px; }
+    .tab-btn.active { background: var(--primary); color: #000; font-weight: bold; border-color: var(--primary); }
+
+    .btn-action { background: var(--primary); color: #000; font-weight: bold; border: none; cursor: pointer; margin-top: 4px; }
+    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .badge { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+    .badge-a1 { background: rgba(129, 140, 248, 0.2); color: var(--agent1); }
+    .badge-a2 { background: rgba(52, 211, 153, 0.2); color: var(--agent2); }
+    .badge-a3 { background: rgba(244, 114, 182, 0.2); color: var(--agent3); }
+
+    .agent-box { border-left: 3px solid var(--border); padding-left: 10px; margin-bottom: 12px; }
+    .agent-box.a1 { border-color: var(--agent1); }
+    .agent-box.a2 { border-color: var(--agent2); }
+    .agent-box.a3 { border-color: var(--agent3); }
+
+    .output-content { background: #0b1120; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; max-height: 250px; overflow-y: auto; }
+    .status-text { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Gemini 3-Agent Office</h1>
+    <p>Điều phối đa tác tử chạy song song trên Android</p>
+  </header>
+
+  <!-- CẤU HÌNH API KEYS -->
+  <div class="card">
+    <div class="card-title">
+      <span>Cấu hình 3 Tài khoản & Model</span>
+      <button style="width: auto; padding: 4px 8px; margin: 0; font-size: 11px;" onclick="toggleConfig()">Thu gọn / Mở</button>
+    </div>
+    <div id="config-panel">
+      <input type="text" id="model-name" placeholder="Model ID" value="gemini-3.8-flash">
+      <input type="password" id="key-1" placeholder="API Key 1 (Trưởng nhóm / Planner)">
+      <input type="password" id="key-2" placeholder="API Key 2 (Chuyên viên / Executor)">
+      <input type="password" id="key-3" placeholder="API Key 3 (Kiểm duyệt / Reviewer)">
+      <button class="btn-action" onclick="saveKeys()">Lưu cấu hình vào máy</button>
+    </div>
+  </div>
+
+  <!-- CHỌN CHẾ ĐỘ -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-auto" onclick="switchTab('auto')">Quy trình tự động</button>
+    <button class="tab-btn" id="tab-chat" onclick="switchTab('chat')">Trò chuyện từng con</button>
+  </div>
+
+  <!-- CHẾ ĐỘ 1: QUY TRÌNH PHỐI HỢP TỰ ĐỘNG -->
+  <div id="view-auto">
+    <div class="card">
+      <div class="card-title">Giao đề bài cho nhóm</div>
+      <textarea id="task-input" rows="3" placeholder="Nhập mục tiêu lớn (Ví dụ: Viết kịch bản tự động hóa, phân tích tài liệu, lập kế hoạch công việc...)"></textarea>
+      <button class="btn-action" id="btn-run" onclick="runPipeline()">Bắt đầu phối hợp</button>
+    </div>
+
+    <!-- Kết quả từng con -->
+    <div class="card" id="results-card" style="display: none;">
+      <div class="card-title">Tiến trình làm việc</div>
+      
+      <div class="agent-box a1">
+        <div class="status-text"><span class="badge badge-a1">Agent 1: Trưởng nhóm</span> <span id="status-1">Đang chờ...</span></div>
+        <div class="output-content" id="output-1">...</div>
+      </div>
+
+      <div class="agent-box a2">
+        <div class="status-text"><span class="badge badge-a2">Agent 2: Thực thi</span> <span id="status-2">Đang chờ...</span></div>
+        <div class="output-content" id="output-2">...</div>
+      </div>
+
+      <div class="agent-box a3">
+        <div class="status-text"><span class="badge badge-a3">Agent 3: Kiểm duyệt</span> <span id="status-3">Đang chờ...</span></div>
+        <div class="output-content" id="output-3">...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHẾ ĐỘ 2: CHAT TRỰC TIẾP TỪNG CON -->
+  <div id="view-chat" style="display: none;">
+    <div class="card">
+      <select id="select-agent">
+        <option value="1">Trò chuyện với Agent 1 (Trưởng nhóm)</option>
+        <option value="2">Trò chuyện với Agent 2 (Chuyên viên)</option>
+        <option value="3">Trò chuyện với Agent 3 (Kiểm duyệt)</option>
+      </select>
+      <textarea id="chat-input" rows="2" placeholder="Nhập tin nhắn riêng..."></textarea>
+      <button class="btn-action" id="btn-chat" onclick="sendDirectChat()">Gửi tin nhắn</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Phản hồi</div>
+      <div class="output-content" id="chat-output" style="max-height: 400px;">Chưa có tin nhắn...</div>
+    </div>
+  </div>
+
+  <script>
+    // Tự động load cấu hình đã lưu
+    window.onload = () => {
+      document.getElementById('key-1').value = localStorage.getItem('gemini_k1') || '';
+      document.getElementById('key-2').value = localStorage.getItem('gemini_k2') || '';
+      document.getElementById('key-3').value = localStorage.getItem('gemini_k3') || '';
+      document.getElementById('model-name').value = localStorage.getItem('gemini_model') || 'gemini-3.8-flash';
+    };
+
+    function saveKeys() {
+      localStorage.setItem('gemini_k1', document.getElementById('key-1').value.trim());
+      localStorage.setItem('gemini_k2', document.getElementById('key-2').value.trim());
+      localStorage.setItem('gemini_k3', document.getElementById('key-3').value.trim());
+      localStorage.setItem('gemini_model', document.getElementById('model-name').value.trim());
+      alert('Đã lưu cấu hình thành công!');
+    }
+
+    function toggleConfig() {
+      const p = document.getElementById('config-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function switchTab(mode) {
+      document.getElementById('view-auto').style.display = mode === 'auto' ? 'block' : 'none';
+      document.getElementById('view-chat').style.display = mode === 'chat' ? 'block' : 'none';
+      document.getElementById('tab-auto').classList.toggle('active', mode === 'auto');
+      document.getElementById('tab-chat').classList.toggle('active', mode === 'chat');
+    }
+
+    // Hàm gọi API Gemini REST
+    async function callGemini(apiKey, model, systemPrompt, userMessage) {
+      if (!apiKey) throw new Error("Chưa nhập API Key cho Agent này!");
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `${systemPrompt}\n\n[DỮ LIỆU ĐẦU VÀO]:\n${userMessage}` }]
+          }
+        ],
+        generationConfig: { temperature: 0.7 }
+      };
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || "Lỗi gọi API");
+      }
+      const data = await res.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+
+    // QUY TRÌNH TỰ ĐỘNG PHỐI HỢP 3 CON
+    async function runPipeline() {
+      const prompt = document.getElementById('task-input').value.trim();
+      if (!prompt) return alert('Vui lòng nhập đề bài!');
+
+      const k1 = localStorage.getItem('gemini_k1');
+      const k2 = localStorage.getItem('gemini_k2');
+      const k3 = localStorage.getItem('gemini_k3');
+      const model = localStorage.getItem('gemini_model') || 'gemini-3.8-flash';
+
+      if (!k1 || !k2 || !k3) return alert('Vui lòng nhập đủ 3 API Key trong mục cấu hình!');
+
+      const btn = document.getElementById('btn-run');
+      btn.disabled = true;
+      document.getElementById('results-card').style.display = 'block';
+
+      try {
+        // BƯỚC 1: AGENT 1 LẬP KẾ HOẠCH
+        document.getElementById('status-1').innerText = "Đang phân tích và lập kế hoạch...";
+        document.getElementById('output-1').innerText = "Đang xử lý...";
+        const planPrompt = "Bạn là Giám đốc kế hoạch (Planner). Hãy phân tích yêu cầu sau thành các bước thực hiện chi tiết, rõ ràng, gạch đầu dòng các tiêu chí kỹ thuật cần đạt để chuyển giao cho chuyên viên triển khai.";
+        const planResult = await callGemini(k1, model, planPrompt, prompt);
+        document.getElementById('status-1').innerText = "Đã hoàn thành!";
+        document.getElementById('output-1').innerText = planResult;
+
+        // BƯỚC 2: AGENT 2 THỰC THI CHI TIẾT
+        document.getElementById('status-2').innerText = "Đang thực thi mã/nội dung chi tiết...";
+        document.getElementById('output-2').innerText = "Đang xử lý...";
+        const execPrompt = "Bạn là Kỹ sư thực thi chính (Executor). Dựa trên kế hoạch chi tiết từ Trưởng nhóm, hãy trực tiếp tạo mã nguồn, thuật toán hoặc nội dung đầy đủ và hoàn chỉnh nhất.";
+        const execResult = await callGemini(k2, model, execPrompt, `Kế hoạch từ Trưởng nhóm:\n${planResult}\n\nYêu cầu gốc:\n${prompt}`);
+        document.getElementById('status-2').innerText = "Đã hoàn thành!";
+        document.getElementById('output-2').innerText = execResult;
+
+        // BƯỚC 3: AGENT 3 KIỂM DUYỆT & TỔNG HỢP
+        document.getElementById('status-3').innerText = "Đang kiểm tra lỗi và tối ưu...";
+        document.getElementById('output-3').innerText = "Đang xử lý...";
+        const reviewPrompt = "Bạn là Chuyên gia kiểm định chất lượng (Reviewer). Rà soát toàn bộ kết quả của Kỹ sư thực thi: tìm lỗi sai sót, tối ưu hóa cấu trúc và xuất ra bản hoàn thiện cuối cùng sẵn sàng sử dụng.";
+        const reviewResult = await callGemini(k3, model, reviewPrompt, `Kết quả của Kỹ sư thực thi:\n${execResult}`);
+        document.getElementById('status-3').innerText = "Đã xong!";
+        document.getElementById('output-3').innerText = reviewResult;
+
+      } catch (err) {
+        alert("Lỗi: " + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // CHAT RIÊNG LẺ
+    async function sendDirectChat() {
+      const msg = document.getElementById('chat-input').value.trim();
+      if (!msg) return;
+
+      const agentNum = document.getElementById('select-agent').value;
+      const key = localStorage.getItem(`gemini_k${agentNum}`);
+      const model = localStorage.getItem('gemini_model') || 'gemini-3.8-flash';
+
+      if (!key) return alert(`Chưa có API Key cho Agent ${agentNum}`);
+
+      const btn = document.getElementById('btn-chat');
+      const out = document.getElementById('chat-output');
+      btn.disabled = true;
+      out.innerText = `Đang gửi tới Agent ${agentNum}...`;
+
+      try {
+        const res = await callGemini(key, model, "Bạn là một trợ lý thông minh hỗ trợ giải quyết công việc.", msg);
+        out.innerText = res;
+      } catch (err) {
+        out.innerText = "Lỗi: " + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+  </html>
+  
