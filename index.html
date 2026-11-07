@@ -70,10 +70,10 @@
       <button class="btn-sound" id="btn-sound" onclick="toggleAudioEngine()">🔊 Âm thanh: BẬT</button>
     </div>
     <div class="weather-clock-badge">
-      <span class="time-text" id="live-time">16:45 • Giờ VN</span>
+      <span class="time-text" id="live-time">17:15 • Giờ VN</span>
       <span class="weather-text" id="live-weather">☀️ Nắng ráo • 28°C</span>
     </div>
-    <div class="hint-tap">👆 Chạm đất: Sếp đi • Chạm bí ngô: Thu hoạch • Hỏi cụ thể ai người đó đáp</div>
+    <div class="hint-tap">👆 Chạm đất: Sếp đi • Chạm bí ngô: Thu hoạch • Hỏi ai người đó đáp</div>
     <div class="barn-badge" id="barn-counter">🎃 Kho: 0 Bí Ngô</div>
   </div>
 
@@ -346,6 +346,7 @@
         ctx.fillStyle = "#ef5350"; ctx.fillRect(p[0] + treeSway - 1, p[1] - 1, 1.5, 1.5);
         ctx.fillStyle = "#b71c1c";
       });
+
       // 2. NỘI THẤT DINH THỰ CHÍNH
       ctx.fillStyle = "#271202"; ctx.fillRect(10, 10, 345, 250);
       ctx.fillStyle = "#4e2608"; ctx.fillRect(12, 12, 341, 246);
@@ -451,7 +452,6 @@
       ctx.fillStyle = "#000000"; ctx.fillText(text, x+1, y+1);
       ctx.fillStyle = "#fde047"; ctx.fillText(text, x, y);
     }
-
     function updateAndDrawPets(ctx) {
       PETS.forEach(p => {
         let dx = p.tx - p.x, dy = p.ty - p.y;
@@ -515,22 +515,20 @@
         ctx.font = "bold 10px sans-serif";
         ctx.fillStyle = "#000"; ctx.fillText("Zzz...", x + 9, y - 7);
         ctx.fillStyle = "#fef08a"; ctx.fillText("Zzz...", x + 8, y - 8);
-        ctx.fillStyle = c.shirt; ctx.beginPath(); ctx.roundRect(x - 7, y + 5, 15, 12, 4); ctx.fill();
+        ctx.fillStyle = c.shirt; ctx.fillRect(x - 7, y + 5, 14, 11);
         ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(x, y + 1, 7, 0, Math.PI * 2); ctx.fill();
         return;
       }
 
       ctx.fillStyle = c.pants;
-      ctx.beginPath(); ctx.roundRect(x - 6, y + 10 + bob, 5, 6 + legWaddle, 2); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(x + 1, y + 10 + bob, 5, 6 - legWaddle, 2); ctx.fill();
+      ctx.fillRect(x - 6, y + 10 + bob, 5, 6 + legWaddle);
+      ctx.fillRect(x + 1, y + 10 + bob, 5, 6 - legWaddle);
       ctx.fillStyle = "#271202";
       ctx.beginPath(); ctx.arc(x - 3.5, y + 15 + bob + legWaddle, 3, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(x + 3.5, y + 15 + bob - legWaddle, 3, 0, Math.PI*2); ctx.fill();
 
-      ctx.fillStyle = "#1e1b4b";
-      ctx.beginPath(); ctx.roundRect(x - 9, y - 2 + bob, 18, 14, 5); ctx.fill();
-      ctx.fillStyle = c.shirt;
-      ctx.beginPath(); ctx.roundRect(x - 8, y - 1 + bob, 16, 12, 4); ctx.fill();
+      ctx.fillStyle = "#1e1b4b"; ctx.fillRect(x - 9, y - 2 + bob, 18, 13);
+      ctx.fillStyle = c.shirt; ctx.fillRect(x - 8, y - 1 + bob, 16, 11);
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(x - 1.5, y + 1 + bob, 3, 3);
       ctx.fillRect(x - 1.5, y + 5 + bob, 3, 3);
@@ -557,7 +555,60 @@
       ctx.beginPath(); ctx.arc(x - 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(x + 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x - 4.5, y
+      ctx.fillRect(x - 4.5, y - 9.5 + bob, 1.5, 1.5);
+      ctx.fillRect(x + 3.0, y - 9.5 + bob, 1.5, 1.5);
+
+      ctx.fillStyle = "rgba(244, 114, 182, 0.75)";
+      ctx.beginPath(); ctx.arc(x - 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
+
+      if (c.hat === "crown") {
+        ctx.fillStyle = "#eab308";
+        ctx.beginPath();
+        ctx.moveTo(x - 7, y - 17 + bob); ctx.lineTo(x - 5, y - 22 + bob); ctx.lineTo(x, y - 18 + bob);
+        ctx.lineTo(x + 5, y - 22 + bob); ctx.lineTo(x + 7, y - 17 + bob);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#dc2626"; ctx.fillRect(x - 1, y - 19 + bob, 2, 2);
+      } else if (c.hat === "cap") {
+        ctx.fillStyle = "#047857";
+        ctx.beginPath(); ctx.arc(x, y - 14 + bob, 8.5, Math.PI, Math.PI*2); ctx.fill();
+        ctx.fillRect(x - 10, y - 15 + bob, 7, 3);
+      } else if (c.hat === "ribbon") {
+        ctx.fillStyle = "#f43f5e";
+        ctx.beginPath(); ctx.arc(x + 5, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x + 9, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillRect(x + 6.5, y - 18 + bob, 1.5, 2);
+      } else if (c.hat === "glasses") {
+        ctx.strokeStyle = "#ca8a04"; ctx.lineWidth = 1.2;
+        ctx.strokeRect(x - 6, y - 10.5 + bob, 4.5, 4);
+        ctx.strokeRect(x + 1.5, y - 10.5 + bob, 4.5, 4);
+        ctx.beginPath(); ctx.moveTo(x - 1.5, y - 8.5 + bob); ctx.lineTo(x + 1.5, y - 8.5 + bob); ctx.stroke();
+      }
+
+      ctx.font = "bold 8.5px sans-serif";
+      ctx.fillStyle = "#000000"; ctx.textAlign = "center";
+      ctx.fillText(c.name, x + 1, y + 25);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(c.name, x, y + 24);
+
+      if (c.bubble && c.bTimer > 0) {
+        c.bTimer--;
+        let bw = Math.min(130, ctx.measureText(c.bubble).width + 14);
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(x - bw/2 + 1, y - 35 + bob + 1, bw, 16);
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(x - bw/2, y - 36 + bob, bw, 16);
+        ctx.strokeStyle = "#fde047"; ctx.lineWidth = 1.5; ctx.strokeRect(x - bw/2, y - 36 + bob, bw, 16);
+        ctx.fillStyle = "#fde047";
+        ctx.beginPath();
+        ctx.moveTo(x - 3, y - 20 + bob); ctx.lineTo(x + 3, y - 20 + bob); ctx.lineTo(x, y - 16 + bob);
+        ctx.fill();
+
+        ctx.font = "bold 8px sans-serif"; ctx.fillStyle = "#fef08a";
+        let t = c.bubble.length > 22 ? c.bubble.substring(0, 20) + '..' : c.bubble;
+        ctx.fillText(t, x, y - 25 + bob);
+      }
+    }
     function updateAndDrawCharacters(ctx) {
       let isWorkingTime = isProcessing;
 
