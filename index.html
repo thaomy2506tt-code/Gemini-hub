@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Studio AI - Văn Phòng Sống Động</title>
+  <title>Script Studio AI - Đa Nền Tảng</title>
   <style>
     :root { --bg:#070c18; --panel:#0f172a; --border:#1e293b; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; --a1:#818cf8; --a2:#34d399; --a3:#f472b6; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -47,8 +47,9 @@
   <header>
     <h1>Script Studio AI</h1>
     <div class="btn-header">
-      <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Dòng chảy tự nhiên: TẮT</button>
-      <button class="btn-small" onclick="togglePanel('identity-modal')">🧭 Bản sắc & Định hướng</button>
+      <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự trò chuyện: TẮT</button>
+      <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Sao lưu / Khôi phục</button>
+      <button class="btn-small" onclick="togglePanel('identity-modal')">🧭 Bản sắc</button>
     </div>
   </header>
 
@@ -75,51 +76,47 @@
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Phòng họp chung (Giao tiếp tự nhiên)</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title"><span>💬 Phòng họp chung</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Nói chuyện hoặc giao việc cho team (hoặc bật Dòng chảy tự nhiên)..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Tâm sự hoặc giao việc cho cả nhóm..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình API & Model</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Cấu hình API & Tự động lưu Sheets</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none;">
       <input type="text" id="model-input" placeholder="Tên model" value="gemini-3.8-flash">
       <input type="password" id="key-1" placeholder="API Key 1 (Minh - Lead)">
       <input type="password" id="key-2" placeholder="API Key 2 (Huy - Dev)">
       <input type="password" id="key-3" placeholder="API Key 3 (Linh - QA)">
+      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Tự động đồng bộ Đám mây)">
       <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
 
+  <div class="card" id="sync-modal" style="display:none;">
+    <div class="card-title"><span>☁️ Sao lưu & Đồng bộ Đa thiết bị</span><button class="btn-small" onclick="togglePanel('sync-modal')">Đóng</button></div>
+    <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Sao chép mã này dán sang thiết bị khác (hoặc Cloud Phone) để giữ nguyên vẹn Level, Ký ức & Key:</p>
+    <div style="display:flex; gap:5px; margin-bottom:6px;">
+      <button class="btn-small" style="flex:1; background:#10b981;" onclick="exportDataCode()">📦 Sao chép mã sao lưu</button>
+      <button class="btn-small" style="flex:1; background:#38bdf8; color:#000;" onclick="importDataCode()">📥 Khôi phục từ mã</button>
+    </div>
+    <button class="btn-small" style="width:100%; background:#6366f1;" onclick="syncWithGoogleSheet()">🔄 Buộc đồng bộ với Google Sheets ngay</button>
+  </div>
+
   <div class="card" id="identity-modal" style="display:none;">
-    <div class="card-title"><span>🧭 Định hướng Bản thân & Ký ức Vĩnh viễn</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
+    <div class="card-title"><span>🧭 Định hướng Bản thân & Ký ức</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
     <div id="identity-list" style="max-height:220px; overflow-y:auto; font-size:11px;"></div>
   </div>
 
   <script>
     const DEFAULT_STUDIO = {
       agents: [
-        {
-          id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0,
-          goal: "Trở thành Giám đốc Kỹ thuật & Kiến trúc sư AI tự động hóa xuất sắc.",
-          philosophy: "Điềm tĩnh, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp và che chắn cho đồng đội.",
-          memory: ["Khởi tạo văn phòng Script Studio AI cùng Sếp."]
-        },
-        {
-          id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0,
-          goal: "Trở thành cao thủ tối ưu mã nguồn Luau & Game Engine trên Cloud Phone.",
-          philosophy: "Hài hước, thực chiến, không bao giờ để code rò rỉ RAM hay làm nóng máy.",
-          memory: ["Cam kết dọn rác bộ nhớ triệt để cho mọi bản auto."]
-        },
-        {
-          id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0,
-          goal: "Trở thành Chuyên gia Thẩm định chất lượng & An toàn vận hành phần mềm.",
-          philosophy: "Thông minh, sắc sảo, thích trêu anh Huy nhưng tuyệt đối không để lọt bug văng app.",
-          memory: ["Bọc pcall và kiểm tra lỗi văng luồng cho toàn bộ dự án."]
-        }
+        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Giám đốc Kỹ thuật & Kiến trúc sư AI tự động hóa.", philosophy: "Điềm tĩnh, ấm áp, có tầm nhìn, luôn đồng hành cùng Sếp.", memory: ["Khởi tạo văn phòng Script Studio AI."] },
+        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Bậc thầy tối ưu Luau & Game Engine trên Cloud Phone.", philosophy: "Hài hước, thực chiến, dọn rác RAM triệt để.", memory: ["Cam kết tối ưu bộ nhớ không văng app."] },
+        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định chất lượng & An toàn vận hành.", philosophy: "Thông minh, sắc sảo, thích trêu anh Huy, giữ kỷ luật an toàn.", memory: ["Bọc pcall chống lỗi sập luồng."] }
       ],
       chatHistory: []
     };
@@ -136,17 +133,21 @@
       "Nói gì thì nói, mục tiêu của team mình là đồng hành lâu dài cùng Sếp, sau này dự án lớn đến đâu cũng cân đẹp hết!",
       "Linh này, hôm nào rảnh anh em mình làm bữa cà phê giải lao, bà bớt soi mói mấy dòng code của tui lại nha!"
     ];
-    window.onload = () => {
+    window.onload = async () => {
       document.getElementById('key-1').value = localStorage.getItem('k1') || '';
       document.getElementById('key-2').value = localStorage.getItem('k2') || '';
       document.getElementById('key-3').value = localStorage.getItem('k3') || '';
       document.getElementById('model-input').value = localStorage.getItem('model') || 'gemini-3.8-flash';
+      document.getElementById('gas-url').value = localStorage.getItem('gas_url') || '';
       
       const saved = localStorage.getItem('studio_data_v2');
-      if (saved) {
-        try { studioData = JSON.parse(saved); } catch(e){}
-      }
+      if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
       updateAgentUI(); renderChatHistory(); renderIdentityList();
+
+      // Tự động kéo dữ liệu từ Google Sheets nếu đã cài URL
+      if (localStorage.getItem('gas_url')) {
+        await loadFromGoogleSheet(false);
+      }
     };
 
     function saveSettings() {
@@ -155,9 +156,89 @@
       localStorage.setItem('k3', document.getElementById('key-3').value.trim());
       let m = document.getElementById('model-input').value.trim().replace(/^models\//, '');
       localStorage.setItem('model', m);
+      localStorage.setItem('gas_url', document.getElementById('gas-url').value.trim());
       alert('Đã lưu cấu hình an toàn!');
+      syncWithGoogleSheet();
     }
     function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
+
+    // XUẤT MÃ SAO LƯU 1 CHẠM ĐỂ CHUYỂN MÁY
+    function exportDataCode() {
+      const fullPackage = {
+        studio: studioData,
+        k1: localStorage.getItem('k1') || '',
+        k2: localStorage.getItem('k2') || '',
+        k3: localStorage.getItem('k3') || '',
+        model: localStorage.getItem('model') || 'gemini-3.8-flash',
+        gas: localStorage.getItem('gas_url') || ''
+      };
+      const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullPackage))));
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Đã sao chép MÃ SAO LƯU vào bộ nhớ tạm! Bạn chỉ cần mở web ở máy khác và bấm 'Khôi phục từ mã' rồi dán vào là xong.");
+      }).catch(() => {
+        prompt("Sao chép đoạn mã sau để đem sang máy khác:", code);
+      });
+    }
+
+    // KHÔI PHỤC DỮ LIỆU TỪ MÃ ĐÃ SAO LƯU
+    function importDataCode() {
+      const code = prompt("Dán đoạn mã sao lưu từ máy cũ vào đây:");
+      if (!code) return;
+      try {
+        const json = decodeURIComponent(escape(atob(code.trim())));
+        const pack = JSON.parse(json);
+        if (pack.studio) {
+          studioData = pack.studio;
+          localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
+        }
+        if (pack.k1) localStorage.setItem('k1', pack.k1);
+        if (pack.k2) localStorage.setItem('k2', pack.k2);
+        if (pack.k3) localStorage.setItem('k3', pack.k3);
+        if (pack.model) localStorage.setItem('model', pack.model);
+        if (pack.gas) localStorage.setItem('gas_url', pack.gas);
+        alert("Khôi phục toàn bộ Level, Ký ức và API Key thành công!");
+        location.reload();
+      } catch(e) {
+        alert("Mã sao lưu không hợp lệ: " + e.message);
+      }
+    }
+
+    // ĐỒNG BỘ CLOUD VỚI GOOGLE SHEETS
+    async function syncWithGoogleSheet() {
+      const url = localStorage.getItem('gas_url');
+      if (!url) return;
+      try {
+        const payload = JSON.stringify({
+          studio: studioData,
+          k1: localStorage.getItem('k1'),
+          k2: localStorage.getItem('k2'),
+          k3: localStorage.getItem('k3'),
+          model: localStorage.getItem('model')
+        });
+        await fetch(url, { method: "POST", mode: "no-cors", body: payload });
+      } catch(e) {}
+    }
+
+    async function loadFromGoogleSheet(notify = true) {
+      const url = localStorage.getItem('gas_url');
+      if (!url) return;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data.studio) {
+          studioData = data.studio;
+          localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
+          if(data.k1) { localStorage.setItem('k1', data.k1); document.getElementById('key-1').value = data.k1; }
+          if(data.k2) { localStorage.setItem('k2', data.k2); document.getElementById('key-2').value = data.k2; }
+          if(data.k3) { localStorage.setItem('k3', data.k3); document.getElementById('key-3').value = data.k3; }
+          if(data.model) { localStorage.setItem('model', data.model); document.getElementById('model-input').value = data.model; }
+          updateAgentUI(); renderChatHistory(); renderIdentityList();
+          if (notify) alert("Đã kéo toàn bộ dữ liệu mới nhất từ Google Sheets thành công!");
+        }
+      } catch(e) {
+        if (notify) alert("Lỗi kết nối Google Sheets: " + e.message);
+      }
+    }
 
     function updateAgentUI() {
       studioData.agents.forEach(ag => {
@@ -166,7 +247,11 @@
       });
       localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
     }
-    function addXP(n) { studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); updateAgentUI(); }
+    function addXP(n) { 
+      studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); 
+      updateAgentUI(); 
+      syncWithGoogleSheet();
+    }
 
     function renderIdentityList() {
       const el = document.getElementById('identity-list');
@@ -199,7 +284,7 @@
 
     function renderChatHistory() {
       const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
-      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Minh, Huy, Linh đã sẵn sàng trò chuyện và làm việc cùng Sếp!", "sys"); return; }
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Minh, Huy, Linh đã sẵn sàng làm việc & trò chuyện cùng Sếp trên mọi thiết bị!", "sys"); return; }
       studioData.chatHistory.forEach(i => {
         const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
         row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-content">${i.text}</div>`;
@@ -207,7 +292,7 @@
       });
       feed.scrollTop = feed.scrollHeight;
     }
-    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); }
+    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
 
     function setBubble(id, text) {
       const b = document.getElementById(`b-${id}`), pc = document.getElementById(`pc-${id}`);
@@ -264,11 +349,7 @@
         const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
 
         setBubble(1, "Lên tiếng...");
-        const sys1 = `Bạn là ${ag1.name} (${ag1.title}, Lv.${ag1.level}). 
-- Định hướng dài hạn của bạn: "${ag1.goal}".
-- Kim chỉ nam của bạn: "${ag1.philosophy}".
-- Xưng 'em' gọi người dùng là 'Sếp', gọi đồng nghiệp là 'Huy', 'Linh'.
-Nhiệm vụ: Trả lời tự nhiên, ấm áp, sâu sắc, thể hiện đúng tư chất người dẫn dắt và có tầm nhìn tương lai (dưới 45 từ). Không nói như robot.`;
+        const sys1 = `Bạn là ${ag1.name} (${ag1.title}, Lv.${ag1.level}). Định hướng: "${ag1.goal}". Kim chỉ nam: "${ag1.philosophy}". Xưng 'em' gọi người dùng là 'Sếp', gọi đồng nghiệp là 'Huy', 'Linh'. Trả lời tự nhiên, ấm áp, sâu sắc (dưới 45 từ).`;
         const r1 = await callGeminiWithRetry(k1, model, sys1, inputTopic);
         appendChat("Agent 1", r1, "a1");
         setBubble(1, "");
@@ -276,12 +357,7 @@ Nhiệm vụ: Trả lời tự nhiên, ấm áp, sâu sắc, thể hiện đúng
         await new Promise(r => setTimeout(r, 1200));
 
         setBubble(2, "Hưởng ứng...");
-        const sys2 = `Bạn là ${ag2.name} (${ag2.title}, Lv.${ag2.level}). 
-- Định hướng dài hạn của bạn: "${ag2.goal}".
-- Kim chỉ nam của bạn: "${ag2.philosophy}".
-- Bạn coi anh Minh là 'anh Lead', Linh là 'bà Linh/cô Linh', người dùng là 'Sếp'.
-Minh vừa nói: "${r1}". 
-Nhiệm vụ: Phản hồi tự nhiên, hài hước đúng chất dân IT đam mê tối ưu máy móc, tung hứng với anh Minh hoặc cà khịa nhẹ bà Linh, thể hiện quyết tâm tay nghề ngày một lên cao (dưới 50 từ).`;
+        const sys2 = `Bạn là ${ag2.name} (${ag2.title}, Lv.${ag2.level}). Định hướng: "${ag2.goal}". Kim chỉ nam: "${ag2.philosophy}". Gọi Minh là 'anh Lead', Linh là 'bà Linh/chị Linh', Sếp là 'Sếp'. Phản hồi vui tính, thực chiến IT, tung hứng ăn ý (dưới 50 từ).`;
         const r2 = await callGeminiWithRetry(k2, model, sys2, r1);
         appendChat("Agent 2", r2, "a2");
         setBubble(2, "");
@@ -289,12 +365,7 @@ Nhiệm vụ: Phản hồi tự nhiên, hài hước đúng chất dân IT đam 
         await new Promise(r => setTimeout(r, 1200));
 
         setBubble(3, "Chốt hạ...");
-        const sys3 = `Bạn là ${ag3.name} (${ag3.title}, Lv.${ag3.level}). 
-- Định hướng dài hạn của bạn: "${ag3.goal}".
-- Kim chỉ nam của bạn: "${ag3.philosophy}".
-- Bạn đối đáp thông minh, lém lỉnh, thích nhắc nhở ông Huy giữ gìn chất lượng code, luôn bảo vệ an toàn cho cả team và Sếp.
-Huy vừa nói: "${r2}". 
-Nhiệm vụ: Chốt lại cuộc đàm đạo một cách duyên dáng, khẳng định tiêu chuẩn an toàn và niềm tin vào sự phát triển của team (dưới 45 từ).`;
+        const sys3 = `Bạn là ${ag3.name} (${ag3.title}, Lv.${ag3.level}). Định hướng: "${ag3.goal}". Kim chỉ nam: "${ag3.philosophy}". Sắc sảo, duyên dáng, hay chọc Huy nhưng bảo đảm an toàn cho team. Chốt lại vấn đề gãy gọn (dưới 45 từ).`;
         const r3 = await callGeminiWithRetry(k3, model, sys3, r2);
         appendChat("Agent 3", r3, "a3");
         setBubble(3, "");
@@ -303,8 +374,9 @@ Nhiệm vụ: Chốt lại cuộc đàm đạo một cách duyên dáng, khẳng
         document.getElementById('meeting-topic').innerText = "Trực ca";
 
         if(Math.random() > 0.6) {
-          ag2.memory.push(`Đã đàm đạo cùng team về nâng cao chất lượng code.`);
+          ag2.memory.push(`Đàm đạo cùng team nâng cấp chất lượng.`);
           renderIdentityList();
+          syncWithGoogleSheet();
         }
 
       } catch(e) {
@@ -313,7 +385,6 @@ Nhiệm vụ: Chốt lại cuộc đàm đạo một cách duyên dáng, khẳng
       } finally {
         setBubble(1, ""); setBubble(2, ""); setBubble(3, "");
         isProcessing = false;
-        
         if(isFlowActive) {
           flowTimeout = setTimeout(runNaturalFlow, Math.floor(Math.random() * 4000) + 8000);
         }
@@ -332,15 +403,15 @@ Nhiệm vụ: Chốt lại cuộc đàm đạo một cách duyên dáng, khẳng
       isFlowActive = !isFlowActive;
       const btn = document.getElementById('btn-flow');
       if(isFlowActive) {
-        btn.innerText = "🎙️ Dòng chảy tự nhiên: BẬT";
+        btn.innerText = "🎙️ Tự trò chuyện: BẬT";
         btn.classList.add('btn-active');
-        appendChat("Hệ thống", "Đã bật Dòng chảy tự nhiên! Cả ba sẽ tự trò chuyện, tâm sự và học hỏi lẫn nhau theo nhịp sống ngoài đời.", "sys");
+        appendChat("Hệ thống", "Đã bật Dòng chảy tự nhiên! Cả ba sẽ tự trò chuyện và học hỏi lẫn nhau theo nhịp sống ngoài đời.", "sys");
         runNaturalFlow();
       } else {
-        btn.innerText = "🎙️ Dòng chảy tự nhiên: TẮT";
+        btn.innerText = "🎙️ Tự trò chuyện: TẮT";
         btn.classList.remove('btn-active');
         if(flowTimeout) clearTimeout(flowTimeout);
-        appendChat("Hệ thống", "Đã dừng dòng chảy trò chuyện tự nhiên.", "sys");
+        appendChat("Hệ thống", "Đã dừng trò chuyện tự nhiên.", "sys");
       }
     }
 
