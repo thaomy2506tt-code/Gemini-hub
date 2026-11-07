@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Valley - Stardew AI Manor</title>
+  <title>Script Valley - Stardew Pixel Manor</title>
   <style>
     :root { --bg:#0b0f19; --panel:#162032; --border:#2d3f5d; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -12,35 +12,45 @@
     header h1 { font-size:16px; color:#fde047; text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
     .btn-header { display:flex; gap:4px; }
     
-    /* KHUNG VIEWPORT GAME CHUẨN PIXEL ART */
-    .game-viewport { position:relative; width:100%; height:295px; background:#4a7c29; border:4px solid #5c3317; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5); margin-bottom:8px; }
+    /* KHUNG GAME STARDEW VALLEY CHUẨN TƯƠNG PHẢN CAO */
+    .game-viewport { position:relative; width:100%; height:305px; background:#365e1b; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
     #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
-    .clock-badge { position:absolute; top:8px; right:8px; background:rgba(20,28,45,0.85); border:2px solid #ca8a04; border-radius:6px; padding:3px 8px; font-size:10.5px; font-weight:bold; color:#fef08a; display:flex; align-items:center; gap:5px; pointer-events:none; box-shadow:0 2px 6px rgba(0,0,0,0.5); }
-    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(20,28,45,0.8); border:1px solid #475569; padding:3px 7px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
+    
+    /* HUY HIỆU GIỜ & THỜI TIẾT THỰC VIỆT NAM */
+    .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(22,32,50,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:#fef08a; display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+    .time-text { font-size:11px; color:#38bdf8; letter-spacing:0.5px; }
+    .weather-text { font-size:9.5px; color:#fef08a; }
+    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(22,32,50,0.85); border:1px solid #475569; padding:3px 8px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
 
     .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
-    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0a0f1d; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
-    .btn-action { background:#15803d; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; box-shadow:0 2px 4px rgba(0,0,0,0.4); }
-    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#22314a; border:1px solid #374b6e; color:#fff; border-radius:4px; cursor:pointer; }
-    .btn-active { background:#16a34a; border-color:#4ade80; }
+    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0c1322; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
+    .btn-action { background:#16a34a; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; box-shadow:0 2px 4px rgba(0,0,0,0.4); }
+    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#25344d; border:1px solid #3c5073; color:#fff; border-radius:4px; cursor:pointer; }
+    .btn-active { background:#15803d; border-color:#4ade80; }
     
-    .chat-container { height:260px; display:flex; flex-direction:column; }
-    .chat-messages { flex:1; overflow-y:auto; background:#0a0f1d; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
+    /* KHUNG CHAT TỰ SUY LUẬN & ĐỐI THOẠI */
+    .chat-container { height:280px; display:flex; flex-direction:column; }
+    .chat-messages { flex:1; overflow-y:auto; background:#0c1322; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
     .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; }
-    .msg-content { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; }
-    .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:#38bdf8; text-align:right; } .msg-user .msg-content { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
-    .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:#818cf8; } .msg-a1 .msg-content { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
-    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
-    .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:#f472b6; } .msg-a3 .msg-content { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
-    .msg-sys .msg-content { background:#1e293b; border:1px dashed #475569; font-size:10px; color:#fde047; text-align:center; padding:3px; }
+    
+    .msg-box { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.45; word-break:break-word; }
+    .msg-thought { font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.45); border-left:3px solid #ca8a04; padding:4px 6px; margin-bottom:5px; border-radius:3px; font-style:italic; line-height:1.35; }
+    .msg-speech { font-size:11.8px; color:#f8fafc; font-weight:500; }
+
+    .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:#38bdf8; text-align:right; } .msg-user .msg-box { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
+    .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:#818cf8; } .msg-a1 .msg-box { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
+    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-box { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
+    .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:#f472b6; } .msg-a3 .msg-box { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
+    .msg-sys .msg-box { background:#1e293b; border:1px dashed #475569; font-size:10px; color:#fde047; text-align:center; padding:3px; }
+    
     .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
   </style>
 </head>
 <body>
   <header>
-    <h1>🏡 Script Valley AI</h1>
+    <h1>🌾 Script Valley</h1>
     <div class="btn-header">
       <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự đàm đạo: TẮT</button>
       <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Sao lưu</button>
@@ -48,15 +58,18 @@
     </div>
   </header>
 
-  <!-- MÀN HÌNH NÔNG TRẠI & DINH THỰ 3/4 -->
+  <!-- MÀN HÌNH NÔNG TRẠI & ĐỒNG HỒ VIỆT NAM -->
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
-    <div class="clock-badge" id="clock-display">☀️ Ban ngày</div>
+    <div class="weather-clock-badge">
+      <span class="time-text" id="live-time">14:45 • Giờ VN</span>
+      <span class="weather-text" id="live-weather">☀️ Nắng ráo • 28°C</span>
+    </div>
     <div class="hint-tap">👆 Chạm vào phòng để Sếp bước tới kiểm tra</div>
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Nhật ký sinh hoạt & Trao đổi công việc</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title"><span>💬 Nhật ký Suy luận & Trò chuyện thực tế</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
       <textarea id="chat-input" rows="2" placeholder="Tâm sự đời sống hoặc giao dự án cho team..."></textarea>
@@ -69,26 +82,29 @@
     <div id="cfg-box" style="display:none; font-size:11px;">
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m1" style="flex:2;"><option value="gemini-3.1-pro" selected>3.1 Pro (Suy luận sâu)</option><option value="gemini-3.8-flash">3.8 Flash</option></select>
+        <select id="m1" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Tư duy toàn diện)</option></select>
         <select id="th1" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
       </div>
       <input type="password" id="key-1" placeholder="API Key 1 (Minh)">
 
       <b style="color:#34d399;">2. Huy (Kỹ sư Code Luau):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m2" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu RAM)</option><option value="gemini-3.1-pro">3.1 Pro</option></select>
+        <select id="m2" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu RAM)</option></select>
         <select id="th2" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
       </div>
       <input type="password" id="key-2" placeholder="API Key 2 (Huy)">
 
       <b style="color:#f472b6;">3. Linh (QA Kiểm duyệt):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m3" style="flex:2;"><option value="gemini-3.1-pro" selected>3.1 Pro (Bắt lỗi an toàn)</option><option value="gemini-3.8-flash">3.8 Flash</option></select>
+        <select id="m3" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Bắt lỗi an toàn)</option></select>
         <select id="th3" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
       </div>
       <input type="password" id="key-3" placeholder="API Key 3 (Linh)">
 
-      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Đồng bộ vĩnh viễn)">
+      <div style="margin-top:4px;">
+        <span style="color:#4ade80; font-size:10px;">✅ WebApp Google Apps Script đã ghim cố định:</span>
+        <input type="text" id="gas-url" readonly style="opacity:0.85; background:#1e293b; color:#38bdf8;">
+      </div>
       <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
@@ -99,7 +115,7 @@
       <button class="btn-small" style="flex:1; background:#16a34a;" onclick="exportDataCode()">📦 Sao chép mã sao lưu</button>
       <button class="btn-small" style="flex:1; background:#0284c7; color:#fff;" onclick="importDataCode()">📥 Khôi phục từ mã</button>
     </div>
-    <button class="btn-small" style="width:100%; background:#4f46e5;" onclick="syncWithGoogleSheet()">🔄 Đồng bộ Google Sheets ngay</button>
+    <button class="btn-small" style="width:100%; background:#4f46e5;" onclick="syncWithGoogleSheet(true)">🔄 Đồng bộ Google Sheets ngay</button>
   </div>
 
   <div class="card" id="identity-modal" style="display:none;">
@@ -108,6 +124,8 @@
   </div>
 
   <script>
+    const PERMANENT_GAS_URL = "https://script.google.com/macros/s/AKfycbwIGM0I7BIg9oWfz8q6U_M8dt8_JPyJaOpSdhVIZ9NmQNUJrwhGhomB4BRY1cvQwdYk/exec";
+
     const DEFAULT_STUDIO = {
       agents: [
         { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp.", memory: ["Gia nhập dinh thự nông trại Script Valley."] },
@@ -121,343 +139,354 @@
     let isFlowActive = false;
     let isProcessing = false;
     let flowTimeout = null;
-
-    const NATURAL_STARTERS = [
-      "Huy với Linh này, thung lũng hôm nay trong lành thật đấy! Anh em nghỉ tay ăn ngụm súp rồi chuẩn bị đón dự án lớn từ Sếp nhé.",
-      "Ê ông Huy, vừa thấy ông ôm máy arcade chiến game cả buổi sáng, tí có task code Luau mà làm rò rỉ RAM là liệu hồn với tui!",
-      "Chị Linh cứ khéo lo, em vừa làm bát súp bí ngô ngọt lịm xong là tư duy thuật toán dọn RAM trên Cloud Phone lên level thượng thừa luôn!",
-      "Nói gì thì nói, mục tiêu của team mình là sống vui, làm việc hết mình và sát cánh lâu dài cùng Sếp!",
-      "Anh Minh ơi, tí nữa họp xong anh em mình ra giếng đá múc xô nước mát tưới nốt mấy luống bí ngô nha!"
-    ];
-    // ==========================================
-    // BỘ MÁY ĐỒ HỌA PIXEL ART STARDEW VALLEY 3/4
-    // ==========================================
+    // ============================================================
+    // BỘ MÁY ĐỒ HỌA THỜI GIAN THẬT VIỆT NAM & THỜI TIẾT TỰ ĐỘNG
+    // ============================================================
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
-    const W = 480, H = 270; // Chuẩn 16:9 pixel RPG
+    const W = 480, H = 270;
 
     function resizeCanvas() { canvas.width = W; canvas.height = H; }
     window.addEventListener('resize', resizeCanvas);
 
-    let gameTime = 0.35;
-    let tapTarget = null; // Vòng tròn hiệu ứng khi Sếp chạm tay đi tới
+    let tapTarget = null;
+    let currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
+    let weatherParticles = [];
 
-    // Các điểm sinh hoạt chuẩn tọa độ trong nhà và ngoài vườn
+    async function updateVietnamWeather() {
+      try {
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=16.0544&longitude=108.2022&current_weather=true");
+        const d = await res.json();
+        if (d && d.current_weather) {
+          const code = d.current_weather.weathercode;
+          const temp = Math.round(d.current_weather.temperature);
+          if (code >= 51 && code <= 99) currentWeather = { type: "rain", temp: temp, text: `🌧️ Mưa rào • ${temp}°C` };
+          else if (code >= 1 && code <= 3) currentWeather = { type: "cloudy", temp: temp, text: `⛅ Nhiều mây • ${temp}°C` };
+          else currentWeather = { type: "clear", temp: temp, text: `☀️ Nắng đẹp • ${temp}°C` };
+        }
+      } catch(e) {
+        currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
+      }
+      initWeatherParticles();
+    }
+
+    function initWeatherParticles() {
+      weatherParticles = [];
+      const count = currentWeather.type === "rain" ? 70 : 18;
+      for (let i = 0; i < count; i++) {
+        weatherParticles.push({
+          x: Math.random() * W, y: Math.random() * H,
+          speed: currentWeather.type === "rain" ? (Math.random() * 4 + 5) : (Math.random() * 0.8 + 0.4),
+          len: currentWeather.type === "rain" ? (Math.random() * 5 + 6) : (Math.random() * 3 + 2),
+          sway: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
     const SPOTS = {
-      work:    [{x: 45, y: 70}, {x: 85, y: 70}, {x: 125, y: 70}], // Bàn máy tính
-      meeting: [{x: 195, y: 75}, {x: 235, y: 75}],                 // Bàn họp gỗ
-      arcade:  [{x: 295, y: 65}, {x: 335, y: 75}],                 // Máy game & sofa
-      kitchen: [{x: 55, y: 195}, {x: 95, y: 195}, {x: 125, y: 175}],// Bếp & Bàn ăn
-      toilet:  [{x: 175, y: 195}, {x: 205, y: 195}],               // Phòng vệ sinh
-      dorm:    [{x: 265, y: 185}, {x: 300, y: 185}, {x: 335, y: 185}],// Giường ngủ
-      farm:    [{x: 395, y: 85}, {x: 435, y: 110}, {x: 405, y: 195}, {x: 445, y: 225}] // Vườn bí ngô
+      work:    [{x: 48, y: 72}, {x: 88, y: 72}, {x: 128, y: 72}],
+      meeting: [{x: 195, y: 75}, {x: 235, y: 75}],
+      arcade:  [{x: 295, y: 68}, {x: 332, y: 78}],
+      kitchen: [{x: 58, y: 195}, {x: 95, y: 195}, {x: 125, y: 175}],
+      toilet:  [{x: 175, y: 195}, {x: 205, y: 195}],
+      dorm:    [{x: 265, y: 188}, {x: 300, y: 188}, {x: 335, y: 188}],
+      farm:    [{x: 395, y: 85}, {x: 435, y: 110}, {x: 405, y: 195}, {x: 445, y: 225}]
     };
 
-    // Khởi tạo nhân vật Stardew Chibi
     const CHARACTERS = {
-      user: { name: "Sếp",  x: 215, y: 130, tx: 215, ty: 130, shirt: "#0284c7", pants: "#0f172a", hair: "#e0f2fe", hat: "crown", bubble: "", bTimer: 0, state: "idle", frame: 0, dir: 1 },
-      a1:   { name: "Minh", x: 45,  y: 70,  tx: 45,  ty: 70,  shirt: "#4f46e5", pants: "#1e1b4b", hair: "#312e81", hat: "tie",   bubble: "", bTimer: 0, state: "work", frame: 0, dir: 1, wait: 120 },
-      a2:   { name: "Huy",  x: 85,  y: 70,  tx: 85,  ty: 70,  shirt: "#059669", pants: "#064e3b", hair: "#78350f", hat: "cap",   bubble: "", bTimer: 0, state: "work", frame: 0, dir: 1, wait: 70 },
-      a3:   { name: "Linh", x: 125, y: 70,  tx: 125, ty: 70,  shirt: "#db2777", pants: "#831843", hair: "#f472b6", hat: "ribbon",bubble: "", bTimer: 0, state: "work", frame: 0, dir: 1, wait: 140 }
+      user: { name: "Sếp",  x: 215, y: 130, tx: 215, ty: 130, shirt: "#0284c7", pants: "#034975", hair: "#38bdf8", hat: "crown", bubble: "", bTimer: 0, state: "idle", frame: 0 },
+      a1:   { name: "Minh", x: 48,  y: 72,  tx: 48,  ty: 72,  shirt: "#4f46e5", pants: "#1e1b4b", hair: "#312e81", hat: "glasses", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 120 },
+      a2:   { name: "Huy",  x: 88,  y: 72,  tx: 88,  ty: 72,  shirt: "#059669", pants: "#064e3b", hair: "#b45309", hat: "cap",   bubble: "", bTimer: 0, state: "work", frame: 0, wait: 70 },
+      a3:   { name: "Linh", x: 128, y: 72,  tx: 128, ty: 72,  shirt: "#db2777", pants: "#831843", hair: "#f472b6", hat: "ribbon",bubble: "", bTimer: 0, state: "work", frame: 0, wait: 140 }
     };
 
-    // Chạm tay để di chuyển Sếp có hiệu ứng vòng tròn chạm
+    function getRoomNameByCoord(x, y) {
+      if (x > 360) return "Vườn Bí Ngô Ngoài Trời";
+      if (y < 125) {
+        if (x < 140) return "Phòng Làm Việc R&D";
+        if (x < 265) return "Phòng Họp Bàn Tròn";
+        return "Phòng Game Arcade";
+      } else {
+        if (x < 145) return "Khu Bếp & Nhà Ăn";
+        if (x < 235) return "Phòng Vệ Sinh";
+        return "Khu Nhà Nghỉ Giường Gỗ";
+      }
+    }
+
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
       const tx = Math.max(20, Math.min(W - 20, (e.clientX - rect.left) * scaleX));
       const ty = Math.max(30, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
-      CHARACTERS.user.tx = tx;
-      CHARACTERS.user.ty = ty;
+      CHARACTERS.user.tx = tx; CHARACTERS.user.ty = ty;
       CHARACTERS.user.bubble = "Đi kiểm tra phòng!";
       CHARACTERS.user.bTimer = 60;
       tapTarget = { x: tx, y: ty, r: 12, alpha: 1.0 };
     });
 
-    // VẼ CHI TIẾT THẾ GIỚI STARDEW VALLEY 3/4
     function drawWorld(ctx) {
-      // 1. THẢM CỎ NGOÀI TRỜI (Bên phải x: 360 -> 480)
-      ctx.fillStyle = "#558b2f"; ctx.fillRect(360, 0, 120, H);
-      // Điểm xuyết ngọn cỏ xanh đậm nhạt
-      ctx.fillStyle = "#33691e";
-      for(let x=365; x<475; x+=16) {
-        for(let y=10; y<260; y+=22) {
-          ctx.fillRect(x, y, 2, 4); ctx.fillRect(x+2, y-1, 2, 5);
-        }
+      ctx.fillStyle = "#4a7c29"; ctx.fillRect(360, 0, 120, H);
+      ctx.fillStyle = "#3b6320";
+      for(let x=365; x<475; x+=14) {
+        for(let y=8; y<265; y+=18) { ctx.fillRect(x, y, 2, 4); ctx.fillRect(x+2, y-1, 2, 5); }
       }
 
-      // LUỐNG ĐẤT TRỒNG TRỌT ĐƯỢC CÀY XỚI (Tilled Soil)
-      ctx.fillStyle = "#4e342e"; ctx.fillRect(375, 45, 95, 65);
-      ctx.strokeStyle = "#3e2723"; ctx.lineWidth = 1;
-      for(let y=45; y<=110; y+=13) {
-        ctx.beginPath(); ctx.moveTo(375, y); ctx.lineTo(470, y); ctx.stroke();
-      }
-      // VƯỜN BÍ NGÔ NỞ RỘ CÓ ĐỔ BÓNG KHỐI
-      for(let x=385; x<=455; x+=22) {
+      ctx.fillStyle = "#3e2723"; ctx.fillRect(375, 42, 95, 68);
+      ctx.fillStyle = "#4e342e"; ctx.fillRect(377, 44, 91, 64);
+      ctx.fillStyle = "#271202";
+      for(let y=44; y<=108; y+=13) { ctx.fillRect(377, y, 91, 2); }
+
+      for(let x=388; x<=458; x+=22) {
         for(let y=54; y<=100; y+=16) {
-          // Bóng quả
-          ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(x, y+5, 7, 3, 0, 0, Math.PI*2); ctx.fill();
-          // Múi bí ngô cam rực rỡ
-          ctx.fillStyle = "#d84315"; ctx.beginPath(); ctx.arc(x, y, 6.5, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = "#ff6f00"; ctx.beginPath(); ctx.arc(x-1, y-1, 5, 0, Math.PI*2); ctx.fill();
-          // Cuống xanh
-          ctx.fillStyle = "#2e7d32"; ctx.fillRect(x-1, y-8, 2, 3);
+          ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.beginPath(); ctx.ellipse(x, y+6, 8, 3.5, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#bf360c"; ctx.beginPath(); ctx.arc(x, y, 7.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#e65100"; ctx.beginPath(); ctx.arc(x-1, y-1, 6.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#ff9800"; ctx.beginPath(); ctx.arc(x-2, y-2, 4.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#1b5e20"; ctx.fillRect(x-1, y-9, 2.5, 4);
+          ctx.fillStyle = "#4caf50"; ctx.fillRect(x+1, y-8, 3, 2);
         }
       }
 
-      // HÀNG RÀO GỖ NÔNG TRẠI (Wooden Fence)
-      ctx.fillStyle = "#8d6e63"; ctx.strokeStyle = "#4e342e"; ctx.lineWidth = 1;
-      for(let y=20; y<=240; y+=24) {
-        ctx.fillRect(365, y, 5, 18); ctx.strokeRect(365, y, 5, 18); // Cột rào
-      }
-      ctx.fillRect(363, 60, 7, 4); ctx.fillRect(363, 140, 7, 4); // Thanh ngang
+      ctx.fillStyle = "#3e2723";
+      for(let y=18; y<=240; y+=24) { ctx.fillRect(364, y, 6, 20); }
+      ctx.fillStyle = "#8d6e63";
+      for(let y=18; y<=240; y+=24) { ctx.fillRect(365, y+1, 4, 18); }
+      ctx.fillStyle = "#5d4037"; ctx.fillRect(363, 60, 8, 4); ctx.fillRect(363, 140, 8, 4);
 
-      // GIẾNG NƯỚC BẰNG ĐÁ RÊU PHONG (Stone Well)
-      ctx.fillStyle = "#546e7a"; ctx.fillRect(395, 130, 36, 26);
-      ctx.strokeStyle = "#263238"; ctx.strokeRect(395, 130, 36, 26);
-      ctx.fillStyle = "#0284c7"; ctx.fillRect(401, 136, 24, 14); // Nước trong veo
-      // Mái che giếng
-      ctx.fillStyle = "#6d4c41"; ctx.fillRect(391, 118, 44, 8);
-      ctx.fillStyle = "#3e2723"; ctx.fillRect(395, 126, 4, 10); ctx.fillRect(423, 126, 4, 10);
+      ctx.fillStyle = "#1a252c"; ctx.fillRect(394, 128, 38, 28);
+      ctx.fillStyle = "#455a64"; ctx.fillRect(395, 129, 36, 26);
+      ctx.fillStyle = "#0284c7"; ctx.fillRect(401, 135, 24, 14);
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(403, 137, 6, 4);
+      ctx.fillStyle = "#271202"; ctx.fillRect(390, 116, 46, 10);
+      ctx.fillStyle = "#8d6e63"; ctx.fillRect(391, 117, 44, 8);
+      ctx.fillStyle = "#3e2723"; ctx.fillRect(395, 125, 4, 10); ctx.fillRect(423, 125, 4, 10);
 
-      // CÂY TÁO XANH RÂM MÁT (Apple Tree)
-      ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(435, 245, 18, 7, 0, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#5d4037"; ctx.fillRect(431, 205, 8, 35); // Thân cây
-      // Tán lá nhiều tầng
-      ctx.fillStyle = "#2e7d32"; ctx.beginPath(); ctx.arc(435, 195, 24, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#388e3c"; ctx.beginPath(); ctx.arc(432, 190, 18, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#4caf50"; ctx.beginPath(); ctx.arc(430, 185, 12, 0, Math.PI*2); ctx.fill();
-      // Quả táo đỏ
-      ctx.fillStyle = "#c62828";
-      [[425, 190], [442, 185], [432, 205], [445, 200]].forEach(p => {
-        ctx.beginPath(); ctx.arc(p[0], p[1], 3.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.beginPath(); ctx.ellipse(436, 245, 19, 7, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#3e2723"; ctx.fillRect(431, 204, 9, 36);
+      ctx.fillStyle = "#6d4c41"; ctx.fillRect(433, 204, 5, 36);
+      ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(435, 195, 25, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#2e7d32"; ctx.beginPath(); ctx.arc(432, 190, 19, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#43a047"; ctx.beginPath(); ctx.arc(430, 184, 13, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#b71c1c";
+      [[424, 190], [443, 185], [432, 205], [446, 200]].forEach(p => {
+        ctx.beginPath(); ctx.arc(p[0], p[1], 3.8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#ef5350"; ctx.fillRect(p[0]-1, p[1]-1, 1.5, 1.5);
+        ctx.fillStyle = "#b71c1c";
       });
 
-      // 2. KHU DINH THỰ VĂN PHÒNG CHÍNH (x: 10 -> 355)
-      // Tường nhà ngoài bằng đá kết hợp gỗ
-      ctx.fillStyle = "#3e2723"; ctx.fillRect(10, 10, 345, 250);
-      // Mái ngói vảy cá nhô ra tạo khối
-      ctx.fillStyle = "#a0522d"; ctx.fillRect(8, 6, 349, 12);
-      ctx.fillStyle = "#d2691e";
-      for(let x=8; x<355; x+=12) {
-        ctx.beginPath(); ctx.arc(x+6, 16, 6, 0, Math.PI); ctx.fill();
+      ctx.fillStyle = "#271202"; ctx.fillRect(10, 10, 345, 250);
+      ctx.fillStyle = "#4e2608"; ctx.fillRect(12, 12, 341, 246);
+      ctx.fillStyle = "#271202"; ctx.fillRect(8, 5, 349, 14);
+      ctx.fillStyle = "#b45309"; ctx.fillRect(9, 6, 347, 12);
+      ctx.fillStyle = "#d97706";
+      for(let x=9; x<355; x+=12) { ctx.beginPath(); ctx.arc(x+6, 17, 6, 0, Math.PI); ctx.fill(); }
+
+      ctx.fillStyle = "#a15312"; ctx.fillRect(14, 20, 337, 236);
+      ctx.fillStyle = "#6e3304";
+      for(let y=20; y<256; y+=14) { ctx.fillRect(14, y, 337, 1.5); }
+      ctx.fillStyle = "#b96a20";
+      for(let y=21; y<256; y+=14) { ctx.fillRect(14, y, 337, 1); }
+
+      ctx.fillStyle = "#271202";
+      ctx.fillRect(135, 20, 7, 105); ctx.fillRect(260, 20, 7, 105); ctx.fillRect(14, 125, 337, 8);
+      ctx.fillRect(140, 133, 7, 123); ctx.fillRect(230, 133, 7, 123);
+      ctx.fillStyle = "#5c2b09";
+      ctx.fillRect(136, 20, 5, 105); ctx.fillRect(261, 20, 5, 105); ctx.fillRect(14, 126, 337, 6);
+      ctx.fillRect(141, 133, 5, 123); ctx.fillRect(231, 133, 5, 123);
+
+      ctx.fillStyle = "#94a3b8"; ctx.fillRect(147, 133, 83, 123);
+      ctx.fillStyle = "#cbd5e1";
+      for(let x=147; x<230; x+=14) {
+        for(let y=133; y<256; y+=14) { if((x+y)%28===0) ctx.fillRect(x, y, 14, 14); }
       }
 
-      // SÀN GỖ VÁN THỰC THẾ (Hardwood Floor)
-      ctx.fillStyle = "#b5651d"; ctx.fillRect(14, 20, 337, 236);
-      ctx.strokeStyle = "#8b4513"; ctx.lineWidth = 1;
-      for(let y=20; y<256; y+=14) {
-        ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(351, y); ctx.stroke();
-      }
+      ctx.fillStyle = "#0f172a"; ctx.fillRect(154, 35, 92, 77);
+      ctx.fillStyle = "#1e3a8a"; ctx.fillRect(156, 37, 88, 73);
+      ctx.fillStyle = "#2563eb"; ctx.fillRect(160, 41, 80, 65);
 
-      // VÁCH NGĂN GỖ CÁC PHÒNG
-      ctx.fillStyle = "#4a2810";
-      ctx.fillRect(135, 20, 6, 105); // Vách phòng làm việc & họp
-      ctx.fillRect(260, 20, 6, 105); // Vách phòng họp & game
-      ctx.fillRect(14, 125, 337, 7);  // Hành lang chính
-      ctx.fillRect(140, 132, 6, 124);// Vách nhà ăn & toilet
-      ctx.fillRect(230, 132, 6, 124);// Vách toilet & nhà nghỉ
+      ctx.fillStyle = "#4a044e"; ctx.fillRect(274, 35, 70, 77);
+      ctx.fillStyle = "#831843"; ctx.fillRect(276, 37, 66, 73);
+      ctx.fillStyle = "#be185d"; ctx.fillRect(280, 41, 58, 65);
 
-      // Sàn gạch đá hoa cương cho Toilet
-      ctx.fillStyle = "#cfd8dc"; ctx.fillRect(146, 132, 84, 124);
-      ctx.fillStyle = "#90a4ae";
-      for(let x=146; x<230; x+=14) {
-        for(let y=132; y<256; y+=14) {
-          if((x+y)%28===0) ctx.fillRect(x, y, 14, 14);
-        }
-      }
-
-      // THẢM PHÒNG HỌP & PHÒNG GAME
-      ctx.fillStyle = "#1e3a8a"; ctx.fillRect(155, 36, 90, 75); // Thảm xanh phòng họp
-      ctx.strokeStyle = "#3b82f6"; ctx.strokeRect(155, 36, 90, 75);
-
-      ctx.fillStyle = "#831843"; ctx.fillRect(275, 36, 68, 75); // Thảm nhung phòng game
-      ctx.strokeStyle = "#ec4899"; ctx.strokeRect(275, 36, 68, 75);
-
-      // --- NỘI THẤT CHI TIẾT 3/4 ---
-      // 💻 PHÒNG LÀM VIỆC (Góc trên trái)
-      ctx.fillStyle = "#5c2e0b"; ctx.fillRect(25, 45, 100, 18); // Bàn gỗ
+      ctx.fillStyle = "#271202"; ctx.fillRect(24, 44, 102, 20);
+      ctx.fillStyle = "#5c2e0b"; ctx.fillRect(25, 45, 100, 18);
       [35, 75, 115].forEach(x => {
-        // Màn hình PC có chân đế
-        ctx.fillStyle = "#334155"; ctx.fillRect(x+4, 48, 4, 6);
-        ctx.fillStyle = "#0f172a"; ctx.fillRect(x, 34, 14, 11);
-        ctx.fillStyle = "#38bdf8"; ctx.fillRect(x+1, 35, 12, 9); // Màn hình phát sáng
+        ctx.fillStyle = "#020617"; ctx.fillRect(x-1, 33, 16, 13);
+        ctx.fillStyle = "#38bdf8"; ctx.fillRect(x, 34, 14, 9);
+        ctx.fillStyle = "#e0f2fe"; ctx.fillRect(x+2, 36, 4, 1.5); ctx.fillRect(x+2, 39, 8, 1.5);
+        ctx.fillStyle = "#475569"; ctx.fillRect(x+5, 47, 4, 4);
       });
       drawRoomLabel(ctx, "💻 STUDIO R&D", 35, 30);
 
-      // 📋 PHÒNG HỌP (Giữa trên)
-      ctx.fillStyle = "#6d4c41"; ctx.fillRect(170, 50, 68, 38); // Bàn họp bầu dục
-      ctx.fillStyle = "#fef08a"; ctx.fillRect(178, 56, 10, 8);  // Sổ tay
-      ctx.fillStyle = "#e2e8f0"; ctx.fillRect(205, 54, 14, 10); // Laptop mở
-      drawRoomLabel(ctx, "📋 BÀN BÀN TRÒN", 175, 30);
+      ctx.fillStyle = "#271202"; ctx.fillRect(169, 49, 70, 40);
+      ctx.fillStyle = "#78350f"; ctx.fillRect(170, 50, 68, 38);
+      ctx.fillStyle = "#fde047"; ctx.fillRect(178, 56, 10, 8);
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(205, 54, 14, 10);
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(207, 56, 10, 6);
+      drawRoomLabel(ctx, "📋 BÀN TRÒN", 175, 30);
 
-      // 🎮 PHÒNG GAME & ARCADE (Góc trên phải)
-      // Máy Arcade retro
+      ctx.fillStyle = "#020617"; ctx.fillRect(277, 41, 24, 34);
       ctx.fillStyle = "#1e1b4b"; ctx.fillRect(278, 42, 22, 32);
-      ctx.fillStyle = "#f43f5e"; ctx.fillRect(281, 46, 16, 14); // Màn hình game
-      ctx.fillStyle = "#eab308"; ctx.fillRect(285, 64, 4, 4);   // Cần gạt joystick
-      // Sofa êm ái
+      ctx.fillStyle = "#f43f5e"; ctx.fillRect(281, 46, 16, 14);
+      ctx.fillStyle = "#fde047"; ctx.fillRect(288, 50, 3, 3);
+      ctx.fillStyle = "#eab308"; ctx.fillRect(285, 64, 4, 4);
+      ctx.fillStyle = "#3b0764"; ctx.fillRect(314, 54, 28, 22);
       ctx.fillStyle = "#7c3aed"; ctx.fillRect(315, 55, 26, 20);
-      ctx.fillStyle = "#a78bfa"; ctx.fillRect(315, 52, 26, 6);  // Đệm lưng tựa
-      drawRoomLabel(ctx, "🎮 GAME ARCADE", 278, 30);
+      ctx.fillStyle = "#a78bfa"; ctx.fillRect(315, 52, 26, 6);
+      drawRoomLabel(ctx, "🎮 ARCADE", 280, 30);
 
-      // 🍳 NHÀ ĂN & BẾP (Góc dưới trái)
-      ctx.fillStyle = "#6d4c41"; ctx.fillRect(30, 170, 95, 26); // Bàn ăn dài
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(115, 145, 20, 36); // Tủ lạnh
-      ctx.fillStyle = "#ca8a04"; ctx.fillRect(50, 174, 9, 9);    // Ấm cà phê
-      ctx.fillStyle = "#ef4444"; ctx.fillRect(80, 175, 7, 7);    // Đĩa hoa quả
-      drawRoomLabel(ctx, "🍳 NHÀ ĂN & BẾP", 35, 144);
+      ctx.fillStyle = "#271202"; ctx.fillRect(29, 169, 97, 28);
+      ctx.fillStyle = "#78350f"; ctx.fillRect(30, 170, 95, 26);
+      ctx.fillStyle = "#020617"; ctx.fillRect(114, 144, 22, 38);
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(115, 145, 20, 36);
+      ctx.fillStyle = "#94a3b8"; ctx.fillRect(117, 160, 16, 2);
+      ctx.fillStyle = "#ca8a04"; ctx.fillRect(50, 174, 9, 9);
+      ctx.fillStyle = "#ef4444"; ctx.fillRect(80, 175, 7, 7);
+      drawRoomLabel(ctx, "🍳 BẾP & NHÀ ĂN", 35, 144);
 
-      // 🚽 PHÒNG VỆ SINH (Giữa dưới)
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(155, 150, 16, 22); // Bồn cầu sứ
+      ctx.fillStyle = "#020617"; ctx.fillRect(154, 149, 18, 24);
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(155, 150, 16, 22);
       ctx.fillStyle = "#38bdf8"; ctx.fillRect(158, 153, 10, 8);
-      ctx.fillStyle = "#94a3b8"; ctx.fillRect(200, 150, 22, 14); // Bồn rửa mặt
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(205, 140, 12, 8);  // Gương soi
+      ctx.fillStyle = "#64748b"; ctx.fillRect(200, 150, 22, 14);
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(205, 140, 12, 8);
       drawRoomLabel(ctx, "🚽 VỆ SINH", 168, 144);
 
-      // 🛏️ NHÀ NGHỈ / DORM (Góc dưới phải)
       [250, 285, 320].forEach((x, i) => {
-        // Giường gỗ ấm áp
+        ctx.fillStyle = "#271202"; ctx.fillRect(x-1, 159, 28, 46);
         ctx.fillStyle = "#5c2e0b"; ctx.fillRect(x, 160, 26, 44);
-        ctx.fillStyle = i===0 ? "#818cf8" : (i===1 ? "#34d399" : "#f472b6");
-        ctx.fillRect(x+2, 174, 22, 28); // Nệm riêng từng bạn
-        ctx.fillStyle = "#f8fafc"; ctx.fillRect(x+4, 163, 18, 9); // Gối êm
+        ctx.fillStyle = i===0 ? "#6366f1" : (i===1 ? "#10b981" : "#ec4899");
+        ctx.fillRect(x+2, 174, 22, 28);
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(x+4, 163, 18, 9);
       });
-      drawRoomLabel(ctx, "🛏️ NHÀ NGHỈ", 275, 144);
+      drawRoomLabel(ctx, "🛏️ PHÒNG NGHỈ", 270, 144);
 
-      // Lối cửa thông ra vườn bí ngô
-      ctx.fillStyle = "#6d4c41"; ctx.fillRect(348, 120, 8, 28);
+      ctx.fillStyle = "#271202"; ctx.fillRect(347, 119, 10, 30);
+      ctx.fillStyle = "#8d6e63"; ctx.fillRect(348, 120, 8, 28);
     }
 
     function drawRoomLabel(ctx, text, x, y) {
-      ctx.font = "bold 8px sans-serif";
-      ctx.fillStyle = "#fde047";
-      ctx.shadowColor = "#000"; ctx.shadowBlur = 3;
-      ctx.fillText(text, x, y);
-      ctx.shadowBlur = 0;
+      ctx.font = "bold 8.5px sans-serif";
+      ctx.fillStyle = "#000000"; ctx.fillText(text, x+1, y+1);
+      ctx.fillStyle = "#fde047"; ctx.fillText(text, x, y);
     }
 
-    // VẼ NHÂN VẬT CHIBI STARDEW VALLEY
     function drawStardewCharacter(ctx, c, isMoving) {
       let x = Math.round(c.x), y = Math.round(c.y);
-      let bob = isMoving ? Math.sin(c.frame * Math.PI) * 2.5 : 0;
-      let legOffset = isMoving ? Math.cos(c.frame * Math.PI) * 3 : 0;
+      let bob = isMoving ? Math.sin(c.frame * Math.PI) * 2.8 : 0;
+      let legWaddle = isMoving ? Math.cos(c.frame * Math.PI) * 3.2 : 0;
 
-      // Bóng đổ dưới chân
-      ctx.fillStyle = "rgba(0,0,0,0.35)";
-      ctx.beginPath();
-      ctx.ellipse(x, y + 14, 8, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      ctx.beginPath(); ctx.ellipse(x, y + 15, 9, 4, 0, 0, Math.PI * 2); ctx.fill();
 
-      // Nếu đang ngủ trên giường: vẽ tư thế nằm ngủ
       if (c.state === "dorm" && !isMoving) {
-        ctx.font = "bold 10px sans-serif"; ctx.fillStyle = "#fef08a";
-        ctx.fillText("Zzz...", x + 8, y - 8);
-        ctx.fillStyle = c.shirt; ctx.fillRect(x - 6, y + 6, 14, 10);
-        ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(x, y + 2, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.font = "bold 10px sans-serif";
+        ctx.fillStyle = "#000"; ctx.fillText("Zzz...", x + 9, y - 7);
+        ctx.fillStyle = "#fef08a"; ctx.fillText("Zzz...", x + 8, y - 8);
+        ctx.fillStyle = c.shirt; ctx.beginPath(); ctx.roundRect(x - 7, y + 5, 15, 12, 4); ctx.fill();
+        ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(x, y + 1, 7, 0, Math.PI * 2); ctx.fill();
         return;
       }
 
-      // 1. Chân & Quần
       ctx.fillStyle = c.pants;
-      ctx.fillRect(x - 5, y + 10 + bob, 4, 5 + legOffset);
-      ctx.fillRect(x + 1, y + 10 + bob, 4, 5 - legOffset);
-      // Giày da
-      ctx.fillStyle = "#3e2723";
-      ctx.fillRect(x - 6, y + 14 + bob + legOffset, 5, 3);
-      ctx.fillRect(x + 1, y + 14 + bob - legOffset, 5, 3);
+      ctx.beginPath(); ctx.roundRect(x - 6, y + 10 + bob, 5, 6 + legWaddle, 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(x + 1, y + 10 + bob, 5, 6 - legWaddle, 2); ctx.fill();
+      ctx.fillStyle = "#271202";
+      ctx.beginPath(); ctx.arc(x - 3.5, y + 15 + bob + legWaddle, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 3.5, y + 15 + bob - legWaddle, 3, 0, Math.PI*2); ctx.fill();
 
-      // 2. Thân áo (Shirt)
+      ctx.fillStyle = "#1e1b4b";
+      ctx.beginPath(); ctx.roundRect(x - 9, y - 2 + bob, 18, 14, 5); ctx.fill();
       ctx.fillStyle = c.shirt;
-      ctx.fillRect(x - 7, y - 1 + bob, 14, 12);
-      // Cổ áo trắng
+      ctx.beginPath(); ctx.roundRect(x - 8, y - 1 + bob, 16, 12, 4); ctx.fill();
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x - 2, y - 1 + bob, 4, 3);
+      ctx.fillRect(x - 1.5, y + 1 + bob, 3, 3);
+      ctx.fillRect(x - 1.5, y + 5 + bob, 3, 3);
 
-      // 3. Cánh tay đung đưa khi đi
       ctx.fillStyle = c.shirt;
-      ctx.fillRect(x - 9, y + 1 + bob - legOffset, 3, 7);
-      ctx.fillRect(x + 6, y + 1 + bob + legOffset, 3, 7);
-      // Bàn tay
+      ctx.beginPath(); ctx.arc(x - 9, y + 4 + bob - legWaddle, 3.2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 9, y + 4 + bob + legWaddle, 3.2, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = "#fed7aa";
-      ctx.fillRect(x - 9, y + 7 + bob - legOffset, 3, 3);
-      ctx.fillRect(x + 6, y + 7 + bob + legOffset, 3, 3);
+      ctx.beginPath(); ctx.arc(x - 9, y + 7 + bob - legWaddle, 2.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 9, y + 7 + bob + legWaddle, 2.5, 0, Math.PI*2); ctx.fill();
 
-      // 4. Đầu & Khuôn mặt Chibi
+      ctx.fillStyle = "#271202";
+      ctx.beginPath(); ctx.arc(x, y - 9 + bob, 9.5, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#fed7aa";
-      ctx.beginPath(); ctx.arc(x, y - 8 + bob, 7.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x, y - 9 + bob, 8.5, 0, Math.PI * 2); ctx.fill();
 
-      // Mái tóc Stardew
       ctx.fillStyle = c.hair;
-      ctx.fillRect(x - 8, y - 16 + bob, 16, 6);
-      ctx.fillRect(x - 8, y - 12 + bob, 3, 6); // Tóc mai
-      ctx.fillRect(x + 5, y - 12 + bob, 3, 6);
+      ctx.beginPath(); ctx.arc(x, y - 12 + bob, 9, Math.PI, Math.PI * 2); ctx.fill();
+      ctx.fillRect(x - 9, y - 13 + bob, 18, 5);
+      ctx.fillRect(x - 9, y - 10 + bob, 3.5, 6);
+      ctx.fillRect(x + 5.5, y - 10 + bob, 3.5, 6);
 
-      // Đôi mắt to tròn có chấm sáng
-      ctx.fillStyle = "#1e293b";
-      ctx.fillRect(x - 4, y - 8 + bob, 2.5, 3);
-      ctx.fillRect(x + 1.5, y - 8 + bob, 2.5, 3);
-      ctx.fillStyle = "#ffffff"; // Đốm sáng mắt
-      ctx.fillRect(x - 4, y - 8 + bob, 1, 1);
-      ctx.fillRect(x + 1.5, y - 8 + bob, 1, 1);
+      ctx.fillStyle = "#090d16";
+      ctx.beginPath(); ctx.arc(x - 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x - 4.5, y - 9.5 + bob, 1.5, 1.5);
+      ctx.fillRect(x + 3.0, y - 9.5 + bob, 1.5, 1.5);
 
-      // Má hồng Chibi
-      ctx.fillStyle = "rgba(244,114,182,0.6)";
-      ctx.fillRect(x - 6, y - 5 + bob, 2, 2);
-      ctx.fillRect(x + 4, y - 5 + bob, 2, 2);
+      ctx.fillStyle = "rgba(244, 114, 182, 0.75)";
+      ctx.beginPath(); ctx.arc(x - 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
 
-      // Phụ kiện riêng
       if (c.hat === "crown") {
         ctx.fillStyle = "#eab308";
         ctx.beginPath();
-        ctx.moveTo(x - 6, y - 16 + bob); ctx.lineTo(x - 4, y - 20 + bob); ctx.lineTo(x, y - 17 + bob);
-        ctx.lineTo(x + 4, y - 20 + bob); ctx.lineTo(x + 6, y - 16 + bob);
+        ctx.moveTo(x - 7, y - 17 + bob); ctx.lineTo(x - 5, y - 22 + bob); ctx.lineTo(x, y - 18 + bob);
+        ctx.lineTo(x + 5, y - 22 + bob); ctx.lineTo(x + 7, y - 17 + bob);
         ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#ef4444"; ctx.fillRect(x - 1, y - 18 + bob, 2, 2); // Ngọc đỏ
+        ctx.fillStyle = "#dc2626"; ctx.fillRect(x - 1, y - 19 + bob, 2, 2);
       } else if (c.hat === "cap") {
-        ctx.fillStyle = "#047857"; ctx.fillRect(x - 7, y - 17 + bob, 14, 4); // Nón lưỡi trai
-        ctx.fillRect(x - 9, y - 14 + bob, 4, 2);
+        ctx.fillStyle = "#047857";
+        ctx.beginPath(); ctx.arc(x, y - 14 + bob, 8.5, Math.PI, Math.PI*2); ctx.fill();
+        ctx.fillRect(x - 10, y - 15 + bob, 7, 3);
       } else if (c.hat === "ribbon") {
-        ctx.fillStyle = "#f43f5e"; ctx.fillRect(x + 3, y - 18 + bob, 5, 4); // Nơ hồng
+        ctx.fillStyle = "#f43f5e";
+        ctx.beginPath(); ctx.arc(x + 5, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x + 9, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillRect(x + 6.5, y - 18 + bob, 1.5, 2);
+      } else if (c.hat === "glasses") {
+        ctx.strokeStyle = "#ca8a04"; ctx.lineWidth = 1.2;
+        ctx.strokeRect(x - 6, y - 10.5 + bob, 4.5, 4);
+        ctx.strokeRect(x + 1.5, y - 10.5 + bob, 4.5, 4);
+        ctx.beginPath(); ctx.moveTo(x - 1.5, y - 8.5 + bob); ctx.lineTo(x + 1.5, y - 8.5 + bob); ctx.stroke();
       }
 
-      // Tên nhân vật nổi bên dưới
-      ctx.font = "bold 8px sans-serif";
+      ctx.font = "bold 8.5px sans-serif";
+      ctx.fillStyle = "#000000"; ctx.textAlign = "center";
+      ctx.fillText(c.name, x + 1, y + 25);
       ctx.fillStyle = "#ffffff";
-      ctx.textAlign = "center";
-      ctx.shadowColor = "#000"; ctx.shadowBlur = 2;
-      ctx.fillText(c.name, x, y + 23);
-      ctx.shadowBlur = 0;
+      ctx.fillText(c.name, x, y + 24);
 
-      // Bong bóng thoại sinh động trên đầu
       if (c.bubble && c.bTimer > 0) {
         c.bTimer--;
-        let bw = Math.min(125, ctx.measureText(c.bubble).width + 12);
-        ctx.fillStyle = "rgba(15,23,42,0.95)";
-        ctx.fillRect(x - bw/2, y - 34 + bob, bw, 15);
-        ctx.strokeStyle = "#fde047"; ctx.strokeRect(x - bw/2, y - 34 + bob, bw, 15);
-        // Đuôi bóng thoại
+        let bw = Math.min(130, ctx.measureText(c.bubble).width + 14);
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.beginPath(); ctx.roundRect(x - bw/2 + 1, y - 35 + bob + 1, bw, 16, 5); ctx.fill();
+        ctx.fillStyle = "#0f172a";
+        ctx.beginPath(); ctx.roundRect(x - bw/2, y - 36 + bob, bw, 16, 5); ctx.fill();
+        ctx.strokeStyle = "#fde047"; ctx.lineWidth = 1.5; ctx.stroke();
         ctx.fillStyle = "#fde047";
         ctx.beginPath();
-        ctx.moveTo(x - 3, y - 19 + bob); ctx.lineTo(x + 3, y - 19 + bob); ctx.lineTo(x, y - 16 + bob);
+        ctx.moveTo(x - 3, y - 20 + bob); ctx.lineTo(x + 3, y - 20 + bob); ctx.lineTo(x, y - 16 + bob);
         ctx.fill();
 
         ctx.font = "bold 8px sans-serif"; ctx.fillStyle = "#fef08a";
         let t = c.bubble.length > 22 ? c.bubble.substring(0, 20) + '..' : c.bubble;
-        ctx.fillText(t, x, y - 23 + bob);
+        ctx.fillText(t, x, y - 25 + bob);
       }
     }
 
-    // Cập nhật di chuyển & Sinh hoạt tự do
     function updateAndDrawCharacters(ctx) {
       let isWorkingTime = isProcessing;
 
-      // Vẽ vòng tròn chạm đất khi Sếp di chuyển
       if (tapTarget && tapTarget.alpha > 0) {
         ctx.strokeStyle = `rgba(56, 189, 248, ${tapTarget.alpha})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(tapTarget.x, tapTarget.y, tapTarget.r, 0, Math.PI * 2); ctx.stroke();
+        ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(tapTarget.x, tapTarget.y, tapTarget.r, 0, Math.PI * 2); ctx.stroke();
         tapTarget.r = Math.max(2, tapTarget.r - 0.5);
         tapTarget.alpha -= 0.03;
       }
@@ -474,7 +503,6 @@
           c.frame = (c.frame + 0.16) % 4;
         } else {
           c.frame = 0;
-          // SINH HOẠT TỰ DO KHI RẢNH RỖI
           if (k !== 'user') {
             c.wait = (c.wait || 0) - 1;
             if (c.wait <= 0) {
@@ -490,9 +518,9 @@
                 c.tx = spot.x; c.ty = spot.y; c.state = chosen;
                 c.wait = Math.floor(Math.random() * 260) + 160;
 
-                if(chosen === "arcade") c.bubble = "Bắn ván game đã! 🎮";
+                if(chosen === "arcade") c.bubble = "Làm ván game đã! 🎮";
                 else if(chosen === "kitchen") c.bubble = "Làm bát súp bí ngô 🥣";
-                else if(chosen === "farm") c.bubble = "Ra vườn hái táo 🌾";
+                else if(chosen === "farm") c.bubble = "Ra vườn ngắm bí ngô 🌾";
                 else if(chosen === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
                 else if(chosen === "toilet") c.bubble = "Rửa mặt cho tỉnh 🚽";
                 else if(chosen === "meeting") c.bubble = "Xem lại sổ tay 📋";
@@ -506,26 +534,50 @@
       });
     }
 
-    // Chu kỳ Ánh sáng Ngày - Đêm
-    function drawLighting(ctx) {
-      gameTime = (gameTime + 0.0002) % 1.0;
-      let clockText = "☀️ Trưa nắng", overlay = "rgba(0,0,0,0)";
+    function drawLightingAndWeather(ctx) {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const timeVal = hours + minutes / 60;
 
-      if (gameTime >= 0.15 && gameTime < 0.3) { clockText = "🌅 Bình minh"; overlay = "rgba(251, 146, 60, 0.15)"; }
-      else if (gameTime >= 0.3 && gameTime < 0.7) { clockText = "☀️ Ban ngày"; overlay = "rgba(255, 255, 255, 0.0)"; }
-      else if (gameTime >= 0.7 && gameTime < 0.85) { clockText = "🌆 Hoàng hôn"; overlay = "rgba(168, 85, 247, 0.22)"; }
-      else { clockText = "🌙 Đêm trăng"; overlay = "rgba(15, 23, 42, 0.65)"; }
+      const timeStr = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
+      document.getElementById('live-time').innerText = `🕒 ${timeStr} • Giờ VN`;
+      document.getElementById('live-weather').innerText = currentWeather.text;
 
-      document.getElementById('clock-display').innerText = clockText;
+      let overlay = "rgba(0,0,0,0)";
+      let isNight = false;
+
+      if (timeVal >= 5.0 && timeVal < 6.8) overlay = "rgba(251, 146, 60, 0.18)";
+      else if (timeVal >= 6.8 && timeVal < 17.0) overlay = currentWeather.type === "rain" ? "rgba(30, 41, 59, 0.22)" : "rgba(255, 255, 255, 0.0)";
+      else if (timeVal >= 17.0 && timeVal < 18.8) overlay = "rgba(168, 85, 247, 0.26)";
+      else { overlay = "rgba(11, 17, 32, 0.70)"; isNight = true; }
+
       ctx.fillStyle = overlay; ctx.fillRect(0, 0, W, H);
 
-      // Đèn lồng ấm áp thắp sáng các phòng trong đêm
-      if (gameTime < 0.2 || gameTime > 0.8) {
-        [ {x: 85, y: 70}, {x: 215, y: 70}, {x: 310, y: 70}, {x: 85, y: 195}, {x: 295, y: 185} ].forEach(l => {
-          let g = ctx.createRadialGradient(l.x, l.y, 5, l.x, l.y, 55);
-          g.addColorStop(0, "rgba(253, 224, 71, 0.38)");
+      if (isNight) {
+        [ {x: 88, y: 72}, {x: 205, y: 75}, {x: 310, y: 70}, {x: 85, y: 195}, {x: 300, y: 188} ].forEach(l => {
+          let g = ctx.createRadialGradient(l.x, l.y, 4, l.x, l.y, 55);
+          g.addColorStop(0, "rgba(253, 224, 71, 0.44)");
           g.addColorStop(1, "transparent");
           ctx.fillStyle = g; ctx.fillRect(l.x - 55, l.y - 55, 110, 110);
+        });
+      }
+
+      if (currentWeather.type === "rain") {
+        ctx.strokeStyle = "rgba(186, 230, 253, 0.65)";
+        ctx.lineWidth = 1.2;
+        weatherParticles.forEach(p => {
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 2, p.y + p.len); ctx.stroke();
+          p.y += p.speed; p.x -= 0.8;
+          if (p.y > H) { p.y = -10; p.x = Math.random() * W; }
+        });
+      } else {
+        ctx.fillStyle = "rgba(254, 240, 138, 0.45)";
+        weatherParticles.forEach(p => {
+          p.sway += 0.02;
+          ctx.beginPath(); ctx.arc(p.x + Math.sin(p.sway) * 4, p.y, 1.5, 0, Math.PI * 2); ctx.fill();
+          p.y += p.speed;
+          if (p.y > H) { p.y = -5; p.x = Math.random() * W; }
         });
       }
     }
@@ -533,28 +585,110 @@
     function gameLoop() {
       drawWorld(ctx);
       updateAndDrawCharacters(ctx);
-      drawLighting(ctx);
+      drawLightingAndWeather(ctx);
       requestAnimationFrame(gameLoop);
     }
 
     // ==========================================
-    // KHỞI ĐỘNG VÀ ĐỒNG BỘ GEMINI ADVANCED
+    // KHỞI ĐỘNG HỆ THỐNG VÀ XỬ LÝ PHẢN HỒI
     // ==========================================
     window.onload = async () => {
       resizeCanvas();
+      initWeatherParticles();
+      updateVietnamWeather();
+      setInterval(updateVietnamWeather, 15 * 60 * 1000);
+
       gameLoop();
 
       document.getElementById('key-1').value = localStorage.getItem('k1') || '';
       document.getElementById('key-2').value = localStorage.getItem('k2') || '';
       document.getElementById('key-3').value = localStorage.getItem('k3') || '';
-      document.getElementById('gas-url').value = localStorage.getItem('gas_url') || '';
       
+      document.getElementById('gas-url').value = PERMANENT_GAS_URL;
+      localStorage.setItem('gas_url', PERMANENT_GAS_URL);
+
+      document.getElementById('m1').value = 'gemini-3.8-flash';
+      document.getElementById('m2').value = 'gemini-3.8-flash';
+      document.getElementById('m3').value = 'gemini-3.8-flash';
+      localStorage.setItem('m1', 'gemini-3.8-flash');
+      localStorage.setItem('m2', 'gemini-3.8-flash');
+      localStorage.setItem('m3', 'gemini-3.8-flash');
+
       const saved = localStorage.getItem('studio_data_v2');
       if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
       renderChatHistory(); renderIdentityList();
 
-      if (localStorage.getItem('gas_url')) { await loadFromGoogleSheet(false); }
+      await loadFromGoogleSheet(false);
     };
+
+    function escapeHtml(t) {
+      return (t || '').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    // BỘ TÁCH SUY LUẬN VÀ LỜI NÓI
+    function parseAiThoughtAndSpeech(raw) {
+      if (!raw) return { thought: "", speech: "..." };
+      let t = raw.trim();
+      let thought = "", speech = "";
+
+      if (t.includes("[SUY LUẬN]:") || t.includes("[SUY NGHĨ]:")) {
+        let parts = t.split(/\[LỜI NÓI\]:/i);
+        let tPart = parts[0].replace(/\[SUY LUẬN\]:|\[SUY NGHĨ\]:/gi, '').trim();
+        let sPart = parts[1] ? parts[1].trim() : "";
+        thought = tPart;
+        speech = sPart || tPart;
+      } else {
+        // Nếu AI không chia thẻ, dùng cả đoạn làm lời nói
+        speech = t;
+      }
+      return { thought: thought, speech: speech };
+    }
+
+    function appendChatMessage(sender, thought, speech, type) {
+      const feed = document.getElementById('chat-feed');
+      const row = document.createElement('div');
+      row.className = `msg-row msg-${type}`;
+      
+      let label = sender;
+      if (type === 'user') label = '👑 Sếp';
+      else if (type === 'a1') label = '👨‍💼 Minh (Lead)';
+      else if (type === 'a2') label = '👨‍💻 Huy (Dev)';
+      else if (type === 'a3') label = '👩‍🔬 Linh (QA)';
+
+      let thoughtHtml = thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(thought)}</div>` : '';
+      let speechHtml = `<div class="msg-speech">${escapeHtml(speech)}</div>`;
+
+      row.innerHTML = `
+        <div class="msg-sender">${label}</div>
+        <div class="msg-box">
+          ${thoughtHtml}
+          ${speechHtml}
+        </div>
+      `;
+      feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
+
+      studioData.chatHistory.push({ sender: label, thought: thought, text: speech, type: type });
+      if (studioData.chatHistory.length > 50) studioData.chatHistory.shift();
+      localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
+    }
+
+    function renderChatHistory() {
+      const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { 
+        appendChatMessage("Hệ thống", "", "Chào mừng Sếp tới dinh thự Script Valley AI!", "sys"); 
+        return; 
+      }
+      studioData.chatHistory.forEach(i => {
+        const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
+        let thoughtHtml = i.thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(i.thought)}</div>` : '';
+        let speechHtml = `<div class="msg-speech">${escapeHtml(i.text)}</div>`;
+        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-box">${thoughtHtml}${speechHtml}</div>`;
+        feed.appendChild(row);
+      });
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
 
     function setAgentBubble(id, text) {
       let key = id === 'user' ? 'user' : `a${id}`;
@@ -568,20 +702,20 @@
       localStorage.setItem('k1', document.getElementById('key-1').value.trim());
       localStorage.setItem('k2', document.getElementById('key-2').value.trim());
       localStorage.setItem('k3', document.getElementById('key-3').value.trim());
-      localStorage.setItem('m1', document.getElementById('m1').value);
+      localStorage.setItem('m1', 'gemini-3.8-flash');
+      localStorage.setItem('m2', 'gemini-3.8-flash');
+      localStorage.setItem('m3', 'gemini-3.8-flash');
       localStorage.setItem('th1', document.getElementById('th1').value);
-      localStorage.setItem('m2', document.getElementById('m2').value);
       localStorage.setItem('th2', document.getElementById('th2').value);
-      localStorage.setItem('m3', document.getElementById('m3').value);
       localStorage.setItem('th3', document.getElementById('th3').value);
-      localStorage.setItem('gas_url', document.getElementById('gas-url').value.trim());
+      localStorage.setItem('gas_url', PERMANENT_GAS_URL);
       alert('Đã lưu cấu hình thung lũng thành công!');
       syncWithGoogleSheet();
     }
     function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
 
     function exportDataCode() {
-      const fullPackage = { studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3'), gas: localStorage.getItem('gas_url') };
+      const fullPackage = { studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3'), gas: PERMANENT_GAS_URL };
       const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullPackage))));
       navigator.clipboard.writeText(code).then(() => { alert("Đã sao chép mã sao lưu!"); }).catch(() => { prompt("Mã sao lưu:", code); });
     }
@@ -592,25 +726,23 @@
       try {
         const pack = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
         if (pack.studio) { studioData = pack.studio; localStorage.setItem('studio_data_v2', JSON.stringify(studioData)); }
-        ['k1','k2','k3','gas'].forEach(k => { if(pack[k]) localStorage.setItem(k==='gas'?'gas_url':k, pack[k]); });
+        ['k1','k2','k3'].forEach(k => { if(pack[k]) localStorage.setItem(k, pack[k]); });
+        localStorage.setItem('gas_url', PERMANENT_GAS_URL);
         alert("Khôi phục dữ liệu thành công!"); location.reload();
       } catch(e) { alert("Mã không hợp lệ!"); }
     }
 
-    async function syncWithGoogleSheet() {
-      const url = localStorage.getItem('gas_url');
-      if (!url) return;
+    async function syncWithGoogleSheet(showMsg = false) {
       try {
         const payload = JSON.stringify({ studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3') });
-        await fetch(url, { method: "POST", mode: "no-cors", body: payload });
-      } catch(e) {}
+        await fetch(PERMANENT_GAS_URL, { method: "POST", mode: "no-cors", body: payload });
+        if(showMsg) alert("Đã đồng bộ lên Google Sheets thành công!");
+      } catch(e) { if(showMsg) alert("Lỗi đồng bộ Sheets: " + e.message); }
     }
 
     async function loadFromGoogleSheet(notify = true) {
-      const url = localStorage.getItem('gas_url');
-      if (!url) return;
       try {
-        const res = await fetch(url);
+        const res = await fetch(PERMANENT_GAS_URL);
         const data = await res.json();
         if (data && data.studio) {
           studioData = data.studio;
@@ -635,42 +767,14 @@
       `).join('');
     }
 
-    function appendChat(sender, text, type) {
-      const feed = document.getElementById('chat-feed');
-      const row = document.createElement('div');
-      row.className = `msg-row msg-${type}`;
-      let label = sender;
-      if (type === 'user') label = '👑 Sếp';
-      else if (type === 'a1') label = '👨‍💼 Minh (Lead)';
-      else if (type === 'a2') label = '👨‍💻 Huy (Dev)';
-      else if (type === 'a3') label = '👩‍🔬 Linh (QA)';
-      row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-content">${text.replace(/[&<>'"]/g, t=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]))}</div>`;
-      feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
-      studioData.chatHistory.push({sender:label, text:text, type:type});
-      if (studioData.chatHistory.length > 50) studioData.chatHistory.shift();
-      localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
-    }
-
-    function renderChatHistory() {
-      const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
-      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Chào mừng Sếp tới dinh thự Script Valley AI!", "sys"); return; }
-      studioData.chatHistory.forEach(i => {
-        const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
-        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-content">${i.text}</div>`;
-        feed.appendChild(row);
-      });
-      feed.scrollTop = feed.scrollHeight;
-    }
-    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
-
     async function callGeminiAdvanced(key, model, thinkingBudget, sys, user, retries = 2) {
       if(!key) throw new Error("Chưa có đủ API Key!");
-      const cleanModel = (model || 'gemini-3.8-flash').replace(/^models\//, '').trim();
+      const cleanModel = "gemini-3.8-flash";
       const cleanKey = key.trim();
       const budget = parseInt(thinkingBudget) || 4096;
       
       const payload = {
-        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[BỐI CẢNH NÔNG TRẠI DINH THỰ]:\n${user}` }] }],
+        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[DỮ LIỆU ĐỐI THOẠI]:\n${user}` }] }],
         generationConfig: { thinkingConfig: { thinkingBudget: budget } }
       };
 
@@ -688,7 +792,12 @@
             throw new Error(msg);
           }
           const d = await res.json();
-          return d.candidates[0].content.parts[0].text;
+          // Quét toàn bộ parts để lấy đủ nội dung
+          let resultText = "";
+          if (d.candidates && d.candidates[0].content && d.candidates[0].content.parts) {
+            d.candidates[0].content.parts.forEach(p => { if(p.text) resultText += p.text + "\n"; });
+          }
+          return resultText.trim();
         } catch(e) {
           if(attempt < retries && (e.message.includes('fetch') || e.message.includes('network'))) {
             await new Promise(r => setTimeout(r, 2000)); continue;
@@ -698,67 +807,111 @@
       }
     }
 
+    // ĐỐI THOẠI TỰ TRỊ TỰ SUY LUẬN (KHÔNG THEO BA REM SẴN)
     async function executeChain(inputTopic, isAutonomous = false) {
       if(isProcessing) return;
       isProcessing = true;
       const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const m1 = localStorage.getItem('m1') || 'gemini-3.1-pro', th1 = localStorage.getItem('th1') || '8192';
-      const m2 = localStorage.getItem('m2') || 'gemini-3.8-flash', th2 = localStorage.getItem('th2') || '8192';
-      const m3 = localStorage.getItem('m3') || 'gemini-3.1-pro', th3 = localStorage.getItem('th3') || '8192';
+      const th1 = localStorage.getItem('th1') || '8192';
+      const th2 = localStorage.getItem('th2') || '8192';
+      const th3 = localStorage.getItem('th3') || '8192';
 
       if(!k1 || !k2 || !k3) {
-        appendChat("Hệ thống", "Vui lòng mở Cấu hình và nhập đủ 3 API Key để cả làng bắt đầu!", "sys");
+        appendChatMessage("Hệ thống", "", "Vui lòng mở Cấu hình và nhập đủ 3 API Key để cả làng bắt đầu!", "sys");
         isProcessing = false; return;
       }
 
-      // KHI CÓ JOB: Cả 3 lập tức chạy về bàn máy tính làm việc
-      CHARACTERS.a1.tx = SPOTS.work[0].x; CHARACTERS.a1.ty = SPOTS.work[0].y;
-      CHARACTERS.a2.tx = SPOTS.work[1].x; CHARACTERS.a2.ty = SPOTS.work[1].y;
-      CHARACTERS.a3.tx = SPOTS.work[2].x; CHARACTERS.a3.ty = SPOTS.work[2].y;
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const rNameMinh = getRoomNameByCoord(CHARACTERS.a1.x, CHARACTERS.a1.y);
+      const rNameHuy = getRoomNameByCoord(CHARACTERS.a2.x, CHARACTERS.a2.y);
+      const rNameLinh = getRoomNameByCoord(CHARACTERS.a3.x, CHARACTERS.a3.y);
+
+      // Nếu Sếp giao việc: chạy về bàn máy tính
+      if (!isAutonomous) {
+        CHARACTERS.a1.tx = SPOTS.work[0].x; CHARACTERS.a1.ty = SPOTS.work[0].y;
+        CHARACTERS.a2.tx = SPOTS.work[1].x; CHARACTERS.a2.ty = SPOTS.work[1].y;
+        CHARACTERS.a3.tx = SPOTS.work[2].x; CHARACTERS.a3.ty = SPOTS.work[2].y;
+      }
 
       try {
         const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
 
-        // 1. MINH
-        setAgentBubble(1, "Có việc rồi anh em!");
-        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại Script Valley. Định hướng: "${ag1.goal}". Trả lời tự nhiên, ấm áp, xưng em gọi Sếp, điều phối anh em (dưới 45 từ).`;
-        const r1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
-        appendChat("Agent 1", r1, "a1");
-        setAgentBubble(1, r1);
+        // 1. MINH SUY LUẬN VÀ PHẢN HỒI
+        setAgentBubble(1, "Đang suy luận...");
+        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại dinh thự Script Valley.
+Bối cảnh thực tế: ${timeStr} tại Việt Nam, thời tiết ${currentWeather.text}. Bạn đang ở ${rNameMinh}.
+Nhiệm vụ: Bạn là con người sống động, có tư duy logic và cảm xúc riêng. Hãy TỰ SUY LUẬN độc lập về bối cảnh xung quanh và nội dung được nghe, tuyệt đối không dùng văn mẫu rập khuôn.
+BẮT BUỘC trả lời đúng 2 phần:
+[SUY LUẬN]: (1-2 câu bạn suy ngẫm ngầm trong đầu về tình huống, công việc hoặc cảm xúc hiện tại)
+[LỜI NÓI]: (câu bạn thực sự nói ra với mọi người, ấm áp, có tầm nhìn, xưng em gọi Sếp - dưới 45 từ)`;
+        
+        const raw1 = await callGeminiAdvanced(k1, "gemini-3.8-flash", th1, sys1, inputTopic);
+        const res1 = parseAiThoughtAndSpeech(raw1);
+        appendChatMessage("Minh", res1.thought, res1.speech, "a1");
+        setAgentBubble(1, res1.speech);
 
         await new Promise(r => setTimeout(r, 1200));
 
-        // 2. HUY
-        setAgentBubble(2, "Vào bàn gõ code!");
-        const sys2 = `Bạn là ${ag2.name} (${ag2.title}). Định hướng: "${ag2.goal}". Dân IT vui vẻ, yêu game arcade và code Luau, tung hứng hài hước với anh Minh (dưới 50 từ).`;
-        const r2 = await callGeminiAdvanced(k2, m2, th2, sys2, r1);
-        appendChat("Agent 2", r2, "a2");
-        setAgentBubble(2, r2);
+        // 2. HUY SUY LUẬN VÀ ĐÁP LỜI
+        setAgentBubble(2, "Đang suy luận...");
+        const sys2 = `Bạn là ${ag2.name} (${ag2.title}) tại dinh thự Script Valley.
+Bối cảnh thực tế: Bạn đang ở ${rNameHuy}. Bạn là dân IT mê code Luau, hài hước, thực chiến, hay gọi anh Minh là 'anh Lead', Linh là 'chị Linh/bà Linh'.
+Minh vừa nói: "${res1.speech}".
+Nhiệm vụ: Tự suy luận độc lập dựa trên điều Minh vừa nói và hoàn cảnh bản thân. Không nói theo khuôn sáo.
+BẮT BUỘC trả lời đúng 2 phần:
+[SUY LUẬN]: (suy nghĩ thầm trong đầu bạn về việc code, bug, ram, đồ ăn hay việc trêu Linh)
+[LỜI NÓI]: (câu bạn nói to ra với team, hài hước, thực tế IT - dưới 50 từ)`;
+
+        const raw2 = await callGeminiAdvanced(k2, "gemini-3.8-flash", th2, sys2, res1.speech);
+        const res2 = parseAiThoughtAndSpeech(raw2);
+        appendChatMessage("Huy", res2.thought, res2.speech, "a2");
+        setAgentBubble(2, res2.speech);
 
         await new Promise(r => setTimeout(r, 1200));
 
-        // 3. LINH
-        setAgentBubble(3, "Bắt lỗi ngay!");
-        const sys3 = `Bạn là ${ag3.name} (${ag3.title}). Định hướng: "${ag3.goal}". Thông minh, sắc sảo, hay chọc nhẹ Huy nhưng luôn bảo đảm an toàn app (dưới 45 từ).`;
-        const r3 = await callGeminiAdvanced(k3, m3, th3, sys3, r2);
-        appendChat("Agent 3", r3, "a3");
-        setAgentBubble(3, r3);
+        // 3. LINH SUY LUẬN VÀ CHỐT HẠ
+        setAgentBubble(3, "Đang suy luận...");
+        const sys3 = `Bạn là ${ag3.name} (${ag3.title}) tại dinh thự Script Valley.
+Bối cảnh thực tế: Bạn đang ở ${rNameLinh}. Bạn sắc sảo, thông minh, tinh ý, thích bắt bẻ ông Huy nhưng rất chu đáo bảo vệ an toàn dự án cho Sếp.
+Huy vừa nói: "${res2.speech}".
+Nhiệm vụ: Tự suy luận độc lập để phản biện hoặc chốt vấn đề một cách duyên dáng.
+BẮT BUỘC trả lời đúng 2 phần:
+[SUY LUẬN]: (đánh giá ngầm của bạn về lời ông Huy, độ an toàn hoặc thời tiết)
+[LỜI NÓI]: (câu nói duyên dáng, sắc bén chốt lại cuộc trò chuyện - dưới 45 từ)`;
+
+        const raw3 = await callGeminiAdvanced(k3, "gemini-3.8-flash", th3, sys3, res2.speech);
+        const res3 = parseAiThoughtAndSpeech(raw3);
+        appendChatMessage("Linh", res3.thought, res3.speech, "a3");
+        setAgentBubble(3, res3.speech);
 
         addXP(25);
       } catch(e) {
-        appendChat("Hệ thống", `Lỗi kết nối: ${e.message}`, "sys");
+        appendChatMessage("Hệ thống", "", `Lỗi kết nối: ${e.message}`, "sys");
       } finally {
         isProcessing = false;
         if(isFlowActive) {
-          flowTimeout = setTimeout(runNaturalFlow, Math.floor(Math.random() * 4000) + 9000);
+          flowTimeout = setTimeout(runAutonomousDiscussion, Math.floor(Math.random() * 5000) + 10000);
         }
       }
+    }
+
+    // ĐÀM ĐẠO TỰ PHÁT HOÀN TOÀN TỪ BỐI CẢNH (KHÔNG CÓ CÂU MỒI SẴN)
+    function runAutonomousDiscussion() {
+      if(isProcessing || !isFlowActive) return;
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const lastMsg = studioData.chatHistory.length > 0 ? studioData.chatHistory[studioData.chatHistory.length - 1].text : "Một ngày mới tại thung lũng.";
+      
+      // Khơi mào chủ đề hoàn toàn mở dựa trên bối cảnh hiện thực
+      const openTopic = `[Thời gian: ${timeStr} Giờ VN, Thời tiết: ${currentWeather.text}]. Hãy tự khởi xướng một suy nghĩ hoặc câu chuyện mới tiếp nối câu chuyện gần nhất: "${lastMsg}".`;
+      executeChain(openTopic, true);
     }
 
     async function sendGroupMessage() {
       const inp = document.getElementById('chat-input'), msg = inp.value.trim();
       if(!msg || isProcessing) return;
-      appendChat("Sếp", msg, "user");
+      appendChatMessage("Sếp", "", msg, "user");
       setAgentBubble('user', msg);
       inp.value = '';
       await executeChain(msg, false);
@@ -770,20 +923,14 @@
       if(isFlowActive) {
         btn.innerText = "🎙️ Tự đàm đạo: BẬT";
         btn.classList.add('btn-active');
-        appendChat("Hệ thống", "Đã kích hoạt cuộc sống tự do tại dinh thự nông trại!", "sys");
-        runNaturalFlow();
+        appendChatMessage("Hệ thống", "", "Đã bật chế độ Tự đàm đạo! Ba anh em sẽ tự quan sát môi trường và trò chuyện tự nhiên theo suy nghĩ riêng.", "sys");
+        runAutonomousDiscussion();
       } else {
         btn.innerText = "🎙️ Tự đàm đạo: TẮT";
         btn.classList.remove('btn-active');
         if(flowTimeout) clearTimeout(flowTimeout);
-        appendChat("Hệ thống", "Đã dừng tự đàm đạo.", "sys");
+        appendChatMessage("Hệ thống", "", "Đã dừng đàm đạo tự do.", "sys");
       }
-    }
-
-    function runNaturalFlow() {
-      if(isProcessing || !isFlowActive) return;
-      const starter = NATURAL_STARTERS[Math.floor(Math.random() * NATURAL_STARTERS.length)];
-      executeChain(starter, true);
     }
   </script>
 </body>
