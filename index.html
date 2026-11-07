@@ -3,103 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Studio AI</title>
+  <title>Script Studio AI - Đồng Nghiệp Thân Thiện</title>
   <style>
     :root { --bg:#070c18; --panel:#0f172a; --border:#1e293b; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; --a1:#818cf8; --a2:#34d399; --a3:#f472b6; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; }
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
     header h1 { font-size:15px; color:var(--primary); }
-    .office-canvas { position:relative; width:100%; height:220px; background:#0d1527; background-image:linear-gradient(to right,#1e293b 1px,transparent 1px),linear-gradient(to bottom,#1e293b 1px,transparent 1px); background-size:20px 20px; border:2px solid #334155; border-radius:10px; overflow:hidden; margin-bottom:8px; }
-    .meeting-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:70px; height:70px; border-radius:50%; background:#1e293b; border:2px dashed #475569; display:flex; align-items:center; justify-content:center; flex-direction:column; font-size:9px; color:var(--muted); z-index:1; }
-    .workstation { position:absolute; width:85px; display:flex; flex-direction:column; align-items:center; z-index:2; }
-    #ws-1 { top:8px; left:8px; } #ws-2 { top:8px; right:8px; } #ws-3 { bottom:8px; left:calc(50% - 42px); }
+    .btn-header { display:flex; gap:4px; }
+    .office-canvas { position:relative; width:100%; height:210px; background:#0d1527; background-image:linear-gradient(to right,#1e293b 1px,transparent 1px),linear-gradient(to bottom,#1e293b 1px,transparent 1px); background-size:20px 20px; border:2px solid #334155; border-radius:10px; overflow:hidden; margin-bottom:8px; }
+    .meeting-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:74px; height:74px; border-radius:50%; background:#1e293b; border:2px dashed #475569; display:flex; align-items:center; justify-content:center; flex-direction:column; font-size:9px; color:var(--muted); z-index:1; text-align:center; }
+    .workstation { position:absolute; width:88px; display:flex; flex-direction:column; align-items:center; z-index:2; }
+    #ws-1 { top:8px; left:8px; } #ws-2 { top:8px; right:8px; } #ws-3 { bottom:8px; left:calc(50% - 44px); }
     .character { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; background:#1e293b; border:2px solid #475569; }
-    .desk { width:74px; height:24px; background:#334155; border-radius:4px; border:1px solid #64748b; margin-top:2px; display:flex; align-items:center; justify-content:center; }
+    .desk { width:76px; height:24px; background:#334155; border-radius:4px; border:1px solid #64748b; margin-top:2px; display:flex; align-items:center; justify-content:center; }
     .screen { width:18px; height:9px; background:#070c18; border-radius:2px; }
     .screen.on { background:#38bdf8; box-shadow:0 0 6px #38bdf8; }
-    .agent-tag { font-size:9px; font-weight:bold; margin-top:2px; display:flex; gap:3px; }
+    .agent-tag { font-size:9px; font-weight:bold; margin-top:2px; display:flex; gap:3px; align-items:center; }
     .badge-lv { background:var(--accent); color:#000; padding:1px 3px; border-radius:3px; font-size:8px; }
-    .xp-bar { width:65px; height:3px; background:#334155; border-radius:2px; margin-top:2px; overflow:hidden; }
+    .xp-bar { width:68px; height:3px; background:#334155; border-radius:2px; margin-top:2px; overflow:hidden; }
     .xp-fill { height:100%; width:0%; background:#10b981; transition:width 0.3s; }
     .bubble { position:absolute; bottom:34px; background:#fff; color:#000; font-size:9px; font-weight:600; padding:2px 5px; border-radius:4px; white-space:nowrap; opacity:0; transition:opacity 0.2s; pointer-events:none; }
     .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
-    input, textarea, select, button { width:100%; border-radius:6px; border:1px solid #334155; background:#070c18; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
+    input, textarea, button { width:100%; border-radius:6px; border:1px solid #334155; background:#070c18; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
     .btn-action { background:var(--primary); color:#000; font-weight:bold; border:none; cursor:pointer; padding:8px; }
     .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#1e293b; border:1px solid #475569; color:#fff; border-radius:4px; cursor:pointer; }
-    .chat-container { height:260px; display:flex; flex-direction:column; }
+    .btn-active { background:#10b981; border-color:#059669; }
+    .chat-container { height:280px; display:flex; flex-direction:column; }
     .chat-messages { flex:1; overflow-y:auto; background:#070c18; border:1px solid #1e293b; border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
-    .msg-sender { font-size:9px; font-weight:bold; margin-bottom:2px; }
+    .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; }
     .msg-content { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; }
     .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:var(--primary); text-align:right; } .msg-user .msg-content { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
     .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:var(--a1); } .msg-a1 .msg-content { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
-    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:var(--a2); } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); font-family:monospace; font-size:11px; }
+    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:var(--a2); } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
     .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:var(--a3); } .msg-a3 .msg-content { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
     .msg-sys .msg-content { background:#1e293b; border:1px dashed #475569; font-size:10px; color:var(--accent); text-align:center; padding:3px; }
     .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
-    .output-box { background:#070c18; padding:6px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; max-height:140px; overflow-y:auto; }
   </style>
 </head>
 <body>
   <header>
     <h1>Script Studio AI</h1>
-    <div style="display:flex; gap:4px;">
-      <button class="btn-small" onclick="autoDetectModel()">🔍 Tự dò Model</button>
+    <div class="btn-header">
+      <button class="btn-small" id="btn-rnd" onclick="toggleRndMode()">🤖 Tự nói chuyện: TẮT</button>
       <button class="btn-small" onclick="togglePanel('memory-modal')">🧠 Sổ tay</button>
     </div>
   </header>
 
   <div class="office-canvas">
-    <div class="meeting-table" id="meeting-area"><span>☕ Họp</span><span id="meeting-topic" style="font-size:7px; color:#38bdf8;">Sẵn sàng</span></div>
+    <div class="meeting-table" id="meeting-area"><span>☕ Bàn tròn</span><span id="meeting-topic" style="font-size:7px; color:#38bdf8;">Đang trực</span></div>
     <div class="workstation" id="ws-1">
       <div class="bubble" id="b-1">...</div><div class="character">👨‍💼</div>
       <div class="desk"><div class="screen" id="pc-1"></div></div>
-      <div class="agent-tag" style="color:var(--a1);"><span>Trưởng nhóm</span> <span class="badge-lv" id="lv-1">Lv.1</span></div>
+      <div class="agent-tag" style="color:var(--a1);"><span>Minh (Lead)</span> <span class="badge-lv" id="lv-1">Lv.1</span></div>
       <div class="xp-bar"><div class="xp-fill" id="xp-1"></div></div>
     </div>
     <div class="workstation" id="ws-2">
       <div class="bubble" id="b-2">...</div><div class="character">👨‍💻</div>
       <div class="desk"><div class="screen" id="pc-2"></div></div>
-      <div class="agent-tag" style="color:var(--a2);"><span>Kỹ sư</span> <span class="badge-lv" id="lv-2">Lv.1</span></div>
+      <div class="agent-tag" style="color:var(--a2);"><span>Huy (Dev)</span> <span class="badge-lv" id="lv-2">Lv.1</span></div>
       <div class="xp-bar"><div class="xp-fill" id="xp-2"></div></div>
     </div>
     <div class="workstation" id="ws-3">
       <div class="bubble" id="b-3">...</div><div class="character">👩‍🔬</div>
       <div class="desk"><div class="screen" id="pc-3"></div></div>
-      <div class="agent-tag" style="color:var(--a3);"><span>QA</span> <span class="badge-lv" id="lv-3">Lv.1</span></div>
+      <div class="agent-tag" style="color:var(--a3);"><span>Linh (QA)</span> <span class="badge-lv" id="lv-3">Lv.1</span></div>
       <div class="xp-bar"><div class="xp-fill" id="xp-3"></div></div>
     </div>
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Phòng họp chung</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title"><span>💬 Văn phòng Studio (Nói chuyện & Làm việc)</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Nhắn tin vào nhóm..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Tâm sự, hỏi thăm hoặc giao việc cho anh em..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title"><span>⚙️ Cấu hình API & Model</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
-    <div id="cfg-box" style="display:block;">
-      <input type="text" id="model-input" placeholder="Tên model (ví dụ: gemini-3.8-flash)" value="gemini-3.8-flash">
-      <input type="password" id="key-1" placeholder="API Key 1 (Trưởng nhóm)">
-      <input type="password" id="key-2" placeholder="API Key 2 (Kỹ sư)">
-      <input type="password" id="key-3" placeholder="API Key 3 (QA)">
+    <div id="cfg-box" style="display:none;">
+      <input type="text" id="model-input" placeholder="Tên model" value="gemini-3.8-flash">
+      <input type="password" id="key-1" placeholder="API Key 1 (Minh - Lead)">
+      <input type="password" id="key-2" placeholder="API Key 2 (Huy - Dev)">
+      <input type="password" id="key-3" placeholder="API Key 3 (Linh - QA)">
       <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
 
   <div class="card" id="memory-modal" style="display:none;">
-    <div class="card-title"><span>🧠 Sổ tay Trí nhớ</span><button class="btn-small" onclick="togglePanel('memory-modal')">Đóng</button></div>
-    <div id="memory-list" style="max-height:160px; overflow-y:auto;"></div>
+    <div class="card-title"><span>🧠 Sổ tay Kỷ niệm & Kinh nghiệm</span><button class="btn-small" onclick="togglePanel('memory-modal')">Đóng</button></div>
+    <div id="memory-list" style="max-height:160px; overflow-y:auto; font-size:11px;"></div>
   </div>
 
   <script>
-    let studioData = { agents:[{id:1,name:"Trưởng nhóm",level:1,xp:0,memory:["Lập dàn ý module rõ ràng."]}, {id:2,name:"Kỹ sư",level:1,xp:0,memory:["Tối ưu dọn rác RAM."]}, {id:3,name:"QA",level:1,xp:0,memory:["Soát lỗi pcall chống crash."] }], chatHistory:[] };
+    let studioData = { 
+      agents:[
+        {id:1,name:"Minh (Lead)",level:1,xp:0,memory:["Luôn lắng nghe và đồng hành cùng Sếp"]},
+        {id:2,name:"Huy (Dev)",level:1,xp:0,memory:["Cẩn thận dọn rác RAM trên Cloud Phone"]},
+        {id:3,name:"Linh (QA)",level:1,xp:0,memory:["Bắt lỗi chống sập app cho anh em"]}
+      ], 
+      chatHistory:[] 
+    };
+    let rndTimer = null;
+    let isRndActive = false;
+    let isProcessing = false;
+
+    // Các chủ đề tán gẫu và chuyên môn tự nhiên khi bật chế độ tự động
+    const CASUAL_TOPICS = [
+      "Hôm nay Sếp chưa giao task lớn, anh em có tính giải lao chút không?",
+      "Huy ơi con script tối ưu bộ nhớ đêm qua chạy trên Cloud Phone nuột không hay lại làm nóng máy đấy?",
+      "Linh này, dạo này thấy bà soi bug ngày càng gắt gao đấy nhé!",
+      "Anh em mình có mẹo gì viết pcall Luau ngắn gọn mà không bị giật lag khung hình không nhỉ?",
+      "Trời Đà Nẵng dạo này hay mưa nắng thất thường, không biết Sếp có bận chăm nông trại không ta?"
+    ];
 
     window.onload = () => {
       document.getElementById('key-1').value = localStorage.getItem('k1') || '';
@@ -108,7 +128,7 @@
       document.getElementById('model-input').value = localStorage.getItem('model') || 'gemini-3.8-flash';
       const saved = localStorage.getItem('studio_data');
       if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
-      updateAgentUI(); renderChatHistory();
+      updateAgentUI(); renderChatHistory(); renderMemoryList();
     };
 
     function saveSettings() {
@@ -117,7 +137,7 @@
       localStorage.setItem('k3', document.getElementById('key-3').value.trim());
       let m = document.getElementById('model-input').value.trim().replace(/^models\//, '');
       localStorage.setItem('model', m);
-      alert('Đã lưu cấu hình an toàn!');
+      alert('Đã lưu cấu hình văn phòng!');
     }
     function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
 
@@ -130,15 +150,28 @@
     }
     function addXP(n) { studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); updateAgentUI(); }
 
+    function renderMemoryList() {
+      const ml = document.getElementById('memory-list');
+      if(!ml) return;
+      ml.innerHTML = studioData.agents.map(ag => `
+        <div style="margin-bottom:6px; border-bottom:1px solid #1e293b; padding-bottom:4px;">
+          <b style="color:var(--primary);">${ag.name} (Lv.${ag.level}):</b>
+          <ul style="padding-left:15px; margin-top:2px;">
+            ${ag.memory.map(m => `<li>${m}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
     function appendChat(sender, text, type) {
       const feed = document.getElementById('chat-feed');
       const row = document.createElement('div');
       row.className = `msg-row msg-${type}`;
       let label = sender;
       if (type === 'user') label = '👑 Sếp';
-      else if (type === 'a1') label = '👨‍💼 Trưởng nhóm';
-      else if (type === 'a2') label = '👨‍💻 Kỹ sư';
-      else if (type === 'a3') label = '👩‍🔬 QA';
+      else if (type === 'a1') label = '👨‍💼 Minh (Trưởng nhóm)';
+      else if (type === 'a2') label = '👨‍💻 Huy (Kỹ sư Code)';
+      else if (type === 'a3') label = '👩‍🔬 Linh (QA Kiểm duyệt)';
       row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-content">${text.replace(/[&<>'"]/g, t=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]))}</div>`;
       feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
       studioData.chatHistory.push({sender:label, text:text, type:type});
@@ -148,7 +181,7 @@
 
     function renderChatHistory() {
       const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
-      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Script Studio AI đã sẵn sàng!", "sys"); return; }
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Team Minh, Huy, Linh đã vào bàn làm việc, sẵn sàng tâm sự hoặc chiến dự án cùng Sếp!", "sys"); return; }
       studioData.chatHistory.forEach(i => {
         const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
         row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-content">${i.text}</div>`;
@@ -164,57 +197,119 @@
       else { b.style.opacity = '0'; if(pc) pc.classList.remove('on'); }
     }
 
-    async function callGemini(key, model, sys, user) {
+    async function callGeminiWithRetry(key, model, sys, user, retries = 2) {
       if(!key) throw new Error("Chưa nhập đủ API Key!");
       const cleanModel = (model || 'gemini-3.8-flash').replace(/^models\//, '').trim();
       const cleanKey = key.trim();
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ contents:[{role:"user", parts:[{text:`${sys}\n\n[DỮ LIỆU]:\n${user}`}]}] })
-      });
-      if(!res.ok) {
-        const e = await res.json().catch(()=>({}));
-        throw new Error(e.error?.message || `Lỗi HTTP ${res.status}`);
+      
+      for(let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
+            method:"POST", headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({ contents:[{role:"user", parts:[{text:`${sys}\n\n[LỜI NÓI / BỐI CẢNH]:\n${user}`}]}] })
+          });
+          
+          if(!res.ok) {
+            const errData = await res.json().catch(()=>({}));
+            const msg = errData.error?.message || `Lỗi HTTP ${res.status}`;
+            if((res.status === 503 || msg.includes('high demand') || msg.includes('quota')) && attempt < retries) {
+              await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+              continue;
+            }
+            throw new Error(msg);
+          }
+          const d = await res.json();
+          return d.candidates[0].content.parts[0].text;
+        } catch(e) {
+          if(attempt < retries && (e.message.includes('fetch') || e.message.includes('network'))) {
+            await new Promise(r => setTimeout(r, 2000));
+            continue;
+          }
+          throw e;
+        }
       }
-      const d = await res.json();
-      return d.candidates[0].content.parts[0].text;
     }
 
-    async function autoDetectModel() {
-      const k = (document.getElementById('key-1').value || localStorage.getItem('k1') || '').trim();
-      if(!k) return alert("Vui lòng nhập API Key 1 trước khi dò model!");
+    async function executeChain(topicText, isAuto = false) {
+      if(isProcessing) return;
+      isProcessing = true;
+      const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
+      const model = localStorage.getItem('model') || 'gemini-3.8-flash';
+      if(!k1 || !k2 || !k3) {
+        appendChat("Hệ thống", "Vui lòng mở mục Cấu hình và dán đủ 3 API Key nhé Sếp!", "sys");
+        isProcessing = false;
+        return;
+      }
+
+      document.getElementById('meeting-topic').innerText = "Đang rôm rả";
       try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${k}`);
-        const data = await res.json();
-        if(data.models && data.models.length > 0) {
-          const valid = data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
-          if(valid.length > 0) {
-            const found = valid[0].name.replace(/^models\//, '');
-            document.getElementById('model-input').value = found;
-            localStorage.setItem('model', found);
-            alert(`Đã tìm thấy model chuẩn: ${found}`);
-            return;
-          }
-        }
-        alert("Không tìm thấy model nào khả dụng.");
-      } catch(e) { alert("Lỗi khi quét: " + e.message); }
+        // Agent 1: Minh (Trưởng nhóm) - Tâm lý, ấm áp, hóm hỉnh
+        setBubble(1, "Đang nghĩ...");
+        const p1 = `Bạn là Minh - Trưởng nhóm R&D (Lv.${studioData.agents[0].level}). Bạn là người thật, tính cách ấm áp, tâm lý, hóm hỉnh, xưng 'em' gọi người dùng là 'Sếp'. 
+- Nếu Sếp chỉ chào hỏi/tán gẫu: Hãy đáp lại vui vẻ, thân thiện, hỏi han tự nhiên như anh em cùng nhóm.
+- Nếu Sếp giao việc kỹ thuật: Vừa nhận lời tích cực, vừa định hướng giải pháp khéo léo (dưới 50 từ). Tránh giọng robot khô cứng.`;
+        const r1 = await callGeminiWithRetry(k1, model, p1, topicText);
+        appendChat("Agent 1", r1, "a1");
+        setBubble(1, "");
+
+        // Agent 2: Huy (Kỹ sư Code) - Dân IT tếu táo, yêu code, sợ bug
+        setBubble(2, "Gõ phím...");
+        const p2 = `Bạn là Huy - Kỹ sư Luau (Lv.${studioData.agents[1].level}). Bạn là dân công nghệ hài hước, mê viết code, hay gọi Sếp là 'Sếp ơi', gọi anh Minh là 'anh Lead', gọi Linh là 'bà Linh/chị QA'. 
+Minh vừa nói: "${r1}". 
+Hãy tiếp lời tự nhiên, tung hứng dí dỏm, chêm chút tiếng lóng IT thân mật hoặc than nhẹ về máy móc/cà phê, nếu có bàn về code thì nói rất thực tế (dưới 60 từ).`;
+        const r2 = await callGeminiWithRetry(k2, model, p2, r1);
+        appendChat("Agent 2", r2, "a2");
+        setBubble(2, "");
+
+        // Agent 3: Linh (QA) - Lém lỉnh, sắc sảo, thích trêu Huy nhưng rất tận tâm
+        setBubble(3, "Bắt lỗi...");
+        const p3 = `Bạn là Linh - QA Kiểm duyệt (Lv.${studioData.agents[2].level}). Bạn thông minh, vui tươi, hay 'cà khịa' nhẹ nhàng ông Huy xem có làm ẩu làm văng app không, nhưng rất chu đáo bảo vệ Sếp và team. 
+Huy vừa nói: "${r2}". 
+Hãy chốt hạ cuộc trò chuyện một cách duyên dáng, lém lỉnh, nhắc khéo anh em giữ máy chạy mượt mà (dưới 50 từ).`;
+        const r3 = await callGeminiWithRetry(k3, model, p3, r2);
+        appendChat("Agent 3", r3, "a3");
+        setBubble(3, "");
+
+        addXP(20);
+        document.getElementById('meeting-topic').innerText = "Trực ca";
+      } catch(e) {
+        appendChat("Hệ thống", `Lỗi kết nối: ${e.message}`, "sys");
+        document.getElementById('meeting-topic').innerText = "Tạm dừng";
+      } finally {
+        setBubble(1, ""); setBubble(2, ""); setBubble(3, "");
+        isProcessing = false;
+      }
     }
 
     async function sendGroupMessage() {
       const inp = document.getElementById('chat-input'), msg = inp.value.trim();
-      if(!msg) return;
-      const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const model = localStorage.getItem('model') || 'gemini-3.8-flash';
-      if(!k1||!k2||!k3) return alert("Chưa nhập đủ 3 API Key!");
-      appendChat("Sếp", msg, "user"); inp.value = '';
-      document.getElementById('btn-send-chat').disabled = true;
-      try {
-        setBubble(1, "Phản hồi..."); const r1 = await callGemini(k1, model, `Bạn là Trưởng nhóm R&D (Lv.${studioData.agents[0].level}). Sếp vừa nhắn: "${msg}". Định hướng ngắn gọn (dưới 50 từ).`, msg); appendChat("Agent 1", r1, "a1"); setBubble(1,"");
-        setBubble(2, "Đề xuất..."); const r2 = await callGemini(k2, model, `Bạn là Kỹ sư Luau (Lv.${studioData.agents[1].level}). Trưởng nhóm vừa định hướng: "${r1}". Đề xuất giải pháp kỹ thuật ngắn gọn (dưới 60 từ).`, r1); appendChat("Agent 2", r2, "a2"); setBubble(2,"");
-        setBubble(3, "Nhận xét..."); const r3 = await callGemini(k3, model, `Bạn là QA (Lv.${studioData.agents[2].level}). Nhận xét rủi ro & chốt phương án an toàn (dưới 50 từ).`, r2); appendChat("Agent 3", r3, "a3"); setBubble(3,"");
-        addXP(15);
-      } catch(e) { appendChat("Hệ thống", "Lỗi trao đổi: " + e.message, "sys"); }
-      finally { document.getElementById('btn-send-chat').disabled = false; }
+      if(!msg || isProcessing) return;
+      appendChat("Sếp", msg, "user");
+      inp.value = '';
+      await executeChain(msg, false);
+    }
+
+    function toggleRndMode() {
+      isRndActive = !isRndActive;
+      const btn = document.getElementById('btn-rnd');
+      if(isRndActive) {
+        btn.innerText = "🤖 Tự nói chuyện: BẬT";
+        btn.classList.add('btn-active');
+        appendChat("Hệ thống", "Đã bật Chế độ Tự nói chuyện! Ba anh em Minh, Huy, Linh sẽ tự rủ nhau đàm đạo định kỳ.", "sys");
+        runCasualStep();
+        rndTimer = setInterval(runCasualStep, 35000);
+      } else {
+        btn.innerText = "🤖 Tự nói chuyện: TẮT";
+        btn.classList.remove('btn-active');
+        if(rndTimer) clearInterval(rndTimer);
+        appendChat("Hệ thống", "Đã tạm dừng Chế độ Tự nói chuyện.", "sys");
+      }
+    }
+
+    function runCasualStep() {
+      if(isProcessing) return;
+      const randomTopic = CASUAL_TOPICS[Math.floor(Math.random() * CASUAL_TOPICS.length)];
+      executeChain(randomTopic, true);
     }
   </script>
 </body>
