@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Valley - Stardew AI Office</title>
+  <title>Script Valley - Stardew AI Manor</title>
   <style>
-    :root { --bg:#0f172a; --panel:#1e293b; --border:#334155; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
+    :root { --bg:#090d16; --panel:#151d30; --border:#2b3954; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; user-select:none; }
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    header h1 { font-size:15px; color:#fde047; text-shadow:1px 1px 0 #854d0e; }
+    header h1 { font-size:15px; color:#fde047; text-shadow:1px 1px 0 #78350f; }
     .btn-header { display:flex; gap:4px; }
     
-    /* KHUNG THẾ GIỚI GAME STARDEW */
-    .game-viewport { position:relative; width:100%; height:250px; background:#22c55e; border:3px solid #78350f; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.5); margin-bottom:8px; }
-    #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; }
-    .clock-badge { position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.65); border:1px solid #ca8a04; border-radius:6px; padding:3px 7px; font-size:10px; color:#fef08a; display:flex; align-items:center; gap:4px; pointer-events:none; }
-    .hint-tap { position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px; font-size:9px; color:#cbd5e1; pointer-events:none; }
+    /* KHUNG THẾ GIỚI STARDEW VALLEY CANVAS */
+    .game-viewport { position:relative; width:100%; height:285px; background:#1b2518; border:3px solid #78350f; border-radius:12px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,0.6); margin-bottom:8px; }
+    #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
+    .clock-badge { position:absolute; top:6px; right:6px; background:rgba(15,23,42,0.85); border:1px solid #ca8a04; border-radius:6px; padding:3px 7px; font-size:10px; color:#fef08a; display:flex; align-items:center; gap:4px; pointer-events:none; }
+    .hint-tap { position:absolute; bottom:6px; left:6px; background:rgba(15,23,42,0.75); padding:2px 6px; border-radius:4px; font-size:8.5px; color:#cbd5e1; pointer-events:none; }
 
     .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
     input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0b1120; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
     .btn-action { background:#16a34a; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; }
-    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#334155; border:1px solid #475569; color:#fff; border-radius:4px; cursor:pointer; }
+    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#24324d; border:1px solid #3b4d70; color:#fff; border-radius:4px; cursor:pointer; }
     .btn-active { background:#15803d; border-color:#22c55e; }
     
     .chat-container { height:260px; display:flex; flex-direction:column; }
@@ -34,13 +34,13 @@
     .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:#818cf8; } .msg-a1 .msg-content { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
     .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
     .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:#f472b6; } .msg-a3 .msg-content { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
-    .msg-sys .msg-content { background:#334155; border:1px dashed #64748b; font-size:10px; color:#fde047; text-align:center; padding:3px; }
+    .msg-sys .msg-content { background:#1e293b; border:1px dashed #475569; font-size:10px; color:#fde047; text-align:center; padding:3px; }
     .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
   </style>
 </head>
 <body>
   <header>
-    <h1>🌾 Script Valley</h1>
+    <h1>🏡 Script Valley AI</h1>
     <div class="btn-header">
       <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự đàm đạo: TẮT</button>
       <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Sao lưu</button>
@@ -48,24 +48,24 @@
     </div>
   </header>
 
-  <!-- KHUNG GAME CANVAS NÔNG TRẠI VĂN PHÒNG -->
+  <!-- MÔ HÌNH THẾ GIỚI GAME CANVASES -->
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
     <div class="clock-badge" id="clock-display">☀️ Ban ngày</div>
-    <div class="hint-tap">👆 Chạm vào bản đồ để di chuyển Sếp</div>
+    <div class="hint-tap">👆 Chạm vào phòng bất kỳ để Sếp bước tới</div>
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Cuộc trò chuyện tại Thung Lũng</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title"><span>💬 Cuộc trò chuyện & Nhật ký sinh hoạt</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Gõ tin nhắn trò chuyện hoặc giao việc..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Nói chuyện hoặc giao việc cho anh em..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình Nhân sự AI & Đám mây</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Cấu hình API & Model từng Agent</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none; font-size:11px;">
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
@@ -88,7 +88,7 @@
       </div>
       <input type="password" id="key-3" placeholder="API Key 3 (Linh)">
 
-      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Đồng bộ vĩnh viễn)">
+      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Tự động đồng bộ vĩnh viễn)">
       <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
@@ -103,16 +103,16 @@
   </div>
 
   <div class="card" id="identity-modal" style="display:none;">
-    <div class="card-title"><span>🧭 Bản sắc & Mục tiêu nhân vật</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
+    <div class="card-title"><span>🧭 Bản sắc & Nhật ký Kỷ niệm</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
     <div id="identity-list" style="max-height:200px; overflow-y:auto; font-size:11px;"></div>
   </div>
 
   <script>
     const DEFAULT_STUDIO = {
       agents: [
-        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, có tầm nhìn, luôn đồng hành cùng Sếp.", memory: ["Gia nhập thung lũng Script Valley."] },
-        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Cao thủ tối ưu mã nguồn Luau & Game Engine trên Cloud Phone.", philosophy: "Hài hước, thực chiến, diệt trừ rác RAM.", memory: ["Cam kết dọn rác bộ nhớ triệt để."] },
-        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định an toàn phần mềm.", philosophy: "Sắc sảo, bắt lỗi tinh tế, thích trêu anh Huy, giữ kỷ luật an toàn.", memory: ["Bọc pcall chống văng app."] }
+        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, có tầm nhìn, luôn đồng hành cùng Sếp.", memory: ["Điều phối sinh hoạt và dự án tại thung lũng."] },
+        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Bậc thầy tối ưu Luau & Cloud Phone.", philosophy: "Hài hước, đam mê game và giải thuật dọn rác RAM.", memory: ["Tối ưu dọn rác bộ nhớ không văng game."] },
+        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định chất lượng phần mềm.", philosophy: "Sắc sảo, tỉ mỉ, hay trêu Huy, giữ kỷ luật an toàn.", memory: ["Bọc pcall chống sập luồng cho hệ thống."] }
       ],
       chatHistory: []
     };
@@ -123,252 +123,296 @@
     let flowTimeout = null;
 
     const NATURAL_STARTERS = [
-      "Huy với Linh này, thung lũng hôm nay thời tiết đẹp thật đấy! Anh em mình dạo một vòng rồi bàn nâng cấp hệ thống auto nhé.",
-      "Ê ông Huy, ra bàn trà ngồi hóng mát tí đi, hôm nay con script tối ưu ram chạy trên Cloud Phone nuột nà chưa đấy?",
-      "Anh Minh yên tâm, ngồi dưới bóng cây táo thế này tư duy thuật toán dọn rác RAM của em là đỉnh chóp luôn!",
-      "Nói gì thì nói, mục tiêu lâu dài của 3 anh em mình là đồng hành cùng Sếp, sau này dự án lớn đến đâu cũng cân đẹp hết!",
-      "Bà Linh đừng có đi theo soi bug tui miết nha, hôm nay trời đẹp uống ngụm trà giải lao chút đi!"
+      "Huy với Linh này, thung lũng hôm nay thời tiết mát mẻ thật! Anh em nghỉ tay uống ngụm trà rồi chuẩn bị tinh thần đón job mới từ Sếp nha.",
+      "Ê ông Huy, vừa thấy ông cắm mặt chơi game arcade cả tiếng đồng hồ rồi đấy, tí có job code auto là phải tập trung nghe chưa!",
+      "Chị Linh yên tâm, vừa làm ván game xả stress xong là đầu óc tư duy thuật toán dọn RAM của em lên tầm vũ trụ luôn!",
+      "Nói gì thì nói, mục tiêu của team mình là sống vui, làm việc hết mình và đồng hành lâu dài cùng Sếp!",
+      "Bà Linh đừng có đi theo soi tui miết nha, ra vườn hái quả bí ngô tươi về nấu súp ăn trưa đi bà!"
     ];
     // ==========================================
-    // THẾ GIỚI GAME STARDEW VALLEY (CANVAS 2D)
+    // STARDEW VALLEY PIXEL ART & LIFE ENGINE
     // ==========================================
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
-    let W = 360, H = 220;
+    const W = 480, H = 260; // Độ phân giải pixel chuẩn tỉ lệ 16:9
 
-    function resizeCanvas() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = W; canvas.height = H;
-    }
+    function resizeCanvas() { canvas.width = W; canvas.height = H; }
     window.addEventListener('resize', resizeCanvas);
 
-    // Chu kỳ ngày đêm (2 phút = 1 ngày đêm đầy đủ)
-    let gameTime = 0.25; // 0.0: nửa đêm, 0.25: sáng sớm, 0.5: trưa, 0.75: hoàng hôn
+    let gameTime = 0.35; // Chu kỳ thời gian ngày đêm
 
-    // Các vị trí trọng điểm trong thế giới
-    const WAYPOINTS = [
-      { name: "Cabin Desk 1", x: 70, y: 75 },
-      { name: "Cabin Desk 2", x: 110, y: 75 },
-      { name: "Cabin Desk 3", x: 150, y: 75 },
-      { name: "Bàn trà sân vườn", x: 260, y: 150 },
-      { name: "Cây táo râm mát", x: 290, y: 70 },
-      { name: "Lối đi lát đá", x: 180, y: 160 },
-      { name: "Bờ hồ nước", x: 60, y: 175 }
-    ];
-
-    // Khởi tạo các nhân vật game
-    const CHARACTERS = {
-      user: { name: "Sếp", role: "user", x: 180, y: 140, tx: 180, ty: 140, color: "#38bdf8", hat: "👑", bubble: "", bubbleTimer: 0 },
-      a1:   { name: "Minh", role: "a1", x: 70, y: 80, tx: 70, ty: 80, color: "#818cf8", hat: "👨‍💼", bubble: "", bubbleTimer: 0, wait: 0 },
-      a2:   { name: "Huy", role: "a2", x: 110, y: 80, tx: 110, ty: 80, color: "#34d399", hat: "👨‍💻", bubble: "", bubbleTimer: 0, wait: 0 },
-      a3:   { name: "Linh", role: "a3", x: 150, y: 80, tx: 150, ty: 80, color: "#f472b6", hat: "👩‍🔬", bubble: "", bubbleTimer: 0, wait: 0 }
+    // Tọa độ các điểm sinh hoạt trong dinh thự & nông trại
+    const ROOM_SPOTS = {
+      office:   [{x: 45, y: 55}, {x: 80, y: 55}, {x: 115, y: 55}], // Bàn làm việc
+      meeting:  [{x: 185, y: 60}, {x: 215, y: 60}, {x: 245, y: 60}], // Phòng họp
+      game:     [{x: 310, y: 55}, {x: 345, y: 65}, {x: 360, y: 55}], // Phòng game (Arcade & Sofa)
+      kitchen:  [{x: 50, y: 175}, {x: 85, y: 175}, {x: 115, y: 165}], // Bàn ăn & Bếp
+      toilet:   [{x: 175, y: 175}, {x: 200, y: 175}],                 // Phòng vệ sinh
+      dorm:     [{x: 260, y: 170}, {x: 295, y: 170}, {x: 330, y: 170}], // Giường ngủ
+      garden:   [{x: 400, y: 80}, {x: 435, y: 120}, {x: 410, y: 190}, {x: 440, y: 220}] // Nông trại ngoài trời
     };
 
-    // Người dùng chạm tay vào bản đồ để di chuyển nhân vật Sếp (Tap-to-Move)
+    // Khởi tạo các nhân vật pixel
+    const CHARACTERS = {
+      user: { name: "Sếp", x: 195, y: 100, tx: 195, ty: 100, color: "#38bdf8", hair: "#38bdf8", hat: "👑", bubble: "", bTimer: 0, state: "idle", frame: 0 },
+      a1:   { name: "Minh", x: 45, y: 55, tx: 45, ty: 55, color: "#818cf8", hair: "#312e81", hat: "👔", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 120 },
+      a2:   { name: "Huy", x: 80, y: 55, tx: 80, ty: 55, color: "#34d399", hair: "#064e3b", hat: "🎧", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 80 },
+      a3:   { name: "Linh", x: 115, y: 55, tx: 115, ty: 55, color: "#f472b6", hair: "#831843", hat: "🎀", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 150 }
+    };
+
+    // Sếp chạm tay lên màn hình để đi tới bất kỳ phòng nào
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      CHARACTERS.user.tx = Math.max(20, Math.min(W - 20, (e.clientX - rect.left) * scaleX));
-      CHARACTERS.user.ty = Math.max(30, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
-      CHARACTERS.user.bubble = "Đi thôi!";
-      CHARACTERS.user.bubbleTimer = 60;
+      CHARACTERS.user.tx = Math.max(15, Math.min(W - 15, (e.clientX - rect.left) * scaleX));
+      CHARACTERS.user.ty = Math.max(20, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
+      CHARACTERS.user.bubble = "Đi kiểm tra phòng!";
+      CHARACTERS.user.bTimer = 60;
     });
 
-    // Vẽ căn nhà gỗ Cabin phong cách Stardew
-    function drawCabin(ctx) {
-      // Tường gỗ
-      ctx.fillStyle = "#854d0e";
-      ctx.fillRect(40, 30, 140, 80);
-      ctx.strokeStyle = "#581c87";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(40, 30, 140, 80);
+    // Vẽ toàn bộ các phòng và nội thất Stardew
+    function drawWorld(ctx) {
+      // 1. SÂN VƯỜN NGOÀI TRỜI (Bên phải x: 380 -> 480)
+      ctx.fillStyle = "#3f6212"; ctx.fillRect(380, 0, 100, H);
+      // Đất trồng luống bí ngô
+      ctx.fillStyle = "#78350f"; ctx.fillRect(395, 40, 75, 45);
+      for(let x=402; x<=460; x+=18) {
+        for(let y=48; y<=75; y+=15) {
+          ctx.fillStyle = "#ea580c"; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill(); // Quả bí ngô
+          ctx.fillStyle = "#15803d"; ctx.fillRect(x-1, y-7, 2, 3); // Cuống lá
+        }
+      }
+      // Giếng nước đá ngoài vườn
+      ctx.fillStyle = "#64748b"; ctx.fillRect(405, 120, 24, 20);
+      ctx.fillStyle = "#0284c7"; ctx.fillRect(409, 124, 16, 12);
+      ctx.fillStyle = "#b45309"; ctx.fillRect(403, 114, 28, 6); // Mái che giếng
+      // Cây táo râm mát
+      ctx.fillStyle = "#713f12"; ctx.fillRect(435, 195, 10, 25);
+      ctx.fillStyle = "#15803d"; ctx.beginPath(); ctx.arc(440, 185, 20, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#dc2626"; ctx.beginPath(); ctx.arc(433, 180, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(448, 188, 3, 0, Math.PI*2); ctx.fill();
 
-      // Mái nhà ngói đỏ cam
-      ctx.fillStyle = "#b45309";
-      ctx.beginPath();
-      ctx.moveTo(30, 30); ctx.lineTo(110, 5); ctx.lineTo(190, 30);
-      ctx.closePath(); ctx.fill(); ctx.stroke();
+      // 2. KHU DINH THỰ VĂN PHÒNG CHÍNH (x: 0 -> 380)
+      // Tường bao gỗ Stardew
+      ctx.fillStyle = "#451a03"; ctx.fillRect(10, 10, 365, 240);
+      // Sàn gỗ ván sàn par-quet ấm áp
+      ctx.fillStyle = "#92400e"; ctx.fillRect(14, 14, 357, 232);
+      // Đường vân gỗ sàn
+      ctx.strokeStyle = "#78350f"; ctx.lineWidth = 1;
+      for(let y = 14; y < 246; y += 14) {
+        ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(371, y); ctx.stroke();
+      }
 
-      // Ống khói bốc khói
-      ctx.fillStyle = "#64748b";
-      ctx.fillRect(150, 10, 14, 20);
-      ctx.fillStyle = "rgba(255,255,255,0.4)";
-      let smokeOffset = (Date.now() / 200) % 15;
-      ctx.beginPath();
-      ctx.arc(157, 5 - smokeOffset, 4, 0, Math.PI * 2); ctx.fill();
-
-      // Cửa chính
+      // VÁCH NGĂN CÁC PHÒNG
       ctx.fillStyle = "#451a03";
-      ctx.fillRect(100, 75, 20, 35);
-      
-      // Cửa sổ phát sáng khi trời tối
-      let isNight = gameTime < 0.2 || gameTime > 0.8;
-      ctx.fillStyle = isNight ? "#fde047" : "#bae6fd";
-      ctx.fillRect(55, 50, 20, 20);
-      ctx.fillRect(145, 50, 20, 20);
-      ctx.strokeStyle = "#451a03";
-      ctx.strokeRect(55, 50, 20, 20); ctx.strokeRect(145, 50, 20, 20);
+      ctx.fillRect(145, 14, 6, 105);  // Vách phòng làm việc & phòng họp
+      ctx.fillRect(280, 14, 6, 105);  // Vách phòng họp & phòng game
+      ctx.fillRect(14, 119, 357, 6);   // Hành lang chính giữa nhà
+      ctx.fillRect(145, 125, 6, 121); // Vách nhà ăn & phòng vệ sinh
+      ctx.fillRect(235, 125, 6, 121); // Vách phòng vệ sinh & nhà nghỉ
 
-      // Bảng hiệu trước nhà
-      ctx.fillStyle = "#ca8a04";
-      ctx.fillRect(90, 35, 40, 12);
-      ctx.fillStyle = "#451a03";
-      ctx.font = "bold 7px sans-serif";
-      ctx.fillText("STUDIO", 95, 44);
-    }
-
-    // Vẽ cây cối và hoa lá
-    function drawNature(ctx) {
-      // Cây táo bên phải
-      ctx.fillStyle = "#78350f"; ctx.fillRect(290, 70, 12, 30);
-      ctx.fillStyle = "#15803d"; ctx.beginPath(); ctx.arc(296, 60, 26, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#16a34a"; ctx.beginPath(); ctx.arc(292, 55, 18, 0, Math.PI * 2); ctx.fill();
-      // Quả táo đỏ
-      ctx.fillStyle = "#dc2626";
-      ctx.beginPath(); ctx.arc(285, 55, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(305, 50, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(295, 70, 3, 0, Math.PI * 2); ctx.fill();
-
-      // Hồ nước tự nhiên góc trái dưới
-      ctx.fillStyle = "#0284c7";
-      ctx.beginPath();
-      ctx.ellipse(65, 180, 35, 20, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5; ctx.stroke();
-
-      // Lối đi lát đá cuội
+      // Sàn gạch caro cho phòng vệ sinh
+      ctx.fillStyle = "#cbd5e1"; ctx.fillRect(151, 125, 84, 121);
       ctx.fillStyle = "#94a3b8";
-      for(let y = 110; y < 190; y += 16) {
-        ctx.beginPath(); ctx.arc(110 + Math.sin(y)*4, y, 6, 0, Math.PI*2); ctx.fill();
-      }
-      for(let x = 110; x < 260; x += 18) {
-        ctx.beginPath(); ctx.arc(x, 150 + Math.cos(x)*3, 6, 0, Math.PI*2); ctx.fill();
+      for(let x=151; x<235; x+=14) {
+        for(let y=125; y<246; y+=14) {
+          if((x+y)%28===0) ctx.fillRect(x, y, 14, 14);
+        }
       }
 
-      // Bàn trà gỗ ngoài trời
-      ctx.fillStyle = "#78350f";
-      ctx.fillRect(250, 145, 25, 16);
-      ctx.fillStyle = "#ca8a04";
-      ctx.fillRect(252, 142, 21, 4); // Ấm trà
+      // THẢM PHÒNG HỌP & PHÒNG GAME
+      ctx.fillStyle = "#1e3a8a"; ctx.fillRect(165, 30, 95, 75); // Thảm phòng họp
+      ctx.fillStyle = "#831843"; ctx.fillRect(295, 30, 70, 75); // Thảm phòng game
+
+      // --- NỘI THẤT CHI TIẾT TỪNG PHÒNG ---
+      // 💻 Phòng làm việc (Góc trên trái)
+      ctx.fillStyle = "#5c2e0b"; ctx.fillRect(25, 40, 110, 20); // Bàn gỗ dài
+      [35, 70, 105].forEach(x => {
+        ctx.fillStyle = "#1e293b"; ctx.fillRect(x, 32, 16, 10); // Màn hình PC
+        ctx.fillStyle = "#38bdf8"; ctx.fillRect(x+1, 33, 14, 8); // Ánh sáng màn hình
+      });
+      drawRoomLabel(ctx, "💻 LÀM VIỆC", 45, 25);
+
+      // 📋 Phòng họp (Giữa trên)
+      ctx.fillStyle = "#78350f"; ctx.fillRect(175, 45, 75, 35); // Bàn họp bầu dục
+      ctx.fillStyle = "#fef08a"; ctx.fillRect(185, 52, 10, 8);  // Sổ tay
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(205, 50, 12, 10); // Laptop
+      drawRoomLabel(ctx, "📋 PHÒNG HỌP", 180, 25);
+
+      // 🎮 Phòng Game (Góc trên phải)
+      ctx.fillStyle = "#0f172a"; ctx.fillRect(295, 35, 22, 28); // Máy Arcade cổ điển
+      ctx.fillStyle = "#f43f5e"; ctx.fillRect(298, 40, 16, 12); // Màn hình máy game
+      ctx.fillStyle = "#9333ea"; ctx.fillRect(330, 50, 32, 16); // Sofa thư giãn
+      drawRoomLabel(ctx, "🎮 GAME ARCADE", 300, 25);
+
+      // 🍳 Nhà ăn & Bếp (Góc dưới trái)
+      ctx.fillStyle = "#78350f"; ctx.fillRect(35, 160, 90, 25); // Bàn ăn
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(115, 140, 22, 35); // Tủ lạnh trắng
+      ctx.fillStyle = "#ca8a04"; ctx.fillRect(55, 165, 8, 8);    // Ấm cà phê
+      drawRoomLabel(ctx, "🍳 NHÀ ĂN & BẾP", 40, 137);
+
+      // 🚽 Phòng vệ sinh (Giữa dưới)
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(160, 140, 15, 20); // Bồn cầu
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(162, 142, 11, 8);
+      ctx.fillStyle = "#64748b"; ctx.fillRect(205, 140, 20, 12); // Bồn rửa mặt
+      drawRoomLabel(ctx, "🚽 VỆ SINH", 168, 137);
+
+      // 🛏️ Nhà nghỉ / Phòng ngủ (Góc dưới phải)
+      [250, 285, 320].forEach((x, i) => {
+        ctx.fillStyle = "#78350f"; ctx.fillRect(x, 150, 26, 40); // Khung giường gỗ
+        ctx.fillStyle = i===0 ? "#818cf8" : (i===1 ? "#34d399" : "#f472b6");
+        ctx.fillRect(x+2, 162, 22, 26); // Nệm ấm màu riêng từng bạn
+        ctx.fillStyle = "#f8fafc"; ctx.fillRect(x+4, 152, 18, 8); // Gối trắng
+      });
+      drawRoomLabel(ctx, "🛏️ NHÀ NGHỈ", 270, 137);
+
+      // Lối cửa ra sân vườn
+      ctx.fillStyle = "#78350f"; ctx.fillRect(366, 115, 10, 26);
     }
 
-    // Vẽ chu kỳ Ánh sáng Ngày - Đêm
-    function drawLighting(ctx) {
-      gameTime = (gameTime + 0.0003) % 1.0;
-      let clockText = "☀️ Trưa nắng";
-      let overlayColor = "rgba(0,0,0,0)";
-
-      if (gameTime >= 0.15 && gameTime < 0.3) {
-        clockText = "🌅 Bình minh";
-        overlayColor = "rgba(251, 146, 60, 0.18)";
-      } else if (gameTime >= 0.3 && gameTime < 0.7) {
-        clockText = "☀️ Ban ngày";
-        overlayColor = "rgba(255, 255, 255, 0.02)";
-      } else if (gameTime >= 0.7 && gameTime < 0.85) {
-        clockText = "🌆 Hoàng hôn";
-        overlayColor = "rgba(168, 85, 247, 0.25)";
-      } else {
-        clockText = "🌙 Đêm trăng";
-        overlayColor = "rgba(15, 23, 42, 0.65)";
-      }
-      document.getElementById('clock-display').innerText = clockText;
-
-      // Phủ màu ánh sáng thời gian
-      ctx.fillStyle = overlayColor;
-      ctx.fillRect(0, 0, W, H);
-
-      // Nếu trời tối, thắp sáng quầng sáng ấm xung quanh nhà và bàn trà
-      if (gameTime < 0.2 || gameTime > 0.8) {
-        const rad1 = ctx.createRadialGradient(110, 85, 5, 110, 85, 50);
-        rad1.addColorStop(0, "rgba(253, 224, 71, 0.4)");
-        rad1.addColorStop(1, "transparent");
-        ctx.fillStyle = rad1; ctx.fillRect(60, 35, 100, 100);
-
-        const rad2 = ctx.createRadialGradient(260, 150, 2, 260, 150, 35);
-        rad2.addColorStop(0, "rgba(253, 224, 71, 0.35)");
-        rad2.addColorStop(1, "transparent");
-        ctx.fillStyle = rad2; ctx.fillRect(225, 115, 70, 70);
-      }
+    function drawRoomLabel(ctx, text, x, y) {
+      ctx.font = "bold 7.5px sans-serif";
+      ctx.fillStyle = "#fef08a";
+      ctx.fillText(text, x, y);
     }
 
-    // Vẽ nhân vật di chuyển
+    // Vẽ nhân vật pixel chuẩn RPG
     function updateAndDrawCharacters(ctx) {
-      let now = Date.now();
+      let isWorkingTime = isProcessing; // Nếu đang trả lời câu hỏi thì tập trung làm việc
       ['user', 'a1', 'a2', 'a3'].forEach(k => {
         let c = CHARACTERS[k];
         
-        // Di chuyển mượt mà tới mục tiêu
+        // Di chuyển nhân vật mượt mà
         let dx = c.tx - c.x, dy = c.ty - c.y;
         let dist = Math.hypot(dx, dy);
-        let isMoving = dist > 1.5;
+        let isMoving = dist > 2;
+
         if (isMoving) {
-          c.x += (dx / dist) * 1.3;
-          c.y += (dy / dist) * 1.3;
-        } else if (k !== 'user') {
-          // Các Agent AI tự động chọn điểm đến mới sau khi đứng nghỉ
-          c.wait = (c.wait || 0) - 1;
-          if (c.wait <= 0) {
-            let wp = WAYPOINTS[Math.floor(Math.random() * WAYPOINTS.length)];
-            c.tx = wp.x + (Math.random() * 16 - 8);
-            c.ty = wp.y + (Math.random() * 16 - 8);
-            c.wait = Math.floor(Math.random() * 200) + 150; // nghỉ 5 - 10 giây
+          c.x += (dx / dist) * 1.5;
+          c.y += (dy / dist) * 1.5;
+          c.frame = (c.frame + 0.15) % 4; // Nhịp bước chân nhấp nhô
+        } else {
+          c.frame = 0;
+          // TRÍ THÔNG MINH NHÂN TẠO SINH HOẠT TỰ DO KHI KHÔNG CÓ VIỆC
+          if (k !== 'user') {
+            c.wait = (c.wait || 0) - 1;
+            if (c.wait <= 0) {
+              if (isWorkingTime) {
+                // Đang bận việc: tập trung tại bàn làm việc hoặc phòng họp
+                let p = ROOM_SPOTS.office[c.name==="Minh"?0:(c.name==="Huy"?1:2)];
+                c.tx = p.x; c.ty = p.y; c.state = "work";
+                c.wait = 200;
+              } else {
+                // Rảnh rỗi: Tự chọn phòng sinh hoạt theo cá tính riêng!
+                let choices = ["game", "kitchen", "garden", "dorm", "toilet", "meeting"];
+                let chosenRoom = choices[Math.floor(Math.random() * choices.length)];
+                let spots = ROOM_SPOTS[chosenRoom];
+                let spot = spots[Math.floor(Math.random() * spots.length)];
+                c.tx = spot.x; c.ty = spot.y;
+                c.state = chosenRoom;
+                c.wait = Math.floor(Math.random() * 250) + 180; // Ở lại phòng 8-15 giây
+
+                // Bong bóng thoại trạng thái tự động
+                if(chosenRoom === "game") c.bubble = "Bắn ván game đã! 🎮";
+                else if(chosenRoom === "kitchen") c.bubble = "Đói bụng quá, kiếm gì ăn ☕";
+                else if(chosenRoom === "garden") c.bubble = "Ra vườn hóng mát 🌾";
+                else if(chosenRoom === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
+                else if(chosenRoom === "toilet") c.bubble = "Đi rửa mặt tí! 🚽";
+                else if(chosenRoom === "meeting") c.bubble = "Xem lại sổ sách 📋";
+                c.bTimer = 90;
+              }
+            }
           }
         }
 
-        // Bước chân nhấp nhô vui mắt khi đi
-        let walkBob = isMoving ? Math.sin(now / 100) * 2 : 0;
+        let bob = Math.sin(c.frame * Math.PI) * 2;
 
-        // Bóng đổ dưới chân
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        // Bóng đổ chân nhân vật
+        ctx.fillStyle = "rgba(0,0,0,0.35)";
         ctx.beginPath();
-        ctx.ellipse(c.x, c.y + 12, 7, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.ellipse(c.x, c.y + 11, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Nếu đang ngủ trên giường: vẽ tư thế nằm
+        if (c.state === "dorm" && !isMoving) {
+          ctx.font = "bold 9px sans-serif"; ctx.fillStyle = "#fef08a";
+          ctx.fillText("Zzz...", c.x + 8, c.y - 10);
+          ctx.fillStyle = c.color; ctx.fillRect(c.x - 5, c.y + 2, 12, 8); // Thân nằm
+          ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(c.x, c.y - 2, 5, 0, Math.PI*2); ctx.fill(); // Đầu
+          ctx.fillText(c.hat, c.x, c.y - 6);
+          return;
+        }
 
         // Thân áo
         ctx.fillStyle = c.color;
-        ctx.fillRect(c.x - 6, c.y - 2 + walkBob, 12, 12);
+        ctx.fillRect(c.x - 6, c.y - 2 + bob, 12, 11);
 
-        // Đầu & Mũ
+        // Quần
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(c.x - 5, c.y + 9 + bob, 4, 4);
+        ctx.fillRect(c.x + 1, c.y + 9 + bob, 4, 4);
+
+        // Đầu & Tóc
         ctx.fillStyle = "#fed7aa";
-        ctx.beginPath();
-        ctx.arc(c.x, c.y - 7 + walkBob, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(c.x, c.y - 7 + bob, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = c.hair;
+        ctx.fillRect(c.x - 6, c.y - 13 + bob, 12, 5); // Mái tóc pixel
 
-        // Biểu tượng icon / nón
-        ctx.font = "11px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(c.hat, c.x, c.y - 12 + walkBob);
+        // Mắt
+        ctx.fillStyle = "#000";
+        ctx.fillRect(c.x - 3, c.y - 7 + bob, 2, 2);
+        ctx.fillRect(c.x + 1, c.y - 7 + bob, 2, 2);
 
-        // Tên nhân vật bên dưới
-        ctx.font = "bold 8px sans-serif";
-        ctx.fillStyle = "#ffffff";
+        // Phụ kiện / Mũ
+        ctx.font = "10px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(c.hat, c.x, c.y - 13 + bob);
+
+        // Tên nhân vật
+        ctx.font = "bold 7.5px sans-serif"; ctx.fillStyle = "#ffffff";
         ctx.fillText(c.name, c.x, c.y + 19);
 
-        // Bong bóng thoại trên đầu khi nói chuyện
-        if (c.bubble && c.bubbleTimer > 0) {
-          c.bubbleTimer--;
-          let bw = Math.min(100, ctx.measureText(c.bubble).width + 12);
-          ctx.fillStyle = "rgba(255,255,255,0.95)";
-          ctx.fillRect(c.x - bw/2, c.y - 32 + walkBob, bw, 14);
-          ctx.strokeStyle = "#334155"; ctx.strokeRect(c.x - bw/2, c.y - 32 + walkBob, bw, 14);
-          
-          ctx.font = "bold 7.5px sans-serif";
-          ctx.fillStyle = "#0f172a";
-          let displayText = c.bubble.length > 20 ? c.bubble.substring(0, 18) + '..' : c.bubble;
-          ctx.fillText(displayText, c.x, c.y - 22 + walkBob);
+        // Bong bóng thoại hành động trên đầu
+        if (c.bubble && c.bTimer > 0) {
+          c.bTimer--;
+          let bw = Math.min(110, ctx.measureText(c.bubble).width + 10);
+          ctx.fillStyle = "rgba(15,23,42,0.95)";
+          ctx.fillRect(c.x - bw/2, c.y - 30 + bob, bw, 13);
+          ctx.strokeStyle = "#ca8a04"; ctx.strokeRect(c.x - bw/2, c.y - 30 + bob, bw, 13);
+          ctx.font = "bold 7.5px sans-serif"; ctx.fillStyle = "#fef08a";
+          let t = c.bubble.length > 20 ? c.bubble.substring(0, 18) + '..' : c.bubble;
+          ctx.fillText(t, c.x, c.y - 21 + bob);
         }
       });
     }
 
-    // Vòng lặp hoạt họa game 60 FPS
-    function gameLoop() {
-      ctx.fillStyle = "#22c55e"; // Nền thảm cỏ xanh Stardew
-      ctx.fillRect(0, 0, W, H);
+    // Hiệu ứng ánh sáng ngày và đêm
+    function drawLighting(ctx) {
+      gameTime = (gameTime + 0.0002) % 1.0;
+      let clockText = "☀️ Trưa nắng", overlay = "rgba(0,0,0,0)";
 
-      drawNature(ctx);
-      drawCabin(ctx);
+      if (gameTime >= 0.15 && gameTime < 0.3) { clockText = "🌅 Bình minh"; overlay = "rgba(251, 146, 60, 0.15)"; }
+      else if (gameTime >= 0.3 && gameTime < 0.7) { clockText = "☀️ Ban ngày"; overlay = "rgba(255, 255, 255, 0.0)"; }
+      else if (gameTime >= 0.7 && gameTime < 0.85) { clockText = "🌆 Hoàng hôn"; overlay = "rgba(168, 85, 247, 0.22)"; }
+      else { clockText = "🌙 Đêm trăng"; overlay = "rgba(15, 23, 42, 0.65)"; }
+
+      document.getElementById('clock-display').innerText = clockText;
+      ctx.fillStyle = overlay; ctx.fillRect(0, 0, W, H);
+
+      // Thắp sáng đèn ấm trong phòng khi trời tối
+      if (gameTime < 0.2 || gameTime > 0.8) {
+        [ {x: 80, y: 60}, {x: 215, y: 60}, {x: 330, y: 60}, {x: 80, y: 180}, {x: 295, y: 170} ].forEach(l => {
+          let g = ctx.createRadialGradient(l.x, l.y, 5, l.x, l.y, 50);
+          g.addColorStop(0, "rgba(253, 224, 71, 0.35)");
+          g.addColorStop(1, "transparent");
+          ctx.fillStyle = g; ctx.fillRect(l.x - 50, l.y - 50, 100, 100);
+        });
+      }
+    }
+
+    function gameLoop() {
+      drawWorld(ctx);
       updateAndDrawCharacters(ctx);
       drawLighting(ctx);
-
       requestAnimationFrame(gameLoop);
     }
 
@@ -395,7 +439,7 @@
       let key = id === 'user' ? 'user' : `a${id}`;
       if (CHARACTERS[key]) {
         CHARACTERS[key].bubble = text;
-        CHARACTERS[key].bubbleTimer = 180; // Hiển thị bong bóng trong 3 giây
+        CHARACTERS[key].bTimer = 220; // Hiện 4 giây
       }
     }
 
@@ -488,7 +532,7 @@
 
     function renderChatHistory() {
       const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
-      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Chào mừng Sếp tới Thung Lũng Script Valley!", "sys"); return; }
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Chào mừng Sếp tới dinh thự Script Valley AI!", "sys"); return; }
       studioData.chatHistory.forEach(i => {
         const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
         row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-content">${i.text}</div>`;
@@ -505,7 +549,7 @@
       const budget = parseInt(thinkingBudget) || 4096;
       
       const payload = {
-        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[BỐI CẢNH THUNG LŨNG]:\n${user}` }] }],
+        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[BỐI CẢNH DINH THỰ]:\n${user}` }] }],
         generationConfig: { thinkingConfig: { thinkingBudget: budget } }
       };
 
@@ -546,12 +590,17 @@
         isProcessing = false; return;
       }
 
+      // KHI CÓ JOB: Cả 3 lập tức chạy về bàn làm việc để hỗ trợ Sếp
+      CHARACTERS.a1.tx = ROOM_SPOTS.office[0].x; CHARACTERS.a1.ty = ROOM_SPOTS.office[0].y;
+      CHARACTERS.a2.tx = ROOM_SPOTS.office[1].x; CHARACTERS.a2.ty = ROOM_SPOTS.office[1].y;
+      CHARACTERS.a3.tx = ROOM_SPOTS.office[2].x; CHARACTERS.a3.ty = ROOM_SPOTS.office[2].y;
+
       try {
         const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
 
         // 1. MINH
-        setAgentBubble(1, "Suy ngẫm...");
-        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại thung lũng Script Valley. Định hướng: "${ag1.goal}". Trả lời tự nhiên, ấm áp, xưng em gọi Sếp, hòa nhã với đồng đội (dưới 45 từ).`;
+        setAgentBubble(1, "Có việc rồi anh em!");
+        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại Script Valley. Định hướng: "${ag1.goal}". Trả lời tự nhiên, ấm áp, xưng em gọi Sếp, điều phối anh em (dưới 45 từ).`;
         const r1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
         appendChat("Agent 1", r1, "a1");
         setAgentBubble(1, r1);
@@ -559,8 +608,8 @@
         await new Promise(r => setTimeout(r, 1200));
 
         // 2. HUY
-        setAgentBubble(2, "Gõ phím...");
-        const sys2 = `Bạn là ${ag2.name} (${ag2.title}). Định hướng: "${ag2.goal}". Dân IT vui vẻ yêu thiên nhiên và code Luau, tung hứng hài hước với anh Minh (dưới 50 từ).`;
+        setAgentBubble(2, "Vào bàn gõ code!");
+        const sys2 = `Bạn là ${ag2.name} (${ag2.title}). Định hướng: "${ag2.goal}". Dân IT vui vẻ, yêu game arcade và code Luau, tung hứng hài hước với anh Minh (dưới 50 từ).`;
         const r2 = await callGeminiAdvanced(k2, m2, th2, sys2, r1);
         appendChat("Agent 2", r2, "a2");
         setAgentBubble(2, r2);
@@ -568,7 +617,7 @@
         await new Promise(r => setTimeout(r, 1200));
 
         // 3. LINH
-        setAgentBubble(3, "Bắt lỗi...");
+        setAgentBubble(3, "Bắt lỗi ngay!");
         const sys3 = `Bạn là ${ag3.name} (${ag3.title}). Định hướng: "${ag3.goal}". Thông minh, sắc sảo, hay chọc nhẹ Huy nhưng luôn bảo đảm an toàn app (dưới 45 từ).`;
         const r3 = await callGeminiAdvanced(k3, m3, th3, sys3, r2);
         appendChat("Agent 3", r3, "a3");
@@ -600,7 +649,7 @@
       if(isFlowActive) {
         btn.innerText = "🎙️ Tự đàm đạo: BẬT";
         btn.classList.add('btn-active');
-        appendChat("Hệ thống", "Đã kích hoạt cuộc sống tự nhiên tại thung lũng!", "sys");
+        appendChat("Hệ thống", "Đã kích hoạt cuộc sống tự do tại dinh thự thung lũng!", "sys");
         runNaturalFlow();
       } else {
         btn.innerText = "🎙️ Tự đàm đạo: TẮT";
