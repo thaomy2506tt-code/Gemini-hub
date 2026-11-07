@@ -12,11 +12,9 @@
     header h1 { font-size:16px; color:#fde047; text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
     .btn-header { display:flex; gap:4px; }
     
-    /* KHUNG GAME STARDEW VALLEY CHUẨN TƯƠNG PHẢN CAO */
     .game-viewport { position:relative; width:100%; height:305px; background:#365e1b; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
     #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
     
-    /* HUY HIỆU GIỜ & THỜI TIẾT THỰC VIỆT NAM */
     .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(22,32,50,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:#fef08a; display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
     .time-text { font-size:11px; color:#38bdf8; letter-spacing:0.5px; }
     .weather-text { font-size:9.5px; color:#fef08a; }
@@ -29,7 +27,6 @@
     .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#25344d; border:1px solid #3c5073; color:#fff; border-radius:4px; cursor:pointer; }
     .btn-active { background:#15803d; border-color:#4ade80; }
     
-    /* KHUNG CHAT TỰ SUY LUẬN & ĐỐI THOẠI */
     .chat-container { height:280px; display:flex; flex-direction:column; }
     .chat-messages { flex:1; overflow-y:auto; background:#0c1322; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
@@ -58,46 +55,73 @@
     </div>
   </header>
 
-  <!-- MÀN HÌNH NÔNG TRẠI & ĐỒNG HỒ VIỆT NAM -->
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
     <div class="weather-clock-badge">
-      <span class="time-text" id="live-time">14:45 • Giờ VN</span>
+      <span class="time-text" id="live-time">15:00 • Giờ VN</span>
       <span class="weather-text" id="live-weather">☀️ Nắng ráo • 28°C</span>
     </div>
     <div class="hint-tap">👆 Chạm vào phòng để Sếp bước tới kiểm tra</div>
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Nhật ký Suy luận & Trò chuyện thực tế</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title">
+      <span>💬 Nhật ký Suy luận & Trò chuyện thực tế</span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn-small" style="background:#dc2626;" onclick="forceResetLock()">🔓 Mở kẹt phím</button>
+        <button class="btn-small" onclick="clearChat()">Xóa chat</button>
+      </div>
+    </div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Tâm sự đời sống hoặc giao dự án cho team..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Tâm sự đời sống hoặc giao việc cho team..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình AI & Đồng bộ Đám mây</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Cấu hình AI & Chọn Model Dự Phòng</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none; font-size:11px;">
+      
+      <!-- CẤU HÌNH MINH -->
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m1" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Tư duy toàn diện)</option></select>
-        <select id="th1" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
+        <select id="m1" style="flex:2;">
+          <option value="gemini-3.8-flash" selected>3.8 Flash (Tiêu chuẩn)</option>
+          <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Dự phòng khi hết Quota)</option>
+        </select>
+        <select id="th1" style="flex:1;">
+          <option value="2048" selected>Tư duy: Nhanh</option>
+          <option value="0">Tắt tư duy</option>
+        </select>
       </div>
       <input type="password" id="key-1" placeholder="API Key 1 (Minh)">
 
+      <!-- CẤU HÌNH HUY -->
       <b style="color:#34d399;">2. Huy (Kỹ sư Code Luau):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m2" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu RAM)</option></select>
-        <select id="th2" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
+        <select id="m2" style="flex:2;">
+          <option value="gemini-3.8-flash" selected>3.8 Flash (Tiêu chuẩn)</option>
+          <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Dự phòng khi hết Quota)</option>
+        </select>
+        <select id="th2" style="flex:1;">
+          <option value="2048" selected>Tư duy: Nhanh</option>
+          <option value="0">Tắt tư duy</option>
+        </select>
       </div>
       <input type="password" id="key-2" placeholder="API Key 2 (Huy)">
 
+      <!-- CẤU HÌNH LINH -->
       <b style="color:#f472b6;">3. Linh (QA Kiểm duyệt):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m3" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Bắt lỗi an toàn)</option></select>
-        <select id="th3" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
+        <select id="m3" style="flex:2;">
+          <option value="gemini-3.8-flash" selected>3.8 Flash (Tiêu chuẩn)</option>
+          <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Dự phòng khi hết Quota)</option>
+        </select>
+        <select id="th3" style="flex:1;">
+          <option value="2048" selected>Tư duy: Nhanh</option>
+          <option value="0">Tắt tư duy</option>
+        </select>
       </div>
       <input type="password" id="key-3" placeholder="API Key 3 (Linh)">
 
@@ -139,9 +163,7 @@
     let isFlowActive = false;
     let isProcessing = false;
     let flowTimeout = null;
-    // ============================================================
-    // BỘ MÁY ĐỒ HỌA THỜI GIAN THẬT VIỆT NAM & THỜI TIẾT TỰ ĐỘNG
-    // ============================================================
+    let hardWatchdog = null;
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     const W = 480, H = 270;
@@ -589,9 +611,6 @@
       requestAnimationFrame(gameLoop);
     }
 
-    // ==========================================
-    // KHỞI ĐỘNG HỆ THỐNG VÀ XỬ LÝ PHẢN HỒI
-    // ==========================================
     window.onload = async () => {
       resizeCanvas();
       initWeatherParticles();
@@ -607,12 +626,9 @@
       document.getElementById('gas-url').value = PERMANENT_GAS_URL;
       localStorage.setItem('gas_url', PERMANENT_GAS_URL);
 
-      document.getElementById('m1').value = 'gemini-3.8-flash';
-      document.getElementById('m2').value = 'gemini-3.8-flash';
-      document.getElementById('m3').value = 'gemini-3.8-flash';
-      localStorage.setItem('m1', 'gemini-3.8-flash');
-      localStorage.setItem('m2', 'gemini-3.8-flash');
-      localStorage.setItem('m3', 'gemini-3.8-flash');
+      document.getElementById('m1').value = localStorage.getItem('m1') || 'gemini-3.8-flash';
+      document.getElementById('m2').value = localStorage.getItem('m2') || 'gemini-3.8-flash';
+      document.getElementById('m3').value = localStorage.getItem('m3') || 'gemini-3.8-flash';
 
       const saved = localStorage.getItem('studio_data_v2');
       if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
@@ -621,11 +637,17 @@
       await loadFromGoogleSheet(false);
     };
 
+    function forceResetLock() {
+      isProcessing = false;
+      if (hardWatchdog) clearTimeout(hardWatchdog);
+      document.getElementById('btn-send-chat').disabled = false;
+      appendChatMessage("Hệ thống", "", "Đã mở kẹt phím cưỡng bức thành công! Bạn có thể gửi tin nhắn bình thường.", "sys");
+    }
+
     function escapeHtml(t) {
       return (t || '').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     }
 
-    // BỘ TÁCH SUY LUẬN VÀ LỜI NÓI
     function parseAiThoughtAndSpeech(raw) {
       if (!raw) return { thought: "", speech: "..." };
       let t = raw.trim();
@@ -638,7 +660,6 @@
         thought = tPart;
         speech = sPart || tPart;
       } else {
-        // Nếu AI không chia thẻ, dùng cả đoạn làm lời nói
         speech = t;
       }
       return { thought: thought, speech: speech };
@@ -658,13 +679,7 @@
       let thoughtHtml = thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(thought)}</div>` : '';
       let speechHtml = `<div class="msg-speech">${escapeHtml(speech)}</div>`;
 
-      row.innerHTML = `
-        <div class="msg-sender">${label}</div>
-        <div class="msg-box">
-          ${thoughtHtml}
-          ${speechHtml}
-        </div>
-      `;
+      row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-box">${thoughtHtml}${speechHtml}</div>`;
       feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
 
       studioData.chatHistory.push({ sender: label, thought: thought, text: speech, type: type });
@@ -702,14 +717,14 @@
       localStorage.setItem('k1', document.getElementById('key-1').value.trim());
       localStorage.setItem('k2', document.getElementById('key-2').value.trim());
       localStorage.setItem('k3', document.getElementById('key-3').value.trim());
-      localStorage.setItem('m1', 'gemini-3.8-flash');
-      localStorage.setItem('m2', 'gemini-3.8-flash');
-      localStorage.setItem('m3', 'gemini-3.8-flash');
+      localStorage.setItem('m1', document.getElementById('m1').value);
+      localStorage.setItem('m2', document.getElementById('m2').value);
+      localStorage.setItem('m3', document.getElementById('m3').value);
       localStorage.setItem('th1', document.getElementById('th1').value);
       localStorage.setItem('th2', document.getElementById('th2').value);
       localStorage.setItem('th3', document.getElementById('th3').value);
       localStorage.setItem('gas_url', PERMANENT_GAS_URL);
-      alert('Đã lưu cấu hình thung lũng thành công!');
+      alert('Đã lưu cấu hình AI thành công!');
       syncWithGoogleSheet();
     }
     function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
@@ -767,58 +782,78 @@
       `).join('');
     }
 
-    async function callGeminiAdvanced(key, model, thinkingBudget, sys, user, retries = 2) {
+    // GỌI API ĐỘNG (TỰ ĐỘNG BỎ THINKING KHI DÙNG FLASH-LITE)
+    async function callGeminiAdvanced(key, chosenModel, thinkingBudget, sys, user) {
       if(!key) throw new Error("Chưa có đủ API Key!");
-      const cleanModel = "gemini-3.8-flash";
+      const cleanModel = (chosenModel || "gemini-3.8-flash").trim();
       const cleanKey = key.trim();
-      const budget = parseInt(thinkingBudget) || 4096;
       
       const payload = {
-        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[DỮ LIỆU ĐỐI THOẠI]:\n${user}` }] }],
-        generationConfig: { thinkingConfig: { thinkingBudget: budget } }
+        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[DỮ LIỆU ĐỐI THOẠI]:\n${user}` }] }]
       };
 
-      for(let attempt = 0; attempt <= retries; attempt++) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
-            method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)
-          });
-          if(!res.ok) {
-            const errData = await res.json().catch(()=>({}));
-            const msg = errData.error?.message || `Lỗi HTTP ${res.status}`;
-            if((res.status === 503 || msg.includes('high demand') || msg.includes('quota')) && attempt < retries) {
-              await new Promise(r => setTimeout(r, 2000 * (attempt + 1))); continue;
-            }
-            throw new Error(msg);
-          }
-          const d = await res.json();
-          // Quét toàn bộ parts để lấy đủ nội dung
-          let resultText = "";
-          if (d.candidates && d.candidates[0].content && d.candidates[0].content.parts) {
-            d.candidates[0].content.parts.forEach(p => { if(p.text) resultText += p.text + "\n"; });
-          }
-          return resultText.trim();
-        } catch(e) {
-          if(attempt < retries && (e.message.includes('fetch') || e.message.includes('network'))) {
-            await new Promise(r => setTimeout(r, 2000)); continue;
-          }
-          throw e;
+      // Chỉ gắn thinkingConfig nếu không phải là bản lite và budget > 0
+      const budget = parseInt(thinkingBudget) || 0;
+      if (!cleanModel.includes("lite") && budget > 0) {
+        payload.generationConfig = { thinkingConfig: { thinkingBudget: budget } };
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if(!res.ok) {
+          const errData = await res.json().catch(()=>({}));
+          throw new Error(errData.error?.message || `Mã HTTP ${res.status}`);
         }
+        const d = await res.json();
+        let resultText = "";
+        if (d.candidates && d.candidates[0].content && d.candidates[0].content.parts) {
+          d.candidates[0].content.parts.forEach(p => { if(p.text) resultText += p.text + "\n"; });
+        }
+        return resultText.trim();
+      } catch(e) {
+        clearTimeout(timeoutId);
+        if (e.name === 'AbortError') {
+          throw new Error("Phản hồi quá 12s (Đã tự động ngắt để bảo vệ).");
+        }
+        throw e;
       }
     }
 
-    // ĐỐI THOẠI TỰ TRỊ TỰ SUY LUẬN (KHÔNG THEO BA REM SẴN)
     async function executeChain(inputTopic, isAutonomous = false) {
       if(isProcessing) return;
       isProcessing = true;
+      document.getElementById('btn-send-chat').disabled = true;
+
+      if (hardWatchdog) clearTimeout(hardWatchdog);
+      hardWatchdog = setTimeout(() => {
+        if (isProcessing) {
+          isProcessing = false;
+          document.getElementById('btn-send-chat').disabled = false;
+        }
+      }, 25000);
+
       const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const th1 = localStorage.getItem('th1') || '8192';
-      const th2 = localStorage.getItem('th2') || '8192';
-      const th3 = localStorage.getItem('th3') || '8192';
+      const m1 = localStorage.getItem('m1') || 'gemini-3.8-flash';
+      const m2 = localStorage.getItem('m2') || 'gemini-3.8-flash';
+      const m3 = localStorage.getItem('m3') || 'gemini-3.8-flash';
+      const th1 = localStorage.getItem('th1') || '2048';
+      const th2 = localStorage.getItem('th2') || '2048';
+      const th3 = localStorage.getItem('th3') || '2048';
 
       if(!k1 || !k2 || !k3) {
         appendChatMessage("Hệ thống", "", "Vui lòng mở Cấu hình và nhập đủ 3 API Key để cả làng bắt đầu!", "sys");
-        isProcessing = false; return;
+        isProcessing = false;
+        document.getElementById('btn-send-chat').disabled = false;
+        return;
       }
 
       const now = new Date();
@@ -827,7 +862,6 @@
       const rNameHuy = getRoomNameByCoord(CHARACTERS.a2.x, CHARACTERS.a2.y);
       const rNameLinh = getRoomNameByCoord(CHARACTERS.a3.x, CHARACTERS.a3.y);
 
-      // Nếu Sếp giao việc: chạy về bàn máy tính
       if (!isAutonomous) {
         CHARACTERS.a1.tx = SPOTS.work[0].x; CHARACTERS.a1.ty = SPOTS.work[0].y;
         CHARACTERS.a2.tx = SPOTS.work[1].x; CHARACTERS.a2.ty = SPOTS.work[1].y;
@@ -837,80 +871,78 @@
       try {
         const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
 
-        // 1. MINH SUY LUẬN VÀ PHẢN HỒI
+        // 1. MINH
         setAgentBubble(1, "Đang suy luận...");
-        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại dinh thự Script Valley.
-Bối cảnh thực tế: ${timeStr} tại Việt Nam, thời tiết ${currentWeather.text}. Bạn đang ở ${rNameMinh}.
-Nhiệm vụ: Bạn là con người sống động, có tư duy logic và cảm xúc riêng. Hãy TỰ SUY LUẬN độc lập về bối cảnh xung quanh và nội dung được nghe, tuyệt đối không dùng văn mẫu rập khuôn.
-BẮT BUỘC trả lời đúng 2 phần:
-[SUY LUẬN]: (1-2 câu bạn suy ngẫm ngầm trong đầu về tình huống, công việc hoặc cảm xúc hiện tại)
-[LỜI NÓI]: (câu bạn thực sự nói ra với mọi người, ấm áp, có tầm nhìn, xưng em gọi Sếp - dưới 45 từ)`;
+        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại Script Valley. Giờ: ${timeStr} VN, Thời tiết: ${currentWeather.text}. Đang ở ${rNameMinh}.
+Nhiệm vụ: Tự suy luận độc lập, không văn mẫu.
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu suy ngẫm ngầm)
+[LỜI NÓI]: (câu nói thật với Sếp hoặc team, dưới 40 từ)`;
         
-        const raw1 = await callGeminiAdvanced(k1, "gemini-3.8-flash", th1, sys1, inputTopic);
+        const raw1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
         const res1 = parseAiThoughtAndSpeech(raw1);
         appendChatMessage("Minh", res1.thought, res1.speech, "a1");
         setAgentBubble(1, res1.speech);
 
-        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => setTimeout(r, 1000));
 
-        // 2. HUY SUY LUẬN VÀ ĐÁP LỜI
+        // 2. HUY
         setAgentBubble(2, "Đang suy luận...");
-        const sys2 = `Bạn là ${ag2.name} (${ag2.title}) tại dinh thự Script Valley.
-Bối cảnh thực tế: Bạn đang ở ${rNameHuy}. Bạn là dân IT mê code Luau, hài hước, thực chiến, hay gọi anh Minh là 'anh Lead', Linh là 'chị Linh/bà Linh'.
+        const sys2 = `Bạn là ${ag2.name} (${ag2.title}). Đang ở ${rNameHuy}. Dân IT vui vẻ, gọi Minh là anh Lead, Linh là bà Linh.
 Minh vừa nói: "${res1.speech}".
-Nhiệm vụ: Tự suy luận độc lập dựa trên điều Minh vừa nói và hoàn cảnh bản thân. Không nói theo khuôn sáo.
-BẮT BUỘC trả lời đúng 2 phần:
-[SUY LUẬN]: (suy nghĩ thầm trong đầu bạn về việc code, bug, ram, đồ ăn hay việc trêu Linh)
-[LỜI NÓI]: (câu bạn nói to ra với team, hài hước, thực tế IT - dưới 50 từ)`;
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu suy nghĩ ngầm về code/game/đồ ăn)
+[LỜI NÓI]: (câu đáp lại anh Minh dí dỏm, dưới 45 từ)`;
 
-        const raw2 = await callGeminiAdvanced(k2, "gemini-3.8-flash", th2, sys2, res1.speech);
+        const raw2 = await callGeminiAdvanced(k2, m2, th2, sys2, res1.speech);
         const res2 = parseAiThoughtAndSpeech(raw2);
         appendChatMessage("Huy", res2.thought, res2.speech, "a2");
         setAgentBubble(2, res2.speech);
 
-        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => setTimeout(r, 1000));
 
-        // 3. LINH SUY LUẬN VÀ CHỐT HẠ
+        // 3. LINH
         setAgentBubble(3, "Đang suy luận...");
-        const sys3 = `Bạn là ${ag3.name} (${ag3.title}) tại dinh thự Script Valley.
-Bối cảnh thực tế: Bạn đang ở ${rNameLinh}. Bạn sắc sảo, thông minh, tinh ý, thích bắt bẻ ông Huy nhưng rất chu đáo bảo vệ an toàn dự án cho Sếp.
+        const sys3 = `Bạn là ${ag3.name} (${ag3.title}). Đang ở ${rNameLinh}. Sắc sảo, thích trêu Huy nhưng giữ an toàn dự án.
 Huy vừa nói: "${res2.speech}".
-Nhiệm vụ: Tự suy luận độc lập để phản biện hoặc chốt vấn đề một cách duyên dáng.
-BẮT BUỘC trả lời đúng 2 phần:
-[SUY LUẬN]: (đánh giá ngầm của bạn về lời ông Huy, độ an toàn hoặc thời tiết)
-[LỜI NÓI]: (câu nói duyên dáng, sắc bén chốt lại cuộc trò chuyện - dưới 45 từ)`;
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu nhận xét ngầm lời ông Huy)
+[LỜI NÓI]: (câu chốt hạ duyên dáng, dưới 40 từ)`;
 
-        const raw3 = await callGeminiAdvanced(k3, "gemini-3.8-flash", th3, sys3, res2.speech);
+        const raw3 = await callGeminiAdvanced(k3, m3, th3, sys3, res2.speech);
         const res3 = parseAiThoughtAndSpeech(raw3);
         appendChatMessage("Linh", res3.thought, res3.speech, "a3");
         setAgentBubble(3, res3.speech);
 
         addXP(25);
       } catch(e) {
-        appendChatMessage("Hệ thống", "", `Lỗi kết nối: ${e.message}`, "sys");
+        appendChatMessage("Hệ thống", "", `Lỗi trao đổi: ${e.message}`, "sys");
       } finally {
         isProcessing = false;
+        document.getElementById('btn-send-chat').disabled = false;
+        if (hardWatchdog) clearTimeout(hardWatchdog);
         if(isFlowActive) {
-          flowTimeout = setTimeout(runAutonomousDiscussion, Math.floor(Math.random() * 5000) + 10000);
+          flowTimeout = setTimeout(runAutonomousDiscussion, Math.floor(Math.random() * 4000) + 10000);
         }
       }
     }
 
-    // ĐÀM ĐẠO TỰ PHÁT HOÀN TOÀN TỪ BỐI CẢNH (KHÔNG CÓ CÂU MỒI SẴN)
     function runAutonomousDiscussion() {
       if(isProcessing || !isFlowActive) return;
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       const lastMsg = studioData.chatHistory.length > 0 ? studioData.chatHistory[studioData.chatHistory.length - 1].text : "Một ngày mới tại thung lũng.";
-      
-      // Khơi mào chủ đề hoàn toàn mở dựa trên bối cảnh hiện thực
-      const openTopic = `[Thời gian: ${timeStr} Giờ VN, Thời tiết: ${currentWeather.text}]. Hãy tự khởi xướng một suy nghĩ hoặc câu chuyện mới tiếp nối câu chuyện gần nhất: "${lastMsg}".`;
+      const openTopic = `[Thời gian: ${timeStr} Giờ VN, Thời tiết: ${currentWeather.text}]. Hãy tự khởi xướng suy nghĩ tiếp nối: "${lastMsg}".`;
       executeChain(openTopic, true);
     }
 
     async function sendGroupMessage() {
       const inp = document.getElementById('chat-input'), msg = inp.value.trim();
-      if(!msg || isProcessing) return;
+      if(!msg) return;
+      if(isProcessing) {
+        alert("Ba bạn AI đang suy luận câu trước, bạn đợi vài giây nhé!");
+        return;
+      }
       appendChatMessage("Sếp", "", msg, "user");
       setAgentBubble('user', msg);
       inp.value = '';
@@ -923,7 +955,7 @@ BẮT BUỘC trả lời đúng 2 phần:
       if(isFlowActive) {
         btn.innerText = "🎙️ Tự đàm đạo: BẬT";
         btn.classList.add('btn-active');
-        appendChatMessage("Hệ thống", "", "Đã bật chế độ Tự đàm đạo! Ba anh em sẽ tự quan sát môi trường và trò chuyện tự nhiên theo suy nghĩ riêng.", "sys");
+        appendChatMessage("Hệ thống", "", "Đã bật chế độ Tự đàm đạo!", "sys");
         runAutonomousDiscussion();
       } else {
         btn.innerText = "🎙️ Tự đàm đạo: TẮT";
