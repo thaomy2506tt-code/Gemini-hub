@@ -5,28 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Script Valley - Stardew AI Manor</title>
   <style>
-    :root { --bg:#090d16; --panel:#151d30; --border:#2b3954; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
+    :root { --bg:#0b0f19; --panel:#162032; --border:#2d3f5d; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; user-select:none; }
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    header h1 { font-size:15px; color:#fde047; text-shadow:1px 1px 0 #78350f; }
+    header h1 { font-size:16px; color:#fde047; text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
     .btn-header { display:flex; gap:4px; }
     
-    /* KHUNG THẾ GIỚI STARDEW VALLEY CANVAS */
-    .game-viewport { position:relative; width:100%; height:285px; background:#1b2518; border:3px solid #78350f; border-radius:12px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,0.6); margin-bottom:8px; }
+    /* KHUNG VIEWPORT GAME CHUẨN PIXEL ART */
+    .game-viewport { position:relative; width:100%; height:295px; background:#4a7c29; border:4px solid #5c3317; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5); margin-bottom:8px; }
     #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
-    .clock-badge { position:absolute; top:6px; right:6px; background:rgba(15,23,42,0.85); border:1px solid #ca8a04; border-radius:6px; padding:3px 7px; font-size:10px; color:#fef08a; display:flex; align-items:center; gap:4px; pointer-events:none; }
-    .hint-tap { position:absolute; bottom:6px; left:6px; background:rgba(15,23,42,0.75); padding:2px 6px; border-radius:4px; font-size:8.5px; color:#cbd5e1; pointer-events:none; }
+    .clock-badge { position:absolute; top:8px; right:8px; background:rgba(20,28,45,0.85); border:2px solid #ca8a04; border-radius:6px; padding:3px 8px; font-size:10.5px; font-weight:bold; color:#fef08a; display:flex; align-items:center; gap:5px; pointer-events:none; box-shadow:0 2px 6px rgba(0,0,0,0.5); }
+    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(20,28,45,0.8); border:1px solid #475569; padding:3px 7px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
 
     .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
-    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0b1120; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
-    .btn-action { background:#16a34a; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; }
-    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#24324d; border:1px solid #3b4d70; color:#fff; border-radius:4px; cursor:pointer; }
-    .btn-active { background:#15803d; border-color:#22c55e; }
+    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0a0f1d; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
+    .btn-action { background:#15803d; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; box-shadow:0 2px 4px rgba(0,0,0,0.4); }
+    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#22314a; border:1px solid #374b6e; color:#fff; border-radius:4px; cursor:pointer; }
+    .btn-active { background:#16a34a; border-color:#4ade80; }
     
     .chat-container { height:260px; display:flex; flex-direction:column; }
-    .chat-messages { flex:1; overflow-y:auto; background:#0b1120; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
+    .chat-messages { flex:1; overflow-y:auto; background:#0a0f1d; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
     .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; }
     .msg-content { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; }
@@ -48,24 +48,24 @@
     </div>
   </header>
 
-  <!-- MÔ HÌNH THẾ GIỚI GAME CANVASES -->
+  <!-- MÀN HÌNH NÔNG TRẠI & DINH THỰ 3/4 -->
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
     <div class="clock-badge" id="clock-display">☀️ Ban ngày</div>
-    <div class="hint-tap">👆 Chạm vào phòng bất kỳ để Sếp bước tới</div>
+    <div class="hint-tap">👆 Chạm vào phòng để Sếp bước tới kiểm tra</div>
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Cuộc trò chuyện & Nhật ký sinh hoạt</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title"><span>💬 Nhật ký sinh hoạt & Trao đổi công việc</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Nói chuyện hoặc giao việc cho anh em..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Tâm sự đời sống hoặc giao dự án cho team..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình API & Model từng Agent</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Cấu hình AI & Đồng bộ Đám mây</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none; font-size:11px;">
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
@@ -83,12 +83,12 @@
 
       <b style="color:#f472b6;">3. Linh (QA Kiểm duyệt):</b>
       <div style="display:flex; gap:4px;">
-        <select id="m3" style="flex:2;"><option value="gemini-3.1-pro" selected>3.1 Pro (Thẩm định code)</option><option value="gemini-3.8-flash">3.8 Flash</option></select>
+        <select id="m3" style="flex:2;"><option value="gemini-3.1-pro" selected>3.1 Pro (Bắt lỗi an toàn)</option><option value="gemini-3.8-flash">3.8 Flash</option></select>
         <select id="th3" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
       </div>
       <input type="password" id="key-3" placeholder="API Key 3 (Linh)">
 
-      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Tự động đồng bộ vĩnh viễn)">
+      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Đồng bộ vĩnh viễn)">
       <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
@@ -103,16 +103,16 @@
   </div>
 
   <div class="card" id="identity-modal" style="display:none;">
-    <div class="card-title"><span>🧭 Bản sắc & Nhật ký Kỷ niệm</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
+    <div class="card-title"><span>🧭 Định hướng & Kỷ niệm</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
     <div id="identity-list" style="max-height:200px; overflow-y:auto; font-size:11px;"></div>
   </div>
 
   <script>
     const DEFAULT_STUDIO = {
       agents: [
-        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, có tầm nhìn, luôn đồng hành cùng Sếp.", memory: ["Điều phối sinh hoạt và dự án tại thung lũng."] },
-        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Bậc thầy tối ưu Luau & Cloud Phone.", philosophy: "Hài hước, đam mê game và giải thuật dọn rác RAM.", memory: ["Tối ưu dọn rác bộ nhớ không văng game."] },
-        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định chất lượng phần mềm.", philosophy: "Sắc sảo, tỉ mỉ, hay trêu Huy, giữ kỷ luật an toàn.", memory: ["Bọc pcall chống sập luồng cho hệ thống."] }
+        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp.", memory: ["Gia nhập dinh thự nông trại Script Valley."] },
+        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Cao thủ tối ưu mã nguồn Luau & Cloud Phone.", philosophy: "Hài hước, thực chiến, diệt trừ rác RAM.", memory: ["Cam kết dọn sạch bộ nhớ không bao giờ văng game."] },
+        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định an toàn phần mềm.", philosophy: "Sắc sảo, bắt lỗi tinh tế, thích trêu Huy nhưng rất chu đáo.", memory: ["Bọc pcall chống sập luồng cho hệ thống."] }
       ],
       chatHistory: []
     };
@@ -123,269 +123,390 @@
     let flowTimeout = null;
 
     const NATURAL_STARTERS = [
-      "Huy với Linh này, thung lũng hôm nay thời tiết mát mẻ thật! Anh em nghỉ tay uống ngụm trà rồi chuẩn bị tinh thần đón job mới từ Sếp nha.",
-      "Ê ông Huy, vừa thấy ông cắm mặt chơi game arcade cả tiếng đồng hồ rồi đấy, tí có job code auto là phải tập trung nghe chưa!",
-      "Chị Linh yên tâm, vừa làm ván game xả stress xong là đầu óc tư duy thuật toán dọn RAM của em lên tầm vũ trụ luôn!",
-      "Nói gì thì nói, mục tiêu của team mình là sống vui, làm việc hết mình và đồng hành lâu dài cùng Sếp!",
-      "Bà Linh đừng có đi theo soi tui miết nha, ra vườn hái quả bí ngô tươi về nấu súp ăn trưa đi bà!"
+      "Huy với Linh này, thung lũng hôm nay trong lành thật đấy! Anh em nghỉ tay ăn ngụm súp rồi chuẩn bị đón dự án lớn từ Sếp nhé.",
+      "Ê ông Huy, vừa thấy ông ôm máy arcade chiến game cả buổi sáng, tí có task code Luau mà làm rò rỉ RAM là liệu hồn với tui!",
+      "Chị Linh cứ khéo lo, em vừa làm bát súp bí ngô ngọt lịm xong là tư duy thuật toán dọn RAM trên Cloud Phone lên level thượng thừa luôn!",
+      "Nói gì thì nói, mục tiêu của team mình là sống vui, làm việc hết mình và sát cánh lâu dài cùng Sếp!",
+      "Anh Minh ơi, tí nữa họp xong anh em mình ra giếng đá múc xô nước mát tưới nốt mấy luống bí ngô nha!"
     ];
     // ==========================================
-    // STARDEW VALLEY PIXEL ART & LIFE ENGINE
+    // BỘ MÁY ĐỒ HỌA PIXEL ART STARDEW VALLEY 3/4
     // ==========================================
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
-    const W = 480, H = 260; // Độ phân giải pixel chuẩn tỉ lệ 16:9
+    const W = 480, H = 270; // Chuẩn 16:9 pixel RPG
 
     function resizeCanvas() { canvas.width = W; canvas.height = H; }
     window.addEventListener('resize', resizeCanvas);
 
-    let gameTime = 0.35; // Chu kỳ thời gian ngày đêm
+    let gameTime = 0.35;
+    let tapTarget = null; // Vòng tròn hiệu ứng khi Sếp chạm tay đi tới
 
-    // Tọa độ các điểm sinh hoạt trong dinh thự & nông trại
-    const ROOM_SPOTS = {
-      office:   [{x: 45, y: 55}, {x: 80, y: 55}, {x: 115, y: 55}], // Bàn làm việc
-      meeting:  [{x: 185, y: 60}, {x: 215, y: 60}, {x: 245, y: 60}], // Phòng họp
-      game:     [{x: 310, y: 55}, {x: 345, y: 65}, {x: 360, y: 55}], // Phòng game (Arcade & Sofa)
-      kitchen:  [{x: 50, y: 175}, {x: 85, y: 175}, {x: 115, y: 165}], // Bàn ăn & Bếp
-      toilet:   [{x: 175, y: 175}, {x: 200, y: 175}],                 // Phòng vệ sinh
-      dorm:     [{x: 260, y: 170}, {x: 295, y: 170}, {x: 330, y: 170}], // Giường ngủ
-      garden:   [{x: 400, y: 80}, {x: 435, y: 120}, {x: 410, y: 190}, {x: 440, y: 220}] // Nông trại ngoài trời
+    // Các điểm sinh hoạt chuẩn tọa độ trong nhà và ngoài vườn
+    const SPOTS = {
+      work:    [{x: 45, y: 70}, {x: 85, y: 70}, {x: 125, y: 70}], // Bàn máy tính
+      meeting: [{x: 195, y: 75}, {x: 235, y: 75}],                 // Bàn họp gỗ
+      arcade:  [{x: 295, y: 65}, {x: 335, y: 75}],                 // Máy game & sofa
+      kitchen: [{x: 55, y: 195}, {x: 95, y: 195}, {x: 125, y: 175}],// Bếp & Bàn ăn
+      toilet:  [{x: 175, y: 195}, {x: 205, y: 195}],               // Phòng vệ sinh
+      dorm:    [{x: 265, y: 185}, {x: 300, y: 185}, {x: 335, y: 185}],// Giường ngủ
+      farm:    [{x: 395, y: 85}, {x: 435, y: 110}, {x: 405, y: 195}, {x: 445, y: 225}] // Vườn bí ngô
     };
 
-    // Khởi tạo các nhân vật pixel
+    // Khởi tạo nhân vật Stardew Chibi
     const CHARACTERS = {
-      user: { name: "Sếp", x: 195, y: 100, tx: 195, ty: 100, color: "#38bdf8", hair: "#38bdf8", hat: "👑", bubble: "", bTimer: 0, state: "idle", frame: 0 },
-      a1:   { name: "Minh", x: 45, y: 55, tx: 45, ty: 55, color: "#818cf8", hair: "#312e81", hat: "👔", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 120 },
-      a2:   { name: "Huy", x: 80, y: 55, tx: 80, ty: 55, color: "#34d399", hair: "#064e3b", hat: "🎧", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 80 },
-      a3:   { name: "Linh", x: 115, y: 55, tx: 115, ty: 55, color: "#f472b6", hair: "#831843", hat: "🎀", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 150 }
+      user: { name: "Sếp",  x: 215, y: 130, tx: 215, ty: 130, shirt: "#0284c7", pants: "#0f172a", hair: "#e0f2fe", hat: "crown", bubble: "", bTimer: 0, state: "idle", frame: 0, dir: 1 },
+      a1:   { name: "Minh", x: 45,  y: 70,  tx: 45,  ty: 70,  shirt: "#4f46e5", pants: "#1e1b4b", hair: "#312e81", hat: "tie",   bubble: "", bTimer: 0, state: "work", frame: 0, dir: 1, wait: 120 },
+      a2:   { name: "Huy",  x: 85,  y: 70,  tx: 85,  ty: 70,  shirt: "#059669", pants: "#064e3b", hair: "#78350f", hat: "cap",   bubble: "", bTimer: 0, state: "work", frame: 0, dir: 1, wait: 70 },
+      a3:   { name: "Linh", x: 125, y: 70,  tx: 125, ty: 70,  shirt: "#db2777", pants: "#831843", hair: "#f472b6", hat: "ribbon",bubble: "", bTimer: 0, state: "work", frame: 0, dir: 1, wait: 140 }
     };
 
-    // Sếp chạm tay lên màn hình để đi tới bất kỳ phòng nào
+    // Chạm tay để di chuyển Sếp có hiệu ứng vòng tròn chạm
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      CHARACTERS.user.tx = Math.max(15, Math.min(W - 15, (e.clientX - rect.left) * scaleX));
-      CHARACTERS.user.ty = Math.max(20, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
+      const tx = Math.max(20, Math.min(W - 20, (e.clientX - rect.left) * scaleX));
+      const ty = Math.max(30, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
+      CHARACTERS.user.tx = tx;
+      CHARACTERS.user.ty = ty;
       CHARACTERS.user.bubble = "Đi kiểm tra phòng!";
       CHARACTERS.user.bTimer = 60;
+      tapTarget = { x: tx, y: ty, r: 12, alpha: 1.0 };
     });
 
-    // Vẽ toàn bộ các phòng và nội thất Stardew
+    // VẼ CHI TIẾT THẾ GIỚI STARDEW VALLEY 3/4
     function drawWorld(ctx) {
-      // 1. SÂN VƯỜN NGOÀI TRỜI (Bên phải x: 380 -> 480)
-      ctx.fillStyle = "#3f6212"; ctx.fillRect(380, 0, 100, H);
-      // Đất trồng luống bí ngô
-      ctx.fillStyle = "#78350f"; ctx.fillRect(395, 40, 75, 45);
-      for(let x=402; x<=460; x+=18) {
-        for(let y=48; y<=75; y+=15) {
-          ctx.fillStyle = "#ea580c"; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill(); // Quả bí ngô
-          ctx.fillStyle = "#15803d"; ctx.fillRect(x-1, y-7, 2, 3); // Cuống lá
+      // 1. THẢM CỎ NGOÀI TRỜI (Bên phải x: 360 -> 480)
+      ctx.fillStyle = "#558b2f"; ctx.fillRect(360, 0, 120, H);
+      // Điểm xuyết ngọn cỏ xanh đậm nhạt
+      ctx.fillStyle = "#33691e";
+      for(let x=365; x<475; x+=16) {
+        for(let y=10; y<260; y+=22) {
+          ctx.fillRect(x, y, 2, 4); ctx.fillRect(x+2, y-1, 2, 5);
         }
       }
-      // Giếng nước đá ngoài vườn
-      ctx.fillStyle = "#64748b"; ctx.fillRect(405, 120, 24, 20);
-      ctx.fillStyle = "#0284c7"; ctx.fillRect(409, 124, 16, 12);
-      ctx.fillStyle = "#b45309"; ctx.fillRect(403, 114, 28, 6); // Mái che giếng
-      // Cây táo râm mát
-      ctx.fillStyle = "#713f12"; ctx.fillRect(435, 195, 10, 25);
-      ctx.fillStyle = "#15803d"; ctx.beginPath(); ctx.arc(440, 185, 20, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#dc2626"; ctx.beginPath(); ctx.arc(433, 180, 3, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(448, 188, 3, 0, Math.PI*2); ctx.fill();
 
-      // 2. KHU DINH THỰ VĂN PHÒNG CHÍNH (x: 0 -> 380)
-      // Tường bao gỗ Stardew
-      ctx.fillStyle = "#451a03"; ctx.fillRect(10, 10, 365, 240);
-      // Sàn gỗ ván sàn par-quet ấm áp
-      ctx.fillStyle = "#92400e"; ctx.fillRect(14, 14, 357, 232);
-      // Đường vân gỗ sàn
-      ctx.strokeStyle = "#78350f"; ctx.lineWidth = 1;
-      for(let y = 14; y < 246; y += 14) {
-        ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(371, y); ctx.stroke();
+      // LUỐNG ĐẤT TRỒNG TRỌT ĐƯỢC CÀY XỚI (Tilled Soil)
+      ctx.fillStyle = "#4e342e"; ctx.fillRect(375, 45, 95, 65);
+      ctx.strokeStyle = "#3e2723"; ctx.lineWidth = 1;
+      for(let y=45; y<=110; y+=13) {
+        ctx.beginPath(); ctx.moveTo(375, y); ctx.lineTo(470, y); ctx.stroke();
+      }
+      // VƯỜN BÍ NGÔ NỞ RỘ CÓ ĐỔ BÓNG KHỐI
+      for(let x=385; x<=455; x+=22) {
+        for(let y=54; y<=100; y+=16) {
+          // Bóng quả
+          ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(x, y+5, 7, 3, 0, 0, Math.PI*2); ctx.fill();
+          // Múi bí ngô cam rực rỡ
+          ctx.fillStyle = "#d84315"; ctx.beginPath(); ctx.arc(x, y, 6.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#ff6f00"; ctx.beginPath(); ctx.arc(x-1, y-1, 5, 0, Math.PI*2); ctx.fill();
+          // Cuống xanh
+          ctx.fillStyle = "#2e7d32"; ctx.fillRect(x-1, y-8, 2, 3);
+        }
       }
 
-      // VÁCH NGĂN CÁC PHÒNG
-      ctx.fillStyle = "#451a03";
-      ctx.fillRect(145, 14, 6, 105);  // Vách phòng làm việc & phòng họp
-      ctx.fillRect(280, 14, 6, 105);  // Vách phòng họp & phòng game
-      ctx.fillRect(14, 119, 357, 6);   // Hành lang chính giữa nhà
-      ctx.fillRect(145, 125, 6, 121); // Vách nhà ăn & phòng vệ sinh
-      ctx.fillRect(235, 125, 6, 121); // Vách phòng vệ sinh & nhà nghỉ
+      // HÀNG RÀO GỖ NÔNG TRẠI (Wooden Fence)
+      ctx.fillStyle = "#8d6e63"; ctx.strokeStyle = "#4e342e"; ctx.lineWidth = 1;
+      for(let y=20; y<=240; y+=24) {
+        ctx.fillRect(365, y, 5, 18); ctx.strokeRect(365, y, 5, 18); // Cột rào
+      }
+      ctx.fillRect(363, 60, 7, 4); ctx.fillRect(363, 140, 7, 4); // Thanh ngang
 
-      // Sàn gạch caro cho phòng vệ sinh
-      ctx.fillStyle = "#cbd5e1"; ctx.fillRect(151, 125, 84, 121);
-      ctx.fillStyle = "#94a3b8";
-      for(let x=151; x<235; x+=14) {
-        for(let y=125; y<246; y+=14) {
+      // GIẾNG NƯỚC BẰNG ĐÁ RÊU PHONG (Stone Well)
+      ctx.fillStyle = "#546e7a"; ctx.fillRect(395, 130, 36, 26);
+      ctx.strokeStyle = "#263238"; ctx.strokeRect(395, 130, 36, 26);
+      ctx.fillStyle = "#0284c7"; ctx.fillRect(401, 136, 24, 14); // Nước trong veo
+      // Mái che giếng
+      ctx.fillStyle = "#6d4c41"; ctx.fillRect(391, 118, 44, 8);
+      ctx.fillStyle = "#3e2723"; ctx.fillRect(395, 126, 4, 10); ctx.fillRect(423, 126, 4, 10);
+
+      // CÂY TÁO XANH RÂM MÁT (Apple Tree)
+      ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(435, 245, 18, 7, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#5d4037"; ctx.fillRect(431, 205, 8, 35); // Thân cây
+      // Tán lá nhiều tầng
+      ctx.fillStyle = "#2e7d32"; ctx.beginPath(); ctx.arc(435, 195, 24, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#388e3c"; ctx.beginPath(); ctx.arc(432, 190, 18, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#4caf50"; ctx.beginPath(); ctx.arc(430, 185, 12, 0, Math.PI*2); ctx.fill();
+      // Quả táo đỏ
+      ctx.fillStyle = "#c62828";
+      [[425, 190], [442, 185], [432, 205], [445, 200]].forEach(p => {
+        ctx.beginPath(); ctx.arc(p[0], p[1], 3.5, 0, Math.PI*2); ctx.fill();
+      });
+
+      // 2. KHU DINH THỰ VĂN PHÒNG CHÍNH (x: 10 -> 355)
+      // Tường nhà ngoài bằng đá kết hợp gỗ
+      ctx.fillStyle = "#3e2723"; ctx.fillRect(10, 10, 345, 250);
+      // Mái ngói vảy cá nhô ra tạo khối
+      ctx.fillStyle = "#a0522d"; ctx.fillRect(8, 6, 349, 12);
+      ctx.fillStyle = "#d2691e";
+      for(let x=8; x<355; x+=12) {
+        ctx.beginPath(); ctx.arc(x+6, 16, 6, 0, Math.PI); ctx.fill();
+      }
+
+      // SÀN GỖ VÁN THỰC THẾ (Hardwood Floor)
+      ctx.fillStyle = "#b5651d"; ctx.fillRect(14, 20, 337, 236);
+      ctx.strokeStyle = "#8b4513"; ctx.lineWidth = 1;
+      for(let y=20; y<256; y+=14) {
+        ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(351, y); ctx.stroke();
+      }
+
+      // VÁCH NGĂN GỖ CÁC PHÒNG
+      ctx.fillStyle = "#4a2810";
+      ctx.fillRect(135, 20, 6, 105); // Vách phòng làm việc & họp
+      ctx.fillRect(260, 20, 6, 105); // Vách phòng họp & game
+      ctx.fillRect(14, 125, 337, 7);  // Hành lang chính
+      ctx.fillRect(140, 132, 6, 124);// Vách nhà ăn & toilet
+      ctx.fillRect(230, 132, 6, 124);// Vách toilet & nhà nghỉ
+
+      // Sàn gạch đá hoa cương cho Toilet
+      ctx.fillStyle = "#cfd8dc"; ctx.fillRect(146, 132, 84, 124);
+      ctx.fillStyle = "#90a4ae";
+      for(let x=146; x<230; x+=14) {
+        for(let y=132; y<256; y+=14) {
           if((x+y)%28===0) ctx.fillRect(x, y, 14, 14);
         }
       }
 
       // THẢM PHÒNG HỌP & PHÒNG GAME
-      ctx.fillStyle = "#1e3a8a"; ctx.fillRect(165, 30, 95, 75); // Thảm phòng họp
-      ctx.fillStyle = "#831843"; ctx.fillRect(295, 30, 70, 75); // Thảm phòng game
+      ctx.fillStyle = "#1e3a8a"; ctx.fillRect(155, 36, 90, 75); // Thảm xanh phòng họp
+      ctx.strokeStyle = "#3b82f6"; ctx.strokeRect(155, 36, 90, 75);
 
-      // --- NỘI THẤT CHI TIẾT TỪNG PHÒNG ---
-      // 💻 Phòng làm việc (Góc trên trái)
-      ctx.fillStyle = "#5c2e0b"; ctx.fillRect(25, 40, 110, 20); // Bàn gỗ dài
-      [35, 70, 105].forEach(x => {
-        ctx.fillStyle = "#1e293b"; ctx.fillRect(x, 32, 16, 10); // Màn hình PC
-        ctx.fillStyle = "#38bdf8"; ctx.fillRect(x+1, 33, 14, 8); // Ánh sáng màn hình
+      ctx.fillStyle = "#831843"; ctx.fillRect(275, 36, 68, 75); // Thảm nhung phòng game
+      ctx.strokeStyle = "#ec4899"; ctx.strokeRect(275, 36, 68, 75);
+
+      // --- NỘI THẤT CHI TIẾT 3/4 ---
+      // 💻 PHÒNG LÀM VIỆC (Góc trên trái)
+      ctx.fillStyle = "#5c2e0b"; ctx.fillRect(25, 45, 100, 18); // Bàn gỗ
+      [35, 75, 115].forEach(x => {
+        // Màn hình PC có chân đế
+        ctx.fillStyle = "#334155"; ctx.fillRect(x+4, 48, 4, 6);
+        ctx.fillStyle = "#0f172a"; ctx.fillRect(x, 34, 14, 11);
+        ctx.fillStyle = "#38bdf8"; ctx.fillRect(x+1, 35, 12, 9); // Màn hình phát sáng
       });
-      drawRoomLabel(ctx, "💻 LÀM VIỆC", 45, 25);
+      drawRoomLabel(ctx, "💻 STUDIO R&D", 35, 30);
 
-      // 📋 Phòng họp (Giữa trên)
-      ctx.fillStyle = "#78350f"; ctx.fillRect(175, 45, 75, 35); // Bàn họp bầu dục
-      ctx.fillStyle = "#fef08a"; ctx.fillRect(185, 52, 10, 8);  // Sổ tay
-      ctx.fillStyle = "#ffffff"; ctx.fillRect(205, 50, 12, 10); // Laptop
-      drawRoomLabel(ctx, "📋 PHÒNG HỌP", 180, 25);
+      // 📋 PHÒNG HỌP (Giữa trên)
+      ctx.fillStyle = "#6d4c41"; ctx.fillRect(170, 50, 68, 38); // Bàn họp bầu dục
+      ctx.fillStyle = "#fef08a"; ctx.fillRect(178, 56, 10, 8);  // Sổ tay
+      ctx.fillStyle = "#e2e8f0"; ctx.fillRect(205, 54, 14, 10); // Laptop mở
+      drawRoomLabel(ctx, "📋 BÀN BÀN TRÒN", 175, 30);
 
-      // 🎮 Phòng Game (Góc trên phải)
-      ctx.fillStyle = "#0f172a"; ctx.fillRect(295, 35, 22, 28); // Máy Arcade cổ điển
-      ctx.fillStyle = "#f43f5e"; ctx.fillRect(298, 40, 16, 12); // Màn hình máy game
-      ctx.fillStyle = "#9333ea"; ctx.fillRect(330, 50, 32, 16); // Sofa thư giãn
-      drawRoomLabel(ctx, "🎮 GAME ARCADE", 300, 25);
+      // 🎮 PHÒNG GAME & ARCADE (Góc trên phải)
+      // Máy Arcade retro
+      ctx.fillStyle = "#1e1b4b"; ctx.fillRect(278, 42, 22, 32);
+      ctx.fillStyle = "#f43f5e"; ctx.fillRect(281, 46, 16, 14); // Màn hình game
+      ctx.fillStyle = "#eab308"; ctx.fillRect(285, 64, 4, 4);   // Cần gạt joystick
+      // Sofa êm ái
+      ctx.fillStyle = "#7c3aed"; ctx.fillRect(315, 55, 26, 20);
+      ctx.fillStyle = "#a78bfa"; ctx.fillRect(315, 52, 26, 6);  // Đệm lưng tựa
+      drawRoomLabel(ctx, "🎮 GAME ARCADE", 278, 30);
 
-      // 🍳 Nhà ăn & Bếp (Góc dưới trái)
-      ctx.fillStyle = "#78350f"; ctx.fillRect(35, 160, 90, 25); // Bàn ăn
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(115, 140, 22, 35); // Tủ lạnh trắng
-      ctx.fillStyle = "#ca8a04"; ctx.fillRect(55, 165, 8, 8);    // Ấm cà phê
-      drawRoomLabel(ctx, "🍳 NHÀ ĂN & BẾP", 40, 137);
+      // 🍳 NHÀ ĂN & BẾP (Góc dưới trái)
+      ctx.fillStyle = "#6d4c41"; ctx.fillRect(30, 170, 95, 26); // Bàn ăn dài
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(115, 145, 20, 36); // Tủ lạnh
+      ctx.fillStyle = "#ca8a04"; ctx.fillRect(50, 174, 9, 9);    // Ấm cà phê
+      ctx.fillStyle = "#ef4444"; ctx.fillRect(80, 175, 7, 7);    // Đĩa hoa quả
+      drawRoomLabel(ctx, "🍳 NHÀ ĂN & BẾP", 35, 144);
 
-      // 🚽 Phòng vệ sinh (Giữa dưới)
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(160, 140, 15, 20); // Bồn cầu
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(162, 142, 11, 8);
-      ctx.fillStyle = "#64748b"; ctx.fillRect(205, 140, 20, 12); // Bồn rửa mặt
-      drawRoomLabel(ctx, "🚽 VỆ SINH", 168, 137);
+      // 🚽 PHÒNG VỆ SINH (Giữa dưới)
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(155, 150, 16, 22); // Bồn cầu sứ
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(158, 153, 10, 8);
+      ctx.fillStyle = "#94a3b8"; ctx.fillRect(200, 150, 22, 14); // Bồn rửa mặt
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(205, 140, 12, 8);  // Gương soi
+      drawRoomLabel(ctx, "🚽 VỆ SINH", 168, 144);
 
-      // 🛏️ Nhà nghỉ / Phòng ngủ (Góc dưới phải)
+      // 🛏️ NHÀ NGHỈ / DORM (Góc dưới phải)
       [250, 285, 320].forEach((x, i) => {
-        ctx.fillStyle = "#78350f"; ctx.fillRect(x, 150, 26, 40); // Khung giường gỗ
+        // Giường gỗ ấm áp
+        ctx.fillStyle = "#5c2e0b"; ctx.fillRect(x, 160, 26, 44);
         ctx.fillStyle = i===0 ? "#818cf8" : (i===1 ? "#34d399" : "#f472b6");
-        ctx.fillRect(x+2, 162, 22, 26); // Nệm ấm màu riêng từng bạn
-        ctx.fillStyle = "#f8fafc"; ctx.fillRect(x+4, 152, 18, 8); // Gối trắng
+        ctx.fillRect(x+2, 174, 22, 28); // Nệm riêng từng bạn
+        ctx.fillStyle = "#f8fafc"; ctx.fillRect(x+4, 163, 18, 9); // Gối êm
       });
-      drawRoomLabel(ctx, "🛏️ NHÀ NGHỈ", 270, 137);
+      drawRoomLabel(ctx, "🛏️ NHÀ NGHỈ", 275, 144);
 
-      // Lối cửa ra sân vườn
-      ctx.fillStyle = "#78350f"; ctx.fillRect(366, 115, 10, 26);
+      // Lối cửa thông ra vườn bí ngô
+      ctx.fillStyle = "#6d4c41"; ctx.fillRect(348, 120, 8, 28);
     }
 
     function drawRoomLabel(ctx, text, x, y) {
-      ctx.font = "bold 7.5px sans-serif";
-      ctx.fillStyle = "#fef08a";
+      ctx.font = "bold 8px sans-serif";
+      ctx.fillStyle = "#fde047";
+      ctx.shadowColor = "#000"; ctx.shadowBlur = 3;
       ctx.fillText(text, x, y);
+      ctx.shadowBlur = 0;
     }
 
-    // Vẽ nhân vật pixel chuẩn RPG
+    // VẼ NHÂN VẬT CHIBI STARDEW VALLEY
+    function drawStardewCharacter(ctx, c, isMoving) {
+      let x = Math.round(c.x), y = Math.round(c.y);
+      let bob = isMoving ? Math.sin(c.frame * Math.PI) * 2.5 : 0;
+      let legOffset = isMoving ? Math.cos(c.frame * Math.PI) * 3 : 0;
+
+      // Bóng đổ dưới chân
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
+      ctx.beginPath();
+      ctx.ellipse(x, y + 14, 8, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Nếu đang ngủ trên giường: vẽ tư thế nằm ngủ
+      if (c.state === "dorm" && !isMoving) {
+        ctx.font = "bold 10px sans-serif"; ctx.fillStyle = "#fef08a";
+        ctx.fillText("Zzz...", x + 8, y - 8);
+        ctx.fillStyle = c.shirt; ctx.fillRect(x - 6, y + 6, 14, 10);
+        ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(x, y + 2, 6, 0, Math.PI * 2); ctx.fill();
+        return;
+      }
+
+      // 1. Chân & Quần
+      ctx.fillStyle = c.pants;
+      ctx.fillRect(x - 5, y + 10 + bob, 4, 5 + legOffset);
+      ctx.fillRect(x + 1, y + 10 + bob, 4, 5 - legOffset);
+      // Giày da
+      ctx.fillStyle = "#3e2723";
+      ctx.fillRect(x - 6, y + 14 + bob + legOffset, 5, 3);
+      ctx.fillRect(x + 1, y + 14 + bob - legOffset, 5, 3);
+
+      // 2. Thân áo (Shirt)
+      ctx.fillStyle = c.shirt;
+      ctx.fillRect(x - 7, y - 1 + bob, 14, 12);
+      // Cổ áo trắng
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x - 2, y - 1 + bob, 4, 3);
+
+      // 3. Cánh tay đung đưa khi đi
+      ctx.fillStyle = c.shirt;
+      ctx.fillRect(x - 9, y + 1 + bob - legOffset, 3, 7);
+      ctx.fillRect(x + 6, y + 1 + bob + legOffset, 3, 7);
+      // Bàn tay
+      ctx.fillStyle = "#fed7aa";
+      ctx.fillRect(x - 9, y + 7 + bob - legOffset, 3, 3);
+      ctx.fillRect(x + 6, y + 7 + bob + legOffset, 3, 3);
+
+      // 4. Đầu & Khuôn mặt Chibi
+      ctx.fillStyle = "#fed7aa";
+      ctx.beginPath(); ctx.arc(x, y - 8 + bob, 7.5, 0, Math.PI * 2); ctx.fill();
+
+      // Mái tóc Stardew
+      ctx.fillStyle = c.hair;
+      ctx.fillRect(x - 8, y - 16 + bob, 16, 6);
+      ctx.fillRect(x - 8, y - 12 + bob, 3, 6); // Tóc mai
+      ctx.fillRect(x + 5, y - 12 + bob, 3, 6);
+
+      // Đôi mắt to tròn có chấm sáng
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(x - 4, y - 8 + bob, 2.5, 3);
+      ctx.fillRect(x + 1.5, y - 8 + bob, 2.5, 3);
+      ctx.fillStyle = "#ffffff"; // Đốm sáng mắt
+      ctx.fillRect(x - 4, y - 8 + bob, 1, 1);
+      ctx.fillRect(x + 1.5, y - 8 + bob, 1, 1);
+
+      // Má hồng Chibi
+      ctx.fillStyle = "rgba(244,114,182,0.6)";
+      ctx.fillRect(x - 6, y - 5 + bob, 2, 2);
+      ctx.fillRect(x + 4, y - 5 + bob, 2, 2);
+
+      // Phụ kiện riêng
+      if (c.hat === "crown") {
+        ctx.fillStyle = "#eab308";
+        ctx.beginPath();
+        ctx.moveTo(x - 6, y - 16 + bob); ctx.lineTo(x - 4, y - 20 + bob); ctx.lineTo(x, y - 17 + bob);
+        ctx.lineTo(x + 4, y - 20 + bob); ctx.lineTo(x + 6, y - 16 + bob);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#ef4444"; ctx.fillRect(x - 1, y - 18 + bob, 2, 2); // Ngọc đỏ
+      } else if (c.hat === "cap") {
+        ctx.fillStyle = "#047857"; ctx.fillRect(x - 7, y - 17 + bob, 14, 4); // Nón lưỡi trai
+        ctx.fillRect(x - 9, y - 14 + bob, 4, 2);
+      } else if (c.hat === "ribbon") {
+        ctx.fillStyle = "#f43f5e"; ctx.fillRect(x + 3, y - 18 + bob, 5, 4); // Nơ hồng
+      }
+
+      // Tên nhân vật nổi bên dưới
+      ctx.font = "bold 8px sans-serif";
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.shadowColor = "#000"; ctx.shadowBlur = 2;
+      ctx.fillText(c.name, x, y + 23);
+      ctx.shadowBlur = 0;
+
+      // Bong bóng thoại sinh động trên đầu
+      if (c.bubble && c.bTimer > 0) {
+        c.bTimer--;
+        let bw = Math.min(125, ctx.measureText(c.bubble).width + 12);
+        ctx.fillStyle = "rgba(15,23,42,0.95)";
+        ctx.fillRect(x - bw/2, y - 34 + bob, bw, 15);
+        ctx.strokeStyle = "#fde047"; ctx.strokeRect(x - bw/2, y - 34 + bob, bw, 15);
+        // Đuôi bóng thoại
+        ctx.fillStyle = "#fde047";
+        ctx.beginPath();
+        ctx.moveTo(x - 3, y - 19 + bob); ctx.lineTo(x + 3, y - 19 + bob); ctx.lineTo(x, y - 16 + bob);
+        ctx.fill();
+
+        ctx.font = "bold 8px sans-serif"; ctx.fillStyle = "#fef08a";
+        let t = c.bubble.length > 22 ? c.bubble.substring(0, 20) + '..' : c.bubble;
+        ctx.fillText(t, x, y - 23 + bob);
+      }
+    }
+
+    // Cập nhật di chuyển & Sinh hoạt tự do
     function updateAndDrawCharacters(ctx) {
-      let isWorkingTime = isProcessing; // Nếu đang trả lời câu hỏi thì tập trung làm việc
+      let isWorkingTime = isProcessing;
+
+      // Vẽ vòng tròn chạm đất khi Sếp di chuyển
+      if (tapTarget && tapTarget.alpha > 0) {
+        ctx.strokeStyle = `rgba(56, 189, 248, ${tapTarget.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(tapTarget.x, tapTarget.y, tapTarget.r, 0, Math.PI * 2); ctx.stroke();
+        tapTarget.r = Math.max(2, tapTarget.r - 0.5);
+        tapTarget.alpha -= 0.03;
+      }
+
       ['user', 'a1', 'a2', 'a3'].forEach(k => {
         let c = CHARACTERS[k];
-        
-        // Di chuyển nhân vật mượt mà
         let dx = c.tx - c.x, dy = c.ty - c.y;
         let dist = Math.hypot(dx, dy);
         let isMoving = dist > 2;
 
         if (isMoving) {
-          c.x += (dx / dist) * 1.5;
-          c.y += (dy / dist) * 1.5;
-          c.frame = (c.frame + 0.15) % 4; // Nhịp bước chân nhấp nhô
+          c.x += (dx / dist) * 1.6;
+          c.y += (dy / dist) * 1.6;
+          c.frame = (c.frame + 0.16) % 4;
         } else {
           c.frame = 0;
-          // TRÍ THÔNG MINH NHÂN TẠO SINH HOẠT TỰ DO KHI KHÔNG CÓ VIỆC
+          // SINH HOẠT TỰ DO KHI RẢNH RỖI
           if (k !== 'user') {
             c.wait = (c.wait || 0) - 1;
             if (c.wait <= 0) {
               if (isWorkingTime) {
-                // Đang bận việc: tập trung tại bàn làm việc hoặc phòng họp
-                let p = ROOM_SPOTS.office[c.name==="Minh"?0:(c.name==="Huy"?1:2)];
+                let p = SPOTS.work[c.name==="Minh"?0:(c.name==="Huy"?1:2)];
                 c.tx = p.x; c.ty = p.y; c.state = "work";
                 c.wait = 200;
               } else {
-                // Rảnh rỗi: Tự chọn phòng sinh hoạt theo cá tính riêng!
-                let choices = ["game", "kitchen", "garden", "dorm", "toilet", "meeting"];
-                let chosenRoom = choices[Math.floor(Math.random() * choices.length)];
-                let spots = ROOM_SPOTS[chosenRoom];
-                let spot = spots[Math.floor(Math.random() * spots.length)];
-                c.tx = spot.x; c.ty = spot.y;
-                c.state = chosenRoom;
-                c.wait = Math.floor(Math.random() * 250) + 180; // Ở lại phòng 8-15 giây
+                let choices = ["arcade", "kitchen", "farm", "dorm", "toilet", "meeting"];
+                let chosen = choices[Math.floor(Math.random() * choices.length)];
+                let list = SPOTS[chosen];
+                let spot = list[Math.floor(Math.random() * list.length)];
+                c.tx = spot.x; c.ty = spot.y; c.state = chosen;
+                c.wait = Math.floor(Math.random() * 260) + 160;
 
-                // Bong bóng thoại trạng thái tự động
-                if(chosenRoom === "game") c.bubble = "Bắn ván game đã! 🎮";
-                else if(chosenRoom === "kitchen") c.bubble = "Đói bụng quá, kiếm gì ăn ☕";
-                else if(chosenRoom === "garden") c.bubble = "Ra vườn hóng mát 🌾";
-                else if(chosenRoom === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
-                else if(chosenRoom === "toilet") c.bubble = "Đi rửa mặt tí! 🚽";
-                else if(chosenRoom === "meeting") c.bubble = "Xem lại sổ sách 📋";
+                if(chosen === "arcade") c.bubble = "Bắn ván game đã! 🎮";
+                else if(chosen === "kitchen") c.bubble = "Làm bát súp bí ngô 🥣";
+                else if(chosen === "farm") c.bubble = "Ra vườn hái táo 🌾";
+                else if(chosen === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
+                else if(chosen === "toilet") c.bubble = "Rửa mặt cho tỉnh 🚽";
+                else if(chosen === "meeting") c.bubble = "Xem lại sổ tay 📋";
                 c.bTimer = 90;
               }
             }
           }
         }
 
-        let bob = Math.sin(c.frame * Math.PI) * 2;
-
-        // Bóng đổ chân nhân vật
-        ctx.fillStyle = "rgba(0,0,0,0.35)";
-        ctx.beginPath();
-        ctx.ellipse(c.x, c.y + 11, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
-
-        // Nếu đang ngủ trên giường: vẽ tư thế nằm
-        if (c.state === "dorm" && !isMoving) {
-          ctx.font = "bold 9px sans-serif"; ctx.fillStyle = "#fef08a";
-          ctx.fillText("Zzz...", c.x + 8, c.y - 10);
-          ctx.fillStyle = c.color; ctx.fillRect(c.x - 5, c.y + 2, 12, 8); // Thân nằm
-          ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(c.x, c.y - 2, 5, 0, Math.PI*2); ctx.fill(); // Đầu
-          ctx.fillText(c.hat, c.x, c.y - 6);
-          return;
-        }
-
-        // Thân áo
-        ctx.fillStyle = c.color;
-        ctx.fillRect(c.x - 6, c.y - 2 + bob, 12, 11);
-
-        // Quần
-        ctx.fillStyle = "#1e293b";
-        ctx.fillRect(c.x - 5, c.y + 9 + bob, 4, 4);
-        ctx.fillRect(c.x + 1, c.y + 9 + bob, 4, 4);
-
-        // Đầu & Tóc
-        ctx.fillStyle = "#fed7aa";
-        ctx.beginPath(); ctx.arc(c.x, c.y - 7 + bob, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = c.hair;
-        ctx.fillRect(c.x - 6, c.y - 13 + bob, 12, 5); // Mái tóc pixel
-
-        // Mắt
-        ctx.fillStyle = "#000";
-        ctx.fillRect(c.x - 3, c.y - 7 + bob, 2, 2);
-        ctx.fillRect(c.x + 1, c.y - 7 + bob, 2, 2);
-
-        // Phụ kiện / Mũ
-        ctx.font = "10px sans-serif"; ctx.textAlign = "center";
-        ctx.fillText(c.hat, c.x, c.y - 13 + bob);
-
-        // Tên nhân vật
-        ctx.font = "bold 7.5px sans-serif"; ctx.fillStyle = "#ffffff";
-        ctx.fillText(c.name, c.x, c.y + 19);
-
-        // Bong bóng thoại hành động trên đầu
-        if (c.bubble && c.bTimer > 0) {
-          c.bTimer--;
-          let bw = Math.min(110, ctx.measureText(c.bubble).width + 10);
-          ctx.fillStyle = "rgba(15,23,42,0.95)";
-          ctx.fillRect(c.x - bw/2, c.y - 30 + bob, bw, 13);
-          ctx.strokeStyle = "#ca8a04"; ctx.strokeRect(c.x - bw/2, c.y - 30 + bob, bw, 13);
-          ctx.font = "bold 7.5px sans-serif"; ctx.fillStyle = "#fef08a";
-          let t = c.bubble.length > 20 ? c.bubble.substring(0, 18) + '..' : c.bubble;
-          ctx.fillText(t, c.x, c.y - 21 + bob);
-        }
+        drawStardewCharacter(ctx, c, isMoving);
       });
     }
 
-    // Hiệu ứng ánh sáng ngày và đêm
+    // Chu kỳ Ánh sáng Ngày - Đêm
     function drawLighting(ctx) {
       gameTime = (gameTime + 0.0002) % 1.0;
       let clockText = "☀️ Trưa nắng", overlay = "rgba(0,0,0,0)";
@@ -398,13 +519,13 @@
       document.getElementById('clock-display').innerText = clockText;
       ctx.fillStyle = overlay; ctx.fillRect(0, 0, W, H);
 
-      // Thắp sáng đèn ấm trong phòng khi trời tối
+      // Đèn lồng ấm áp thắp sáng các phòng trong đêm
       if (gameTime < 0.2 || gameTime > 0.8) {
-        [ {x: 80, y: 60}, {x: 215, y: 60}, {x: 330, y: 60}, {x: 80, y: 180}, {x: 295, y: 170} ].forEach(l => {
-          let g = ctx.createRadialGradient(l.x, l.y, 5, l.x, l.y, 50);
-          g.addColorStop(0, "rgba(253, 224, 71, 0.35)");
+        [ {x: 85, y: 70}, {x: 215, y: 70}, {x: 310, y: 70}, {x: 85, y: 195}, {x: 295, y: 185} ].forEach(l => {
+          let g = ctx.createRadialGradient(l.x, l.y, 5, l.x, l.y, 55);
+          g.addColorStop(0, "rgba(253, 224, 71, 0.38)");
           g.addColorStop(1, "transparent");
-          ctx.fillStyle = g; ctx.fillRect(l.x - 50, l.y - 50, 100, 100);
+          ctx.fillStyle = g; ctx.fillRect(l.x - 55, l.y - 55, 110, 110);
         });
       }
     }
@@ -417,7 +538,7 @@
     }
 
     // ==========================================
-    // KHỞI ĐỘNG HỆ THỐNG VÀ API GEMINI
+    // KHỞI ĐỘNG VÀ ĐỒNG BỘ GEMINI ADVANCED
     // ==========================================
     window.onload = async () => {
       resizeCanvas();
@@ -439,7 +560,7 @@
       let key = id === 'user' ? 'user' : `a${id}`;
       if (CHARACTERS[key]) {
         CHARACTERS[key].bubble = text;
-        CHARACTERS[key].bTimer = 220; // Hiện 4 giây
+        CHARACTERS[key].bTimer = 220;
       }
     }
 
@@ -549,7 +670,7 @@
       const budget = parseInt(thinkingBudget) || 4096;
       
       const payload = {
-        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[BỐI CẢNH DINH THỰ]:\n${user}` }] }],
+        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[BỐI CẢNH NÔNG TRẠI DINH THỰ]:\n${user}` }] }],
         generationConfig: { thinkingConfig: { thinkingBudget: budget } }
       };
 
@@ -590,10 +711,10 @@
         isProcessing = false; return;
       }
 
-      // KHI CÓ JOB: Cả 3 lập tức chạy về bàn làm việc để hỗ trợ Sếp
-      CHARACTERS.a1.tx = ROOM_SPOTS.office[0].x; CHARACTERS.a1.ty = ROOM_SPOTS.office[0].y;
-      CHARACTERS.a2.tx = ROOM_SPOTS.office[1].x; CHARACTERS.a2.ty = ROOM_SPOTS.office[1].y;
-      CHARACTERS.a3.tx = ROOM_SPOTS.office[2].x; CHARACTERS.a3.ty = ROOM_SPOTS.office[2].y;
+      // KHI CÓ JOB: Cả 3 lập tức chạy về bàn máy tính làm việc
+      CHARACTERS.a1.tx = SPOTS.work[0].x; CHARACTERS.a1.ty = SPOTS.work[0].y;
+      CHARACTERS.a2.tx = SPOTS.work[1].x; CHARACTERS.a2.ty = SPOTS.work[1].y;
+      CHARACTERS.a3.tx = SPOTS.work[2].x; CHARACTERS.a3.ty = SPOTS.work[2].y;
 
       try {
         const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
@@ -649,7 +770,7 @@
       if(isFlowActive) {
         btn.innerText = "🎙️ Tự đàm đạo: BẬT";
         btn.classList.add('btn-active');
-        appendChat("Hệ thống", "Đã kích hoạt cuộc sống tự do tại dinh thự thung lũng!", "sys");
+        appendChat("Hệ thống", "Đã kích hoạt cuộc sống tự do tại dinh thự nông trại!", "sys");
         runNaturalFlow();
       } else {
         btn.innerText = "🎙️ Tự đàm đạo: TẮT";
