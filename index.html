@@ -58,7 +58,7 @@
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
     <div class="weather-clock-badge">
-      <span class="time-text" id="live-time">15:00 • Giờ VN</span>
+      <span class="time-text" id="live-time">16:45 • Giờ VN</span>
       <span class="weather-text" id="live-weather">☀️ Nắng ráo • 28°C</span>
     </div>
     <div class="hint-tap">👆 Chạm vào phòng để Sếp bước tới kiểm tra</div>
@@ -80,15 +80,15 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình AI & Chọn Model Dự Phòng</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Cấu hình AI & Chọn Model Chuẩn</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none; font-size:11px;">
       
       <!-- CẤU HÌNH MINH -->
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
         <select id="m1" style="flex:2;">
-          <option value="gemini-3.8-flash" selected>3.8 Flash (Tiêu chuẩn)</option>
-          <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Dự phòng khi hết Quota)</option>
+          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ)</option>
+          <option value="gemini-3.8-flash">3.8 Flash (Tiêu chuẩn)</option>
         </select>
         <select id="th1" style="flex:1;">
           <option value="2048" selected>Tư duy: Nhanh</option>
@@ -101,8 +101,8 @@
       <b style="color:#34d399;">2. Huy (Kỹ sư Code Luau):</b>
       <div style="display:flex; gap:4px;">
         <select id="m2" style="flex:2;">
-          <option value="gemini-3.8-flash" selected>3.8 Flash (Tiêu chuẩn)</option>
-          <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Dự phòng khi hết Quota)</option>
+          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ)</option>
+          <option value="gemini-3.8-flash">3.8 Flash (Tiêu chuẩn)</option>
         </select>
         <select id="th2" style="flex:1;">
           <option value="2048" selected>Tư duy: Nhanh</option>
@@ -115,8 +115,8 @@
       <b style="color:#f472b6;">3. Linh (QA Kiểm duyệt):</b>
       <div style="display:flex; gap:4px;">
         <select id="m3" style="flex:2;">
-          <option value="gemini-3.8-flash" selected>3.8 Flash (Tiêu chuẩn)</option>
-          <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Dự phòng khi hết Quota)</option>
+          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ)</option>
+          <option value="gemini-3.8-flash">3.8 Flash (Tiêu chuẩn)</option>
         </select>
         <select id="th3" style="flex:1;">
           <option value="2048" selected>Tư duy: Nhanh</option>
@@ -164,7 +164,7 @@
     let isProcessing = false;
     let flowTimeout = null;
     let hardWatchdog = null;
-    const canvas = document.getElementById('game-canvas');
+        const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     const W = 480, H = 270;
 
@@ -611,6 +611,7 @@
       requestAnimationFrame(gameLoop);
     }
 
+    // TỰ ĐỘNG CHUYỂN TOÀN BỘ CACHE CŨ SANG 3.5 FLASH-LITE
     window.onload = async () => {
       resizeCanvas();
       initWeatherParticles();
@@ -626,9 +627,15 @@
       document.getElementById('gas-url').value = PERMANENT_GAS_URL;
       localStorage.setItem('gas_url', PERMANENT_GAS_URL);
 
-      document.getElementById('m1').value = localStorage.getItem('m1') || 'gemini-3.8-flash';
-      document.getElementById('m2').value = localStorage.getItem('m2') || 'gemini-3.8-flash';
-      document.getElementById('m3').value = localStorage.getItem('m3') || 'gemini-3.8-flash';
+      // Tự động nâng cấp cache nếu dính bản 2.5 đã khai tử
+      ['m1', 'm2', 'm3'].forEach(id => {
+        let val = localStorage.getItem(id);
+        if (!val || val.includes('2.5') || val.includes('3.1')) {
+          val = 'gemini-3.5-flash-lite';
+          localStorage.setItem(id, val);
+        }
+        document.getElementById(id).value = val;
+      });
 
       const saved = localStorage.getItem('studio_data_v2');
       if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
@@ -782,17 +789,17 @@
       `).join('');
     }
 
-    // GỌI API ĐỘNG (TỰ ĐỘNG BỎ THINKING KHI DÙNG FLASH-LITE)
+    // GỌI CHUẨN 3.5 FLASH-LITE (TỰ ĐỘNG CHỐNG LỖI THINKING)
     async function callGeminiAdvanced(key, chosenModel, thinkingBudget, sys, user) {
       if(!key) throw new Error("Chưa có đủ API Key!");
-      const cleanModel = (chosenModel || "gemini-3.8-flash").trim();
+      let cleanModel = (chosenModel || "gemini-3.5-flash-lite").trim();
+      if (cleanModel.includes('2.5')) cleanModel = "gemini-3.5-flash-lite";
       const cleanKey = key.trim();
       
       const payload = {
         contents: [{ role:"user", parts:[{ text: `${sys}\n\n[DỮ LIỆU ĐỐI THOẠI]:\n${user}` }] }]
       };
 
-      // Chỉ gắn thinkingConfig nếu không phải là bản lite và budget > 0
       const budget = parseInt(thinkingBudget) || 0;
       if (!cleanModel.includes("lite") && budget > 0) {
         payload.generationConfig = { thinkingConfig: { thinkingBudget: budget } };
@@ -842,9 +849,9 @@
       }, 25000);
 
       const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const m1 = localStorage.getItem('m1') || 'gemini-3.8-flash';
-      const m2 = localStorage.getItem('m2') || 'gemini-3.8-flash';
-      const m3 = localStorage.getItem('m3') || 'gemini-3.8-flash';
+      const m1 = localStorage.getItem('m1') || 'gemini-3.5-flash-lite';
+      const m2 = localStorage.getItem('m2') || 'gemini-3.5-flash-lite';
+      const m3 = localStorage.getItem('m3') || 'gemini-3.5-flash-lite';
       const th1 = localStorage.getItem('th1') || '2048';
       const th2 = localStorage.getItem('th2') || '2048';
       const th3 = localStorage.getItem('th3') || '2048';
