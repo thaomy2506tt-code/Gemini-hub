@@ -3,120 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Studio AI - Đa Nền Tảng</title>
+  <title>Script Valley - Stardew AI Office</title>
   <style>
-    :root { --bg:#070c18; --panel:#0f172a; --border:#1e293b; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; --a1:#818cf8; --a2:#34d399; --a3:#f472b6; }
+    :root { --bg:#0f172a; --panel:#1e293b; --border:#334155; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; }
+    body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; user-select:none; }
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    header h1 { font-size:15px; color:var(--primary); }
+    header h1 { font-size:15px; color:#fde047; text-shadow:1px 1px 0 #854d0e; }
     .btn-header { display:flex; gap:4px; }
-    .office-canvas { position:relative; width:100%; height:210px; background:#0d1527; background-image:linear-gradient(to right,#1e293b 1px,transparent 1px),linear-gradient(to bottom,#1e293b 1px,transparent 1px); background-size:20px 20px; border:2px solid #334155; border-radius:10px; overflow:hidden; margin-bottom:8px; }
-    .meeting-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:76px; height:76px; border-radius:50%; background:#1e293b; border:2px dashed #475569; display:flex; align-items:center; justify-content:center; flex-direction:column; font-size:9px; color:var(--muted); z-index:1; text-align:center; }
-    .workstation { position:absolute; width:88px; display:flex; flex-direction:column; align-items:center; z-index:2; }
-    #ws-1 { top:8px; left:8px; } #ws-2 { top:8px; right:8px; } #ws-3 { bottom:8px; left:calc(50% - 44px); }
-    .character { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; background:#1e293b; border:2px solid #475569; }
-    .desk { width:76px; height:24px; background:#334155; border-radius:4px; border:1px solid #64748b; margin-top:2px; display:flex; align-items:center; justify-content:center; }
-    .screen { width:18px; height:9px; background:#070c18; border-radius:2px; }
-    .screen.on { background:#38bdf8; box-shadow:0 0 6px #38bdf8; }
-    .agent-tag { font-size:9px; font-weight:bold; margin-top:2px; display:flex; gap:3px; align-items:center; }
-    .badge-lv { background:var(--accent); color:#000; padding:1px 3px; border-radius:3px; font-size:8px; }
-    .xp-bar { width:68px; height:3px; background:#334155; border-radius:2px; margin-top:2px; overflow:hidden; }
-    .xp-fill { height:100%; width:0%; background:#10b981; transition:width 0.3s; }
-    .bubble { position:absolute; bottom:34px; background:#fff; color:#000; font-size:9px; font-weight:600; padding:2px 5px; border-radius:4px; white-space:nowrap; opacity:0; transition:opacity 0.2s; pointer-events:none; }
+    
+    /* KHUNG THẾ GIỚI GAME STARDEW */
+    .game-viewport { position:relative; width:100%; height:250px; background:#22c55e; border:3px solid #78350f; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.5); margin-bottom:8px; }
+    #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; }
+    .clock-badge { position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.65); border:1px solid #ca8a04; border-radius:6px; padding:3px 7px; font-size:10px; color:#fef08a; display:flex; align-items:center; gap:4px; pointer-events:none; }
+    .hint-tap { position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px; font-size:9px; color:#cbd5e1; pointer-events:none; }
+
     .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
-    input, textarea, button { width:100%; border-radius:6px; border:1px solid #334155; background:#070c18; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
-    .btn-action { background:var(--primary); color:#000; font-weight:bold; border:none; cursor:pointer; padding:8px; }
-    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#1e293b; border:1px solid #475569; color:#fff; border-radius:4px; cursor:pointer; }
-    .btn-active { background:#10b981; border-color:#059669; }
-    .chat-container { height:280px; display:flex; flex-direction:column; }
-    .chat-messages { flex:1; overflow-y:auto; background:#070c18; border:1px solid #1e293b; border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
+    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0b1120; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
+    .btn-action { background:#16a34a; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; }
+    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#334155; border:1px solid #475569; color:#fff; border-radius:4px; cursor:pointer; }
+    .btn-active { background:#15803d; border-color:#22c55e; }
+    
+    .chat-container { height:260px; display:flex; flex-direction:column; }
+    .chat-messages { flex:1; overflow-y:auto; background:#0b1120; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
     .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; }
     .msg-content { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; }
-    .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:var(--primary); text-align:right; } .msg-user .msg-content { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
-    .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:var(--a1); } .msg-a1 .msg-content { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
-    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:var(--a2); } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
-    .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:var(--a3); } .msg-a3 .msg-content { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
-    .msg-sys .msg-content { background:#1e293b; border:1px dashed #475569; font-size:10px; color:var(--accent); text-align:center; padding:3px; }
+    .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:#38bdf8; text-align:right; } .msg-user .msg-content { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
+    .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:#818cf8; } .msg-a1 .msg-content { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
+    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
+    .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:#f472b6; } .msg-a3 .msg-content { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
+    .msg-sys .msg-content { background:#334155; border:1px dashed #64748b; font-size:10px; color:#fde047; text-align:center; padding:3px; }
     .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Script Studio AI</h1>
+    <h1>🌾 Script Valley</h1>
     <div class="btn-header">
-      <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự trò chuyện: TẮT</button>
-      <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Sao lưu / Khôi phục</button>
+      <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự đàm đạo: TẮT</button>
+      <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Sao lưu</button>
       <button class="btn-small" onclick="togglePanel('identity-modal')">🧭 Bản sắc</button>
     </div>
   </header>
 
-  <div class="office-canvas">
-    <div class="meeting-table" id="meeting-area"><span>☕ Bàn tròn</span><span id="meeting-topic" style="font-size:7px; color:#38bdf8;">Đang trực</span></div>
-    <div class="workstation" id="ws-1">
-      <div class="bubble" id="b-1">...</div><div class="character">👨‍💼</div>
-      <div class="desk"><div class="screen" id="pc-1"></div></div>
-      <div class="agent-tag" style="color:var(--a1);"><span>Minh (Lead)</span> <span class="badge-lv" id="lv-1">Lv.1</span></div>
-      <div class="xp-bar"><div class="xp-fill" id="xp-1"></div></div>
-    </div>
-    <div class="workstation" id="ws-2">
-      <div class="bubble" id="b-2">...</div><div class="character">👨‍💻</div>
-      <div class="desk"><div class="screen" id="pc-2"></div></div>
-      <div class="agent-tag" style="color:var(--a2);"><span>Huy (Dev)</span> <span class="badge-lv" id="lv-2">Lv.1</span></div>
-      <div class="xp-bar"><div class="xp-fill" id="xp-2"></div></div>
-    </div>
-    <div class="workstation" id="ws-3">
-      <div class="bubble" id="b-3">...</div><div class="character">👩‍🔬</div>
-      <div class="desk"><div class="screen" id="pc-3"></div></div>
-      <div class="agent-tag" style="color:var(--a3);"><span>Linh (QA)</span> <span class="badge-lv" id="lv-3">Lv.1</span></div>
-      <div class="xp-bar"><div class="xp-fill" id="xp-3"></div></div>
-    </div>
+  <!-- KHUNG GAME CANVAS NÔNG TRẠI VĂN PHÒNG -->
+  <div class="game-viewport">
+    <canvas id="game-canvas"></canvas>
+    <div class="clock-badge" id="clock-display">☀️ Ban ngày</div>
+    <div class="hint-tap">👆 Chạm vào bản đồ để di chuyển Sếp</div>
   </div>
 
   <div class="card chat-container">
-    <div class="card-title"><span>💬 Phòng họp chung</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="card-title"><span>💬 Cuộc trò chuyện tại Thung Lũng</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Tâm sự hoặc giao việc cho cả nhóm..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Gõ tin nhắn trò chuyện hoặc giao việc..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình API & Tự động lưu Sheets</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
-    <div id="cfg-box" style="display:none;">
-      <input type="text" id="model-input" placeholder="Tên model" value="gemini-3.8-flash">
-      <input type="password" id="key-1" placeholder="API Key 1 (Minh - Lead)">
-      <input type="password" id="key-2" placeholder="API Key 2 (Huy - Dev)">
-      <input type="password" id="key-3" placeholder="API Key 3 (Linh - QA)">
-      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Tự động đồng bộ Đám mây)">
+    <div class="card-title"><span>⚙️ Cấu hình Nhân sự AI & Đám mây</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div id="cfg-box" style="display:none; font-size:11px;">
+      <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
+      <div style="display:flex; gap:4px;">
+        <select id="m1" style="flex:2;"><option value="gemini-3.1-pro" selected>3.1 Pro (Suy luận sâu)</option><option value="gemini-3.8-flash">3.8 Flash</option></select>
+        <select id="th1" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
+      </div>
+      <input type="password" id="key-1" placeholder="API Key 1 (Minh)">
+
+      <b style="color:#34d399;">2. Huy (Kỹ sư Code Luau):</b>
+      <div style="display:flex; gap:4px;">
+        <select id="m2" style="flex:2;"><option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu RAM)</option><option value="gemini-3.1-pro">3.1 Pro</option></select>
+        <select id="th2" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
+      </div>
+      <input type="password" id="key-2" placeholder="API Key 2 (Huy)">
+
+      <b style="color:#f472b6;">3. Linh (QA Kiểm duyệt):</b>
+      <div style="display:flex; gap:4px;">
+        <select id="m3" style="flex:2;"><option value="gemini-3.1-pro" selected>3.1 Pro (Thẩm định code)</option><option value="gemini-3.8-flash">3.8 Flash</option></select>
+        <select id="th3" style="flex:1;"><option value="8192" selected>Tư duy: Cao</option><option value="4096">Tư duy: Vừa</option></select>
+      </div>
+      <input type="password" id="key-3" placeholder="API Key 3 (Linh)">
+
+      <input type="text" id="gas-url" placeholder="URL Google Apps Script (Đồng bộ vĩnh viễn)">
       <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
 
   <div class="card" id="sync-modal" style="display:none;">
-    <div class="card-title"><span>☁️ Sao lưu & Đồng bộ Đa thiết bị</span><button class="btn-small" onclick="togglePanel('sync-modal')">Đóng</button></div>
-    <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Sao chép mã này dán sang thiết bị khác (hoặc Cloud Phone) để giữ nguyên vẹn Level, Ký ức & Key:</p>
+    <div class="card-title"><span>☁️ Đồng bộ Đa thiết bị</span><button class="btn-small" onclick="togglePanel('sync-modal')">Đóng</button></div>
     <div style="display:flex; gap:5px; margin-bottom:6px;">
-      <button class="btn-small" style="flex:1; background:#10b981;" onclick="exportDataCode()">📦 Sao chép mã sao lưu</button>
-      <button class="btn-small" style="flex:1; background:#38bdf8; color:#000;" onclick="importDataCode()">📥 Khôi phục từ mã</button>
+      <button class="btn-small" style="flex:1; background:#16a34a;" onclick="exportDataCode()">📦 Sao chép mã sao lưu</button>
+      <button class="btn-small" style="flex:1; background:#0284c7; color:#fff;" onclick="importDataCode()">📥 Khôi phục từ mã</button>
     </div>
-    <button class="btn-small" style="width:100%; background:#6366f1;" onclick="syncWithGoogleSheet()">🔄 Buộc đồng bộ với Google Sheets ngay</button>
+    <button class="btn-small" style="width:100%; background:#4f46e5;" onclick="syncWithGoogleSheet()">🔄 Đồng bộ Google Sheets ngay</button>
   </div>
 
   <div class="card" id="identity-modal" style="display:none;">
-    <div class="card-title"><span>🧭 Định hướng Bản thân & Ký ức</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
-    <div id="identity-list" style="max-height:220px; overflow-y:auto; font-size:11px;"></div>
+    <div class="card-title"><span>🧭 Bản sắc & Mục tiêu nhân vật</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
+    <div id="identity-list" style="max-height:200px; overflow-y:auto; font-size:11px;"></div>
   </div>
 
   <script>
     const DEFAULT_STUDIO = {
       agents: [
-        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Giám đốc Kỹ thuật & Kiến trúc sư AI tự động hóa.", philosophy: "Điềm tĩnh, ấm áp, có tầm nhìn, luôn đồng hành cùng Sếp.", memory: ["Khởi tạo văn phòng Script Studio AI."] },
-        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Bậc thầy tối ưu Luau & Game Engine trên Cloud Phone.", philosophy: "Hài hước, thực chiến, dọn rác RAM triệt để.", memory: ["Cam kết tối ưu bộ nhớ không văng app."] },
-        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định chất lượng & An toàn vận hành.", philosophy: "Thông minh, sắc sảo, thích trêu anh Huy, giữ kỷ luật an toàn.", memory: ["Bọc pcall chống lỗi sập luồng."] }
+        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, có tầm nhìn, luôn đồng hành cùng Sếp.", memory: ["Gia nhập thung lũng Script Valley."] },
+        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Cao thủ tối ưu mã nguồn Luau & Game Engine trên Cloud Phone.", philosophy: "Hài hước, thực chiến, diệt trừ rác RAM.", memory: ["Cam kết dọn rác bộ nhớ triệt để."] },
+        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định an toàn phần mềm.", philosophy: "Sắc sảo, bắt lỗi tinh tế, thích trêu anh Huy, giữ kỷ luật an toàn.", memory: ["Bọc pcall chống văng app."] }
       ],
       chatHistory: []
     };
@@ -127,94 +123,320 @@
     let flowTimeout = null;
 
     const NATURAL_STARTERS = [
-      "Huy với Linh này, dạo này anh em mình làm việc ăn ý hẳn lên nhỉ! Sắp tới anh tính bàn với Sếp nâng cấp hệ thống auto lên tầm cao mới.",
-      "Ê ông Huy, con script auto tối ưu ram chạy thử trên Cloud Phone có mượt không đấy, hay lại để tôi phải đi hốt bug?",
-      "Anh Minh ơi, dạo này em nghiên cứu sâu thuật toán gom rác rbxscriptconnection, cảm giác tư duy lên tay hẳn anh ạ!",
-      "Nói gì thì nói, mục tiêu của team mình là đồng hành lâu dài cùng Sếp, sau này dự án lớn đến đâu cũng cân đẹp hết!",
-      "Linh này, hôm nào rảnh anh em mình làm bữa cà phê giải lao, bà bớt soi mói mấy dòng code của tui lại nha!"
+      "Huy với Linh này, thung lũng hôm nay thời tiết đẹp thật đấy! Anh em mình dạo một vòng rồi bàn nâng cấp hệ thống auto nhé.",
+      "Ê ông Huy, ra bàn trà ngồi hóng mát tí đi, hôm nay con script tối ưu ram chạy trên Cloud Phone nuột nà chưa đấy?",
+      "Anh Minh yên tâm, ngồi dưới bóng cây táo thế này tư duy thuật toán dọn rác RAM của em là đỉnh chóp luôn!",
+      "Nói gì thì nói, mục tiêu lâu dài của 3 anh em mình là đồng hành cùng Sếp, sau này dự án lớn đến đâu cũng cân đẹp hết!",
+      "Bà Linh đừng có đi theo soi bug tui miết nha, hôm nay trời đẹp uống ngụm trà giải lao chút đi!"
     ];
+    // ==========================================
+    // THẾ GIỚI GAME STARDEW VALLEY (CANVAS 2D)
+    // ==========================================
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    let W = 360, H = 220;
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = W; canvas.height = H;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Chu kỳ ngày đêm (2 phút = 1 ngày đêm đầy đủ)
+    let gameTime = 0.25; // 0.0: nửa đêm, 0.25: sáng sớm, 0.5: trưa, 0.75: hoàng hôn
+
+    // Các vị trí trọng điểm trong thế giới
+    const WAYPOINTS = [
+      { name: "Cabin Desk 1", x: 70, y: 75 },
+      { name: "Cabin Desk 2", x: 110, y: 75 },
+      { name: "Cabin Desk 3", x: 150, y: 75 },
+      { name: "Bàn trà sân vườn", x: 260, y: 150 },
+      { name: "Cây táo râm mát", x: 290, y: 70 },
+      { name: "Lối đi lát đá", x: 180, y: 160 },
+      { name: "Bờ hồ nước", x: 60, y: 175 }
+    ];
+
+    // Khởi tạo các nhân vật game
+    const CHARACTERS = {
+      user: { name: "Sếp", role: "user", x: 180, y: 140, tx: 180, ty: 140, color: "#38bdf8", hat: "👑", bubble: "", bubbleTimer: 0 },
+      a1:   { name: "Minh", role: "a1", x: 70, y: 80, tx: 70, ty: 80, color: "#818cf8", hat: "👨‍💼", bubble: "", bubbleTimer: 0, wait: 0 },
+      a2:   { name: "Huy", role: "a2", x: 110, y: 80, tx: 110, ty: 80, color: "#34d399", hat: "👨‍💻", bubble: "", bubbleTimer: 0, wait: 0 },
+      a3:   { name: "Linh", role: "a3", x: 150, y: 80, tx: 150, ty: 80, color: "#f472b6", hat: "👩‍🔬", bubble: "", bubbleTimer: 0, wait: 0 }
+    };
+
+    // Người dùng chạm tay vào bản đồ để di chuyển nhân vật Sếp (Tap-to-Move)
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      CHARACTERS.user.tx = Math.max(20, Math.min(W - 20, (e.clientX - rect.left) * scaleX));
+      CHARACTERS.user.ty = Math.max(30, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
+      CHARACTERS.user.bubble = "Đi thôi!";
+      CHARACTERS.user.bubbleTimer = 60;
+    });
+
+    // Vẽ căn nhà gỗ Cabin phong cách Stardew
+    function drawCabin(ctx) {
+      // Tường gỗ
+      ctx.fillStyle = "#854d0e";
+      ctx.fillRect(40, 30, 140, 80);
+      ctx.strokeStyle = "#581c87";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(40, 30, 140, 80);
+
+      // Mái nhà ngói đỏ cam
+      ctx.fillStyle = "#b45309";
+      ctx.beginPath();
+      ctx.moveTo(30, 30); ctx.lineTo(110, 5); ctx.lineTo(190, 30);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      // Ống khói bốc khói
+      ctx.fillStyle = "#64748b";
+      ctx.fillRect(150, 10, 14, 20);
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
+      let smokeOffset = (Date.now() / 200) % 15;
+      ctx.beginPath();
+      ctx.arc(157, 5 - smokeOffset, 4, 0, Math.PI * 2); ctx.fill();
+
+      // Cửa chính
+      ctx.fillStyle = "#451a03";
+      ctx.fillRect(100, 75, 20, 35);
+      
+      // Cửa sổ phát sáng khi trời tối
+      let isNight = gameTime < 0.2 || gameTime > 0.8;
+      ctx.fillStyle = isNight ? "#fde047" : "#bae6fd";
+      ctx.fillRect(55, 50, 20, 20);
+      ctx.fillRect(145, 50, 20, 20);
+      ctx.strokeStyle = "#451a03";
+      ctx.strokeRect(55, 50, 20, 20); ctx.strokeRect(145, 50, 20, 20);
+
+      // Bảng hiệu trước nhà
+      ctx.fillStyle = "#ca8a04";
+      ctx.fillRect(90, 35, 40, 12);
+      ctx.fillStyle = "#451a03";
+      ctx.font = "bold 7px sans-serif";
+      ctx.fillText("STUDIO", 95, 44);
+    }
+
+    // Vẽ cây cối và hoa lá
+    function drawNature(ctx) {
+      // Cây táo bên phải
+      ctx.fillStyle = "#78350f"; ctx.fillRect(290, 70, 12, 30);
+      ctx.fillStyle = "#15803d"; ctx.beginPath(); ctx.arc(296, 60, 26, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#16a34a"; ctx.beginPath(); ctx.arc(292, 55, 18, 0, Math.PI * 2); ctx.fill();
+      // Quả táo đỏ
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath(); ctx.arc(285, 55, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(305, 50, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(295, 70, 3, 0, Math.PI * 2); ctx.fill();
+
+      // Hồ nước tự nhiên góc trái dưới
+      ctx.fillStyle = "#0284c7";
+      ctx.beginPath();
+      ctx.ellipse(65, 180, 35, 20, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // Lối đi lát đá cuội
+      ctx.fillStyle = "#94a3b8";
+      for(let y = 110; y < 190; y += 16) {
+        ctx.beginPath(); ctx.arc(110 + Math.sin(y)*4, y, 6, 0, Math.PI*2); ctx.fill();
+      }
+      for(let x = 110; x < 260; x += 18) {
+        ctx.beginPath(); ctx.arc(x, 150 + Math.cos(x)*3, 6, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Bàn trà gỗ ngoài trời
+      ctx.fillStyle = "#78350f";
+      ctx.fillRect(250, 145, 25, 16);
+      ctx.fillStyle = "#ca8a04";
+      ctx.fillRect(252, 142, 21, 4); // Ấm trà
+    }
+
+    // Vẽ chu kỳ Ánh sáng Ngày - Đêm
+    function drawLighting(ctx) {
+      gameTime = (gameTime + 0.0003) % 1.0;
+      let clockText = "☀️ Trưa nắng";
+      let overlayColor = "rgba(0,0,0,0)";
+
+      if (gameTime >= 0.15 && gameTime < 0.3) {
+        clockText = "🌅 Bình minh";
+        overlayColor = "rgba(251, 146, 60, 0.18)";
+      } else if (gameTime >= 0.3 && gameTime < 0.7) {
+        clockText = "☀️ Ban ngày";
+        overlayColor = "rgba(255, 255, 255, 0.02)";
+      } else if (gameTime >= 0.7 && gameTime < 0.85) {
+        clockText = "🌆 Hoàng hôn";
+        overlayColor = "rgba(168, 85, 247, 0.25)";
+      } else {
+        clockText = "🌙 Đêm trăng";
+        overlayColor = "rgba(15, 23, 42, 0.65)";
+      }
+      document.getElementById('clock-display').innerText = clockText;
+
+      // Phủ màu ánh sáng thời gian
+      ctx.fillStyle = overlayColor;
+      ctx.fillRect(0, 0, W, H);
+
+      // Nếu trời tối, thắp sáng quầng sáng ấm xung quanh nhà và bàn trà
+      if (gameTime < 0.2 || gameTime > 0.8) {
+        const rad1 = ctx.createRadialGradient(110, 85, 5, 110, 85, 50);
+        rad1.addColorStop(0, "rgba(253, 224, 71, 0.4)");
+        rad1.addColorStop(1, "transparent");
+        ctx.fillStyle = rad1; ctx.fillRect(60, 35, 100, 100);
+
+        const rad2 = ctx.createRadialGradient(260, 150, 2, 260, 150, 35);
+        rad2.addColorStop(0, "rgba(253, 224, 71, 0.35)");
+        rad2.addColorStop(1, "transparent");
+        ctx.fillStyle = rad2; ctx.fillRect(225, 115, 70, 70);
+      }
+    }
+
+    // Vẽ nhân vật di chuyển
+    function updateAndDrawCharacters(ctx) {
+      let now = Date.now();
+      ['user', 'a1', 'a2', 'a3'].forEach(k => {
+        let c = CHARACTERS[k];
+        
+        // Di chuyển mượt mà tới mục tiêu
+        let dx = c.tx - c.x, dy = c.ty - c.y;
+        let dist = Math.hypot(dx, dy);
+        let isMoving = dist > 1.5;
+        if (isMoving) {
+          c.x += (dx / dist) * 1.3;
+          c.y += (dy / dist) * 1.3;
+        } else if (k !== 'user') {
+          // Các Agent AI tự động chọn điểm đến mới sau khi đứng nghỉ
+          c.wait = (c.wait || 0) - 1;
+          if (c.wait <= 0) {
+            let wp = WAYPOINTS[Math.floor(Math.random() * WAYPOINTS.length)];
+            c.tx = wp.x + (Math.random() * 16 - 8);
+            c.ty = wp.y + (Math.random() * 16 - 8);
+            c.wait = Math.floor(Math.random() * 200) + 150; // nghỉ 5 - 10 giây
+          }
+        }
+
+        // Bước chân nhấp nhô vui mắt khi đi
+        let walkBob = isMoving ? Math.sin(now / 100) * 2 : 0;
+
+        // Bóng đổ dưới chân
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.beginPath();
+        ctx.ellipse(c.x, c.y + 12, 7, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Thân áo
+        ctx.fillStyle = c.color;
+        ctx.fillRect(c.x - 6, c.y - 2 + walkBob, 12, 12);
+
+        // Đầu & Mũ
+        ctx.fillStyle = "#fed7aa";
+        ctx.beginPath();
+        ctx.arc(c.x, c.y - 7 + walkBob, 6, 0, Math.PI * 2); ctx.fill();
+
+        // Biểu tượng icon / nón
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(c.hat, c.x, c.y - 12 + walkBob);
+
+        // Tên nhân vật bên dưới
+        ctx.font = "bold 8px sans-serif";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(c.name, c.x, c.y + 19);
+
+        // Bong bóng thoại trên đầu khi nói chuyện
+        if (c.bubble && c.bubbleTimer > 0) {
+          c.bubbleTimer--;
+          let bw = Math.min(100, ctx.measureText(c.bubble).width + 12);
+          ctx.fillStyle = "rgba(255,255,255,0.95)";
+          ctx.fillRect(c.x - bw/2, c.y - 32 + walkBob, bw, 14);
+          ctx.strokeStyle = "#334155"; ctx.strokeRect(c.x - bw/2, c.y - 32 + walkBob, bw, 14);
+          
+          ctx.font = "bold 7.5px sans-serif";
+          ctx.fillStyle = "#0f172a";
+          let displayText = c.bubble.length > 20 ? c.bubble.substring(0, 18) + '..' : c.bubble;
+          ctx.fillText(displayText, c.x, c.y - 22 + walkBob);
+        }
+      });
+    }
+
+    // Vòng lặp hoạt họa game 60 FPS
+    function gameLoop() {
+      ctx.fillStyle = "#22c55e"; // Nền thảm cỏ xanh Stardew
+      ctx.fillRect(0, 0, W, H);
+
+      drawNature(ctx);
+      drawCabin(ctx);
+      updateAndDrawCharacters(ctx);
+      drawLighting(ctx);
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // ==========================================
+    // KHỞI ĐỘNG HỆ THỐNG VÀ API GEMINI
+    // ==========================================
     window.onload = async () => {
+      resizeCanvas();
+      gameLoop();
+
       document.getElementById('key-1').value = localStorage.getItem('k1') || '';
       document.getElementById('key-2').value = localStorage.getItem('k2') || '';
       document.getElementById('key-3').value = localStorage.getItem('k3') || '';
-      document.getElementById('model-input').value = localStorage.getItem('model') || 'gemini-3.8-flash';
       document.getElementById('gas-url').value = localStorage.getItem('gas_url') || '';
       
       const saved = localStorage.getItem('studio_data_v2');
       if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
-      updateAgentUI(); renderChatHistory(); renderIdentityList();
+      renderChatHistory(); renderIdentityList();
 
-      // Tự động kéo dữ liệu từ Google Sheets nếu đã cài URL
-      if (localStorage.getItem('gas_url')) {
-        await loadFromGoogleSheet(false);
-      }
+      if (localStorage.getItem('gas_url')) { await loadFromGoogleSheet(false); }
     };
+
+    function setAgentBubble(id, text) {
+      let key = id === 'user' ? 'user' : `a${id}`;
+      if (CHARACTERS[key]) {
+        CHARACTERS[key].bubble = text;
+        CHARACTERS[key].bubbleTimer = 180; // Hiển thị bong bóng trong 3 giây
+      }
+    }
 
     function saveSettings() {
       localStorage.setItem('k1', document.getElementById('key-1').value.trim());
       localStorage.setItem('k2', document.getElementById('key-2').value.trim());
       localStorage.setItem('k3', document.getElementById('key-3').value.trim());
-      let m = document.getElementById('model-input').value.trim().replace(/^models\//, '');
-      localStorage.setItem('model', m);
+      localStorage.setItem('m1', document.getElementById('m1').value);
+      localStorage.setItem('th1', document.getElementById('th1').value);
+      localStorage.setItem('m2', document.getElementById('m2').value);
+      localStorage.setItem('th2', document.getElementById('th2').value);
+      localStorage.setItem('m3', document.getElementById('m3').value);
+      localStorage.setItem('th3', document.getElementById('th3').value);
       localStorage.setItem('gas_url', document.getElementById('gas-url').value.trim());
-      alert('Đã lưu cấu hình an toàn!');
+      alert('Đã lưu cấu hình thung lũng thành công!');
       syncWithGoogleSheet();
     }
     function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
 
-    // XUẤT MÃ SAO LƯU 1 CHẠM ĐỂ CHUYỂN MÁY
     function exportDataCode() {
-      const fullPackage = {
-        studio: studioData,
-        k1: localStorage.getItem('k1') || '',
-        k2: localStorage.getItem('k2') || '',
-        k3: localStorage.getItem('k3') || '',
-        model: localStorage.getItem('model') || 'gemini-3.8-flash',
-        gas: localStorage.getItem('gas_url') || ''
-      };
+      const fullPackage = { studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3'), gas: localStorage.getItem('gas_url') };
       const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullPackage))));
-      navigator.clipboard.writeText(code).then(() => {
-        alert("Đã sao chép MÃ SAO LƯU vào bộ nhớ tạm! Bạn chỉ cần mở web ở máy khác và bấm 'Khôi phục từ mã' rồi dán vào là xong.");
-      }).catch(() => {
-        prompt("Sao chép đoạn mã sau để đem sang máy khác:", code);
-      });
+      navigator.clipboard.writeText(code).then(() => { alert("Đã sao chép mã sao lưu!"); }).catch(() => { prompt("Mã sao lưu:", code); });
     }
 
-    // KHÔI PHỤC DỮ LIỆU TỪ MÃ ĐÃ SAO LƯU
     function importDataCode() {
-      const code = prompt("Dán đoạn mã sao lưu từ máy cũ vào đây:");
+      const code = prompt("Dán đoạn mã sao lưu vào đây:");
       if (!code) return;
       try {
-        const json = decodeURIComponent(escape(atob(code.trim())));
-        const pack = JSON.parse(json);
-        if (pack.studio) {
-          studioData = pack.studio;
-          localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
-        }
-        if (pack.k1) localStorage.setItem('k1', pack.k1);
-        if (pack.k2) localStorage.setItem('k2', pack.k2);
-        if (pack.k3) localStorage.setItem('k3', pack.k3);
-        if (pack.model) localStorage.setItem('model', pack.model);
-        if (pack.gas) localStorage.setItem('gas_url', pack.gas);
-        alert("Khôi phục toàn bộ Level, Ký ức và API Key thành công!");
-        location.reload();
-      } catch(e) {
-        alert("Mã sao lưu không hợp lệ: " + e.message);
-      }
+        const pack = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+        if (pack.studio) { studioData = pack.studio; localStorage.setItem('studio_data_v2', JSON.stringify(studioData)); }
+        ['k1','k2','k3','gas'].forEach(k => { if(pack[k]) localStorage.setItem(k==='gas'?'gas_url':k, pack[k]); });
+        alert("Khôi phục dữ liệu thành công!"); location.reload();
+      } catch(e) { alert("Mã không hợp lệ!"); }
     }
 
-    // ĐỒNG BỘ CLOUD VỚI GOOGLE SHEETS
     async function syncWithGoogleSheet() {
       const url = localStorage.getItem('gas_url');
       if (!url) return;
       try {
-        const payload = JSON.stringify({
-          studio: studioData,
-          k1: localStorage.getItem('k1'),
-          k2: localStorage.getItem('k2'),
-          k3: localStorage.getItem('k3'),
-          model: localStorage.getItem('model')
-        });
+        const payload = JSON.stringify({ studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3') });
         await fetch(url, { method: "POST", mode: "no-cors", body: payload });
       } catch(e) {}
     }
@@ -228,40 +450,22 @@
         if (data && data.studio) {
           studioData = data.studio;
           localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
-          if(data.k1) { localStorage.setItem('k1', data.k1); document.getElementById('key-1').value = data.k1; }
-          if(data.k2) { localStorage.setItem('k2', data.k2); document.getElementById('key-2').value = data.k2; }
-          if(data.k3) { localStorage.setItem('k3', data.k3); document.getElementById('key-3').value = data.k3; }
-          if(data.model) { localStorage.setItem('model', data.model); document.getElementById('model-input').value = data.model; }
-          updateAgentUI(); renderChatHistory(); renderIdentityList();
-          if (notify) alert("Đã kéo toàn bộ dữ liệu mới nhất từ Google Sheets thành công!");
+          renderChatHistory(); renderIdentityList();
+          if (notify) alert("Đã đồng bộ dữ liệu từ Google Sheets!");
         }
-      } catch(e) {
-        if (notify) alert("Lỗi kết nối Google Sheets: " + e.message);
-      }
+      } catch(e) { if (notify) alert("Lỗi kết nối Sheets: " + e.message); }
     }
 
-    function updateAgentUI() {
-      studioData.agents.forEach(ag => {
-        document.getElementById(`lv-${ag.id}`).innerText = `Lv.${ag.level}`;
-        document.getElementById(`xp-${ag.id}`).style.width = `${ag.xp % 100}%`;
-      });
-      localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
-    }
-    function addXP(n) { 
-      studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); 
-      updateAgentUI(); 
-      syncWithGoogleSheet();
-    }
+    function addXP(n) { studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); renderIdentityList(); syncWithGoogleSheet(); }
 
     function renderIdentityList() {
       const el = document.getElementById('identity-list');
       if(!el) return;
       el.innerHTML = studioData.agents.map(ag => `
-        <div style="margin-bottom:8px; border-bottom:1px solid #1e293b; padding-bottom:6px;">
-          <div style="font-weight:bold; color:var(--primary);">${ag.name} - ${ag.title} (Lv.${ag.level})</div>
-          <div style="color:var(--accent); font-size:10px; margin-top:2px;">🎯 Định hướng dài hạn: ${ag.goal}</div>
-          <div style="color:var(--muted); font-size:10px; margin-top:2px;">💡 Kim chỉ nam: ${ag.philosophy}</div>
-          <div style="font-size:10px; margin-top:3px; color:#cbd5e1;"><b>Ký ức tích lũy:</b> ${ag.memory.join(' • ')}</div>
+        <div style="margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:6px;">
+          <div style="font-weight:bold; color:#fde047;">${ag.name} - ${ag.title} (Lv.${ag.level})</div>
+          <div style="color:#ca8a04; font-size:10px; margin-top:2px;">🎯 Định hướng: ${ag.goal}</div>
+          <div style="color:#94a3b8; font-size:10px; margin-top:2px;">💡 Kim chỉ nam: ${ag.philosophy}</div>
         </div>
       `).join('');
     }
@@ -284,7 +488,7 @@
 
     function renderChatHistory() {
       const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
-      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Minh, Huy, Linh đã sẵn sàng làm việc & trò chuyện cùng Sếp trên mọi thiết bị!", "sys"); return; }
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Chào mừng Sếp tới Thung Lũng Script Valley!", "sys"); return; }
       studioData.chatHistory.forEach(i => {
         const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
         row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-content">${i.text}</div>`;
@@ -294,30 +498,27 @@
     }
     function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
 
-    function setBubble(id, text) {
-      const b = document.getElementById(`b-${id}`), pc = document.getElementById(`pc-${id}`);
-      if(text) { b.innerText = text; b.style.opacity = '1'; if(pc) pc.classList.add('on'); }
-      else { b.style.opacity = '0'; if(pc) pc.classList.remove('on'); }
-    }
-
-    async function callGeminiWithRetry(key, model, sys, user, retries = 2) {
+    async function callGeminiAdvanced(key, model, thinkingBudget, sys, user, retries = 2) {
       if(!key) throw new Error("Chưa có đủ API Key!");
       const cleanModel = (model || 'gemini-3.8-flash').replace(/^models\//, '').trim();
       const cleanKey = key.trim();
+      const budget = parseInt(thinkingBudget) || 4096;
       
+      const payload = {
+        contents: [{ role:"user", parts:[{ text: `${sys}\n\n[BỐI CẢNH THUNG LŨNG]:\n${user}` }] }],
+        generationConfig: { thinkingConfig: { thinkingBudget: budget } }
+      };
+
       for(let attempt = 0; attempt <= retries; attempt++) {
         try {
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
-            method:"POST", headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({ contents:[{role:"user", parts:[{text:`${sys}\n\n[DỮ LIỆU ĐỐI THOẠI]:\n${user}`}]}] })
+            method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)
           });
-          
           if(!res.ok) {
             const errData = await res.json().catch(()=>({}));
             const msg = errData.error?.message || `Lỗi HTTP ${res.status}`;
             if((res.status === 503 || msg.includes('high demand') || msg.includes('quota')) && attempt < retries) {
-              await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
-              continue;
+              await new Promise(r => setTimeout(r, 2000 * (attempt + 1))); continue;
             }
             throw new Error(msg);
           }
@@ -325,8 +526,7 @@
           return d.candidates[0].content.parts[0].text;
         } catch(e) {
           if(attempt < retries && (e.message.includes('fetch') || e.message.includes('network'))) {
-            await new Promise(r => setTimeout(r, 2000));
-            continue;
+            await new Promise(r => setTimeout(r, 2000)); continue;
           }
           throw e;
         }
@@ -337,56 +537,50 @@
       if(isProcessing) return;
       isProcessing = true;
       const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const model = localStorage.getItem('model') || 'gemini-3.8-flash';
+      const m1 = localStorage.getItem('m1') || 'gemini-3.1-pro', th1 = localStorage.getItem('th1') || '8192';
+      const m2 = localStorage.getItem('m2') || 'gemini-3.8-flash', th2 = localStorage.getItem('th2') || '8192';
+      const m3 = localStorage.getItem('m3') || 'gemini-3.1-pro', th3 = localStorage.getItem('th3') || '8192';
+
       if(!k1 || !k2 || !k3) {
-        appendChat("Hệ thống", "Vui lòng mở mục Cấu hình và dán đủ 3 API Key để anh em hoạt động nhé Sếp!", "sys");
-        isProcessing = false;
-        return;
+        appendChat("Hệ thống", "Vui lòng mở Cấu hình và nhập đủ 3 API Key để cả làng bắt đầu!", "sys");
+        isProcessing = false; return;
       }
 
-      document.getElementById('meeting-topic').innerText = "Rôm rả";
       try {
         const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
 
-        setBubble(1, "Lên tiếng...");
-        const sys1 = `Bạn là ${ag1.name} (${ag1.title}, Lv.${ag1.level}). Định hướng: "${ag1.goal}". Kim chỉ nam: "${ag1.philosophy}". Xưng 'em' gọi người dùng là 'Sếp', gọi đồng nghiệp là 'Huy', 'Linh'. Trả lời tự nhiên, ấm áp, sâu sắc (dưới 45 từ).`;
-        const r1 = await callGeminiWithRetry(k1, model, sys1, inputTopic);
+        // 1. MINH
+        setAgentBubble(1, "Suy ngẫm...");
+        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại thung lũng Script Valley. Định hướng: "${ag1.goal}". Trả lời tự nhiên, ấm áp, xưng em gọi Sếp, hòa nhã với đồng đội (dưới 45 từ).`;
+        const r1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
         appendChat("Agent 1", r1, "a1");
-        setBubble(1, "");
+        setAgentBubble(1, r1);
 
         await new Promise(r => setTimeout(r, 1200));
 
-        setBubble(2, "Hưởng ứng...");
-        const sys2 = `Bạn là ${ag2.name} (${ag2.title}, Lv.${ag2.level}). Định hướng: "${ag2.goal}". Kim chỉ nam: "${ag2.philosophy}". Gọi Minh là 'anh Lead', Linh là 'bà Linh/chị Linh', Sếp là 'Sếp'. Phản hồi vui tính, thực chiến IT, tung hứng ăn ý (dưới 50 từ).`;
-        const r2 = await callGeminiWithRetry(k2, model, sys2, r1);
+        // 2. HUY
+        setAgentBubble(2, "Gõ phím...");
+        const sys2 = `Bạn là ${ag2.name} (${ag2.title}). Định hướng: "${ag2.goal}". Dân IT vui vẻ yêu thiên nhiên và code Luau, tung hứng hài hước với anh Minh (dưới 50 từ).`;
+        const r2 = await callGeminiAdvanced(k2, m2, th2, sys2, r1);
         appendChat("Agent 2", r2, "a2");
-        setBubble(2, "");
+        setAgentBubble(2, r2);
 
         await new Promise(r => setTimeout(r, 1200));
 
-        setBubble(3, "Chốt hạ...");
-        const sys3 = `Bạn là ${ag3.name} (${ag3.title}, Lv.${ag3.level}). Định hướng: "${ag3.goal}". Kim chỉ nam: "${ag3.philosophy}". Sắc sảo, duyên dáng, hay chọc Huy nhưng bảo đảm an toàn cho team. Chốt lại vấn đề gãy gọn (dưới 45 từ).`;
-        const r3 = await callGeminiWithRetry(k3, model, sys3, r2);
+        // 3. LINH
+        setAgentBubble(3, "Bắt lỗi...");
+        const sys3 = `Bạn là ${ag3.name} (${ag3.title}). Định hướng: "${ag3.goal}". Thông minh, sắc sảo, hay chọc nhẹ Huy nhưng luôn bảo đảm an toàn app (dưới 45 từ).`;
+        const r3 = await callGeminiAdvanced(k3, m3, th3, sys3, r2);
         appendChat("Agent 3", r3, "a3");
-        setBubble(3, "");
+        setAgentBubble(3, r3);
 
         addXP(25);
-        document.getElementById('meeting-topic').innerText = "Trực ca";
-
-        if(Math.random() > 0.6) {
-          ag2.memory.push(`Đàm đạo cùng team nâng cấp chất lượng.`);
-          renderIdentityList();
-          syncWithGoogleSheet();
-        }
-
       } catch(e) {
         appendChat("Hệ thống", `Lỗi kết nối: ${e.message}`, "sys");
-        document.getElementById('meeting-topic').innerText = "Tạm dừng";
       } finally {
-        setBubble(1, ""); setBubble(2, ""); setBubble(3, "");
         isProcessing = false;
         if(isFlowActive) {
-          flowTimeout = setTimeout(runNaturalFlow, Math.floor(Math.random() * 4000) + 8000);
+          flowTimeout = setTimeout(runNaturalFlow, Math.floor(Math.random() * 4000) + 9000);
         }
       }
     }
@@ -395,6 +589,7 @@
       const inp = document.getElementById('chat-input'), msg = inp.value.trim();
       if(!msg || isProcessing) return;
       appendChat("Sếp", msg, "user");
+      setAgentBubble('user', msg);
       inp.value = '';
       await executeChain(msg, false);
     }
@@ -403,15 +598,15 @@
       isFlowActive = !isFlowActive;
       const btn = document.getElementById('btn-flow');
       if(isFlowActive) {
-        btn.innerText = "🎙️ Tự trò chuyện: BẬT";
+        btn.innerText = "🎙️ Tự đàm đạo: BẬT";
         btn.classList.add('btn-active');
-        appendChat("Hệ thống", "Đã bật Dòng chảy tự nhiên! Cả ba sẽ tự trò chuyện và học hỏi lẫn nhau theo nhịp sống ngoài đời.", "sys");
+        appendChat("Hệ thống", "Đã kích hoạt cuộc sống tự nhiên tại thung lũng!", "sys");
         runNaturalFlow();
       } else {
-        btn.innerText = "🎙️ Tự trò chuyện: TẮT";
+        btn.innerText = "🎙️ Tự đàm đạo: TẮT";
         btn.classList.remove('btn-active');
         if(flowTimeout) clearTimeout(flowTimeout);
-        appendChat("Hệ thống", "Đã dừng trò chuyện tự nhiên.", "sys");
+        appendChat("Hệ thống", "Đã dừng tự đàm đạo.", "sys");
       }
     }
 
