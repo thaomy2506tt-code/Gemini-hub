@@ -3,42 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Valley - Stardew Pixel Manor</title>
+  <title>Script Valley - Stardew AI Manor Pro</title>
   <style>
-    :root { --bg:#0b0f19; --panel:#162032; --border:#2d3f5d; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; }
+    :root {
+      --bg:#070b14; --panel:#121a29; --panel-border:#24334a; --primary:#38bdf8;
+      --accent:#f59e0b; --stardew-yellow:#fde047; --text:#f8fafc; --muted:#94a3b8;
+    }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; user-select:none; }
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    header h1 { font-size:16px; color:#fde047; text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
+    header h1 { font-size:16px; color:var(--stardew-yellow); text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
     .btn-header { display:flex; gap:4px; }
     
-    .game-viewport { position:relative; width:100%; height:305px; background:#365e1b; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
+    .game-viewport { position:relative; width:100%; height:310px; background:#365e1b; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
     #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
     
-    .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(22,32,50,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:#fef08a; display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+    .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(18,26,41,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:var(--stardew-yellow); display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
     .time-text { font-size:11px; color:#38bdf8; letter-spacing:0.5px; }
     .weather-text { font-size:9.5px; color:#fef08a; }
-    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(22,32,50,0.85); border:1px solid #475569; padding:3px 8px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
+    
+    .top-left-tools { position:absolute; top:8px; left:8px; display:flex; gap:4px; }
+    .btn-sound { background:rgba(18,26,41,0.85); border:1px solid #475569; color:#fde047; font-size:10px; padding:3px 7px; border-radius:5px; cursor:pointer; }
+    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(18,26,41,0.85); border:1px solid #475569; padding:3px 8px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
+    .barn-badge { position:absolute; bottom:8px; right:8px; background:rgba(18,26,41,0.85); border:1px solid #eab308; padding:3px 8px; border-radius:4px; font-size:9.5px; color:#fde047; font-weight:bold; pointer-events:none; }
 
-    .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
+    .card { background:var(--panel); border:1px solid var(--panel-border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
-    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--border); background:#0c1322; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
+    input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--panel-border); background:#0a0f1c; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
     .btn-action { background:#16a34a; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; box-shadow:0 2px 4px rgba(0,0,0,0.4); }
-    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#25344d; border:1px solid #3c5073; color:#fff; border-radius:4px; cursor:pointer; }
+    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#22314a; border:1px solid #374b6e; color:#fff; border-radius:4px; cursor:pointer; }
     .btn-active { background:#15803d; border-color:#4ade80; }
     
-    .chat-container { height:280px; display:flex; flex-direction:column; }
-    .chat-messages { flex:1; overflow-y:auto; background:#0c1322; border:1px solid var(--border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
+    .chat-container { height:290px; display:flex; flex-direction:column; }
+    .chat-messages { flex:1; overflow-y:auto; background:#080c16; border:1px solid var(--panel-border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
-    .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; }
+    .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; display:flex; justify-content:space-between; }
     
     .msg-box { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.45; word-break:break-word; }
-    .msg-thought { font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.45); border-left:3px solid #ca8a04; padding:4px 6px; margin-bottom:5px; border-radius:3px; font-style:italic; line-height:1.35; }
+    .msg-thought { font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.5); border-left:3px solid #ca8a04; padding:4px 6px; margin-bottom:5px; border-radius:3px; font-style:italic; line-height:1.35; }
     .msg-speech { font-size:11.8px; color:#f8fafc; font-weight:500; }
+    .file-download-chip { display:inline-flex; align-items:center; gap:5px; background:#047857; color:#fff; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:bold; margin-top:6px; cursor:pointer; border:1px solid #10b981; }
 
     .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:#38bdf8; text-align:right; } .msg-user .msg-box { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
     .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:#818cf8; } .msg-a1 .msg-box { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
-    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-box { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); }
+    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-box { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); font-family:monospace; font-size:11.2px; }
     .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:#f472b6; } .msg-a3 .msg-box { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
     .msg-sys .msg-box { background:#1e293b; border:1px dashed #475569; font-size:10px; color:#fde047; text-align:center; padding:3px; }
     
@@ -47,26 +55,31 @@
 </head>
 <body>
   <header>
-    <h1>🌾 Script Valley</h1>
+    <h1>🌾 Script Valley AI Pro</h1>
     <div class="btn-header">
       <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự đàm đạo: TẮT</button>
-      <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Sao lưu</button>
+      <button class="btn-small" onclick="togglePanel('vault-modal')">📜 Kho Script</button>
+      <button class="btn-small" onclick="togglePanel('sync-modal')">☁️ Đám mây</button>
       <button class="btn-small" onclick="togglePanel('identity-modal')">🧭 Bản sắc</button>
     </div>
   </header>
 
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
+    <div class="top-left-tools">
+      <button class="btn-sound" id="btn-sound" onclick="toggleAudioEngine()">🔊 Âm thanh: BẬT</button>
+    </div>
     <div class="weather-clock-badge">
       <span class="time-text" id="live-time">16:45 • Giờ VN</span>
       <span class="weather-text" id="live-weather">☀️ Nắng ráo • 28°C</span>
     </div>
-    <div class="hint-tap">👆 Chạm vào phòng để Sếp bước tới kiểm tra</div>
+    <div class="hint-tap">👆 Chạm đất: Sếp đi • Chạm bí ngô: Thu hoạch • Hỏi cụ thể ai người đó đáp</div>
+    <div class="barn-badge" id="barn-counter">🎃 Kho: 0 Bí Ngô</div>
   </div>
 
   <div class="card chat-container">
     <div class="card-title">
-      <span>💬 Nhật ký Suy luận & Trò chuyện thực tế</span>
+      <span>💬 Phòng họp R&D (Phản hồi chọn lọc & Xuất file)</span>
       <div style="display:flex; gap:4px;">
         <button class="btn-small" style="background:#dc2626;" onclick="forceResetLock()">🔓 Mở kẹt phím</button>
         <button class="btn-small" onclick="clearChat()">Xóa chat</button>
@@ -74,54 +87,54 @@
     </div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Tâm sự đời sống hoặc giao việc cho team..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="VD: 'Huy viết script gom rác RAM', hoặc 'Linh kiểm tra giúp...'"></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
+  <div class="card" id="vault-modal" style="display:none;">
+    <div class="card-title">
+      <span>📜 Kho Script Luau (Tải về dùng ngay)</span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn-small" style="background:#2563eb;" onclick="downloadAllScripts()">📦 Tải tất cả (.lua)</button>
+        <button class="btn-small" onclick="togglePanel('vault-modal')">Đóng</button>
+      </div>
+    </div>
+    <div id="vault-list" style="max-height:230px; overflow-y:auto; font-size:11px; display:flex; flex-direction:column; gap:6px;">
+      <p style="color:var(--muted); text-align:center;">Chưa có đoạn script nào. Khi Huy viết code Luau, hệ thống sẽ tự lưu vào đây!</p>
+    </div>
+  </div>
+
   <div class="card">
-    <div class="card-title"><span>⚙️ Cấu hình AI & Chọn Model Chuẩn</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Cấu hình AI (3.5 Flash-Lite Chuẩn)</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none; font-size:11px;">
-      
-      <!-- CẤU HÌNH MINH -->
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
         <select id="m1" style="flex:2;">
-          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ)</option>
-          <option value="gemini-3.8-flash">3.8 Flash (Tiêu chuẩn)</option>
+          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ & Không Lỗi)</option>
+          <option value="gemini-3.8-flash">3.8 Flash</option>
         </select>
-        <select id="th1" style="flex:1;">
-          <option value="2048" selected>Tư duy: Nhanh</option>
-          <option value="0">Tắt tư duy</option>
-        </select>
+        <select id="th1" style="flex:1;"><option value="2048" selected>Tư duy: Nhanh</option><option value="0">Tắt tư duy</option></select>
       </div>
       <input type="password" id="key-1" placeholder="API Key 1 (Minh)">
 
-      <!-- CẤU HÌNH HUY -->
       <b style="color:#34d399;">2. Huy (Kỹ sư Code Luau):</b>
       <div style="display:flex; gap:4px;">
         <select id="m2" style="flex:2;">
-          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ)</option>
-          <option value="gemini-3.8-flash">3.8 Flash (Tiêu chuẩn)</option>
+          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ & Không Lỗi)</option>
+          <option value="gemini-3.8-flash">3.8 Flash</option>
         </select>
-        <select id="th2" style="flex:1;">
-          <option value="2048" selected>Tư duy: Nhanh</option>
-          <option value="0">Tắt tư duy</option>
-        </select>
+        <select id="th2" style="flex:1;"><option value="2048" selected>Tư duy: Nhanh</option><option value="0">Tắt tư duy</option></select>
       </div>
       <input type="password" id="key-2" placeholder="API Key 2 (Huy)">
 
-      <!-- CẤU HÌNH LINH -->
       <b style="color:#f472b6;">3. Linh (QA Kiểm duyệt):</b>
       <div style="display:flex; gap:4px;">
         <select id="m3" style="flex:2;">
-          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ)</option>
-          <option value="gemini-3.8-flash">3.8 Flash (Tiêu chuẩn)</option>
+          <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Chuẩn Google, Rất Nhẹ & Không Lỗi)</option>
+          <option value="gemini-3.8-flash">3.8 Flash</option>
         </select>
-        <select id="th3" style="flex:1;">
-          <option value="2048" selected>Tư duy: Nhanh</option>
-          <option value="0">Tắt tư duy</option>
-        </select>
+        <select id="th3" style="flex:1;"><option value="2048" selected>Tư duy: Nhanh</option><option value="0">Tắt tư duy</option></select>
       </div>
       <input type="password" id="key-3" placeholder="API Key 3 (Linh)">
 
@@ -134,7 +147,7 @@
   </div>
 
   <div class="card" id="sync-modal" style="display:none;">
-    <div class="card-title"><span>☁️ Đồng bộ Đa thiết bị</span><button class="btn-small" onclick="togglePanel('sync-modal')">Đóng</button></div>
+    <div class="card-title"><span>☁️ Đồng bộ Google Sheets & Đa thiết bị</span><button class="btn-small" onclick="togglePanel('sync-modal')">Đóng</button></div>
     <div style="display:flex; gap:5px; margin-bottom:6px;">
       <button class="btn-small" style="flex:1; background:#16a34a;" onclick="exportDataCode()">📦 Sao chép mã sao lưu</button>
       <button class="btn-small" style="flex:1; background:#0284c7; color:#fff;" onclick="importDataCode()">📥 Khôi phục từ mã</button>
@@ -152,11 +165,13 @@
 
     const DEFAULT_STUDIO = {
       agents: [
-        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp.", memory: ["Gia nhập dinh thự nông trại Script Valley."] },
-        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, goal: "Cao thủ tối ưu mã nguồn Luau & Cloud Phone.", philosophy: "Hài hước, thực chiến, diệt trừ rác RAM.", memory: ["Cam kết dọn sạch bộ nhớ không bao giờ văng game."] },
-        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, goal: "Chuyên gia Thẩm định an toàn phần mềm.", philosophy: "Sắc sảo, bắt lỗi tinh tế, thích trêu Huy nhưng rất chu đáo.", memory: ["Bọc pcall chống sập luồng cho hệ thống."] }
+        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, energy: 100, mood: "Tập trung", goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp.", memory: ["Điều phối sinh hoạt và dự án tại thung lũng."] },
+        { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, energy: 100, mood: "Phấn chấn", goal: "Cao thủ tối ưu mã nguồn Luau & Cloud Phone.", philosophy: "Hài hước, thực chiến, diệt trừ rác RAM.", memory: ["Tối ưu dọn sạch rác bộ nhớ không văng game."] },
+        { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, energy: 100, mood: "Sắc bén", goal: "Chuyên gia Thẩm định an toàn phần mềm.", philosophy: "Sắc sảo, bắt lỗi tinh tế, thích trêu Huy nhưng rất chu đáo.", memory: ["Bọc pcall chống sập luồng cho hệ thống."] }
       ],
-      chatHistory: []
+      chatHistory: [],
+      vaultScripts: [],
+      pumpkinsHarvested: 0
     };
 
     let studioData = DEFAULT_STUDIO;
@@ -164,7 +179,8 @@
     let isProcessing = false;
     let flowTimeout = null;
     let hardWatchdog = null;
-        const canvas = document.getElementById('game-canvas');
+    let soundEnabled = true;
+    const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     const W = 480, H = 270;
 
@@ -174,36 +190,8 @@
     let tapTarget = null;
     let currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
     let weatherParticles = [];
-
-    async function updateVietnamWeather() {
-      try {
-        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=16.0544&longitude=108.2022&current_weather=true");
-        const d = await res.json();
-        if (d && d.current_weather) {
-          const code = d.current_weather.weathercode;
-          const temp = Math.round(d.current_weather.temperature);
-          if (code >= 51 && code <= 99) currentWeather = { type: "rain", temp: temp, text: `🌧️ Mưa rào • ${temp}°C` };
-          else if (code >= 1 && code <= 3) currentWeather = { type: "cloudy", temp: temp, text: `⛅ Nhiều mây • ${temp}°C` };
-          else currentWeather = { type: "clear", temp: temp, text: `☀️ Nắng đẹp • ${temp}°C` };
-        }
-      } catch(e) {
-        currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
-      }
-      initWeatherParticles();
-    }
-
-    function initWeatherParticles() {
-      weatherParticles = [];
-      const count = currentWeather.type === "rain" ? 70 : 18;
-      for (let i = 0; i < count; i++) {
-        weatherParticles.push({
-          x: Math.random() * W, y: Math.random() * H,
-          speed: currentWeather.type === "rain" ? (Math.random() * 4 + 5) : (Math.random() * 0.8 + 0.4),
-          len: currentWeather.type === "rain" ? (Math.random() * 5 + 6) : (Math.random() * 3 + 2),
-          sway: Math.random() * Math.PI * 2
-        });
-      }
-    }
+    let fireAnimFrame = 0;
+    let floatingTexts = [];
 
     const SPOTS = {
       work:    [{x: 48, y: 72}, {x: 88, y: 72}, {x: 128, y: 72}],
@@ -212,7 +200,8 @@
       kitchen: [{x: 58, y: 195}, {x: 95, y: 195}, {x: 125, y: 175}],
       toilet:  [{x: 175, y: 195}, {x: 205, y: 195}],
       dorm:    [{x: 265, y: 188}, {x: 300, y: 188}, {x: 335, y: 188}],
-      farm:    [{x: 395, y: 85}, {x: 435, y: 110}, {x: 405, y: 195}, {x: 445, y: 225}]
+      farm:    [{x: 395, y: 85}, {x: 435, y: 110}, {x: 405, y: 195}, {x: 445, y: 225}],
+      fireplace:[{x: 170, y: 45}]
     };
 
     const CHARACTERS = {
@@ -222,11 +211,28 @@
       a3:   { name: "Linh", x: 128, y: 72,  tx: 128, ty: 72,  shirt: "#db2777", pants: "#831843", hair: "#f472b6", hat: "ribbon",bubble: "", bTimer: 0, state: "work", frame: 0, wait: 140 }
     };
 
+    const PETS = [
+      { type: "rabbit", name: "Thỏ Trắng", x: 410, y: 135, tx: 410, ty: 135, wait: 40, frame: 0, color: "#ffffff", eye: "#ef4444" },
+      { type: "chicken", name: "Gà Nâu",   x: 440, y: 145, tx: 440, ty: 145, wait: 60, frame: 0, color: "#d97706", beak: "#f59e0b" }
+    ];
+
+    let pumpkins = [
+      {x: 390, y: 55, growth: 100, watered: true},
+      {x: 415, y: 55, growth: 100, watered: true},
+      {x: 440, y: 55, growth: 80,  watered: false},
+      {x: 390, y: 75, growth: 100, watered: true},
+      {x: 415, y: 75, growth: 90,  watered: false},
+      {x: 440, y: 75, growth: 100, watered: true},
+      {x: 390, y: 95, growth: 70,  watered: false},
+      {x: 415, y: 95, growth: 100, watered: true},
+      {x: 440, y: 95, growth: 100, watered: true}
+    ];
+
     function getRoomNameByCoord(x, y) {
       if (x > 360) return "Vườn Bí Ngô Ngoài Trời";
       if (y < 125) {
         if (x < 140) return "Phòng Làm Việc R&D";
-        if (x < 265) return "Phòng Họp Bàn Tròn";
+        if (x < 265) return "Phòng Họp & Lò Sưởi";
         return "Phòng Game Arcade";
       } else {
         if (x < 145) return "Khu Bếp & Nhà Ăn";
@@ -241,11 +247,44 @@
       const scaleY = canvas.height / rect.height;
       const tx = Math.max(20, Math.min(W - 20, (e.clientX - rect.left) * scaleX));
       const ty = Math.max(30, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
-      CHARACTERS.user.tx = tx; CHARACTERS.user.ty = ty;
-      CHARACTERS.user.bubble = "Đi kiểm tra phòng!";
-      CHARACTERS.user.bTimer = 60;
-      tapTarget = { x: tx, y: ty, r: 12, alpha: 1.0 };
+
+      let clickedPumpkin = false;
+      if (tx >= 375 && tx <= 470 && ty >= 42 && ty <= 110) {
+        pumpkins.forEach(p => {
+          let dist = Math.hypot(p.x - tx, p.y - ty);
+          if (dist < 14) {
+            clickedPumpkin = true;
+            if (p.growth >= 100) {
+              p.growth = 20;
+              p.watered = false;
+              studioData.pumpkinsHarvested = (studioData.pumpkinsHarvested || 0) + 1;
+              document.getElementById('barn-counter').innerText = `🎃 Kho: ${studioData.pumpkinsHarvested} Bí Ngô`;
+              addFloatingText("+1 Bí Ngô 🎃", p.x, p.y, "#fde047");
+              playChiptune("coin");
+              addXP(10);
+            } else {
+              p.watered = true;
+              p.growth = Math.min(100, p.growth + 25);
+              addFloatingText("Tưới nước 💧", p.x, p.y, "#38bdf8");
+              playChiptune("step");
+            }
+          }
+        });
+      }
+
+      if (!clickedPumpkin) {
+        CHARACTERS.user.tx = tx;
+        CHARACTERS.user.ty = ty;
+        CHARACTERS.user.bubble = "Đi kiểm tra!";
+        CHARACTERS.user.bTimer = 60;
+        tapTarget = { x: tx, y: ty, r: 12, alpha: 1.0 };
+        playChiptune("step");
+      }
     });
+
+    function addFloatingText(text, x, y, color) {
+      floatingTexts.push({ text: text, x: x, y: y, alpha: 1.0, color: color });
+    }
 
     function drawWorld(ctx) {
       ctx.fillStyle = "#4a7c29"; ctx.fillRect(360, 0, 120, H);
@@ -259,16 +298,26 @@
       ctx.fillStyle = "#271202";
       for(let y=44; y<=108; y+=13) { ctx.fillRect(377, y, 91, 2); }
 
-      for(let x=388; x<=458; x+=22) {
-        for(let y=54; y<=100; y+=16) {
-          ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.beginPath(); ctx.ellipse(x, y+6, 8, 3.5, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = "#bf360c"; ctx.beginPath(); ctx.arc(x, y, 7.5, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = "#e65100"; ctx.beginPath(); ctx.arc(x-1, y-1, 6.5, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = "#ff9800"; ctx.beginPath(); ctx.arc(x-2, y-2, 4.5, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = "#1b5e20"; ctx.fillRect(x-1, y-9, 2.5, 4);
-          ctx.fillStyle = "#4caf50"; ctx.fillRect(x+1, y-8, 3, 2);
+      pumpkins.forEach(p => {
+        if (p.watered) {
+          ctx.fillStyle = "#1e1005";
+          ctx.fillRect(p.x - 9, p.y - 7, 18, 14);
         }
-      }
+        ctx.fillStyle = "rgba(0,0,0,0.45)";
+        ctx.beginPath(); ctx.ellipse(p.x, p.y + 6, 8, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+
+        if (p.growth >= 100) {
+          ctx.fillStyle = "#bf360c"; ctx.beginPath(); ctx.arc(p.x, p.y, 7.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#e65100"; ctx.beginPath(); ctx.arc(p.x - 1, p.y - 1, 6.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#ff9800"; ctx.beginPath(); ctx.arc(p.x - 2, p.y - 2, 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#1b5e20"; ctx.fillRect(p.x - 1, p.y - 9, 2.5, 4);
+          ctx.fillStyle = "#4caf50"; ctx.fillRect(p.x + 1, p.y - 8, 3, 2);
+        } else {
+          ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(p.x, p.y + 1, 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#4caf50"; ctx.beginPath(); ctx.arc(p.x - 1, p.y, 3.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#81c784"; ctx.fillRect(p.x - 1, p.y - 5, 2, 4);
+        }
+      });
 
       ctx.fillStyle = "#3e2723";
       for(let y=18; y<=240; y+=24) { ctx.fillRect(364, y, 6, 20); }
@@ -284,19 +333,20 @@
       ctx.fillStyle = "#8d6e63"; ctx.fillRect(391, 117, 44, 8);
       ctx.fillStyle = "#3e2723"; ctx.fillRect(395, 125, 4, 10); ctx.fillRect(423, 125, 4, 10);
 
+      let treeSway = Math.sin(Date.now() / 800) * 1.5;
       ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.beginPath(); ctx.ellipse(436, 245, 19, 7, 0, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = "#3e2723"; ctx.fillRect(431, 204, 9, 36);
       ctx.fillStyle = "#6d4c41"; ctx.fillRect(433, 204, 5, 36);
-      ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(435, 195, 25, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#2e7d32"; ctx.beginPath(); ctx.arc(432, 190, 19, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#43a047"; ctx.beginPath(); ctx.arc(430, 184, 13, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(435 + treeSway, 195, 25, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#2e7d32"; ctx.beginPath(); ctx.arc(432 + treeSway, 190, 19, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#43a047"; ctx.beginPath(); ctx.arc(430 + treeSway, 184, 13, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = "#b71c1c";
       [[424, 190], [443, 185], [432, 205], [446, 200]].forEach(p => {
-        ctx.beginPath(); ctx.arc(p[0], p[1], 3.8, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "#ef5350"; ctx.fillRect(p[0]-1, p[1]-1, 1.5, 1.5);
+        ctx.beginPath(); ctx.arc(p[0] + treeSway, p[1], 3.8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#ef5350"; ctx.fillRect(p[0] + treeSway - 1, p[1] - 1, 1.5, 1.5);
         ctx.fillStyle = "#b71c1c";
       });
-
+      // 2. NỘI THẤT DINH THỰ CHÍNH
       ctx.fillStyle = "#271202"; ctx.fillRect(10, 10, 345, 250);
       ctx.fillStyle = "#4e2608"; ctx.fillRect(12, 12, 341, 246);
       ctx.fillStyle = "#271202"; ctx.fillRect(8, 5, 349, 14);
@@ -341,12 +391,21 @@
       });
       drawRoomLabel(ctx, "💻 STUDIO R&D", 35, 30);
 
-      ctx.fillStyle = "#271202"; ctx.fillRect(169, 49, 70, 40);
-      ctx.fillStyle = "#78350f"; ctx.fillRect(170, 50, 68, 38);
-      ctx.fillStyle = "#fde047"; ctx.fillRect(178, 56, 10, 8);
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(205, 54, 14, 10);
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(207, 56, 10, 6);
-      drawRoomLabel(ctx, "📋 BÀN TRÒN", 175, 30);
+      ctx.fillStyle = "#271202"; ctx.fillRect(184, 52, 60, 36);
+      ctx.fillStyle = "#78350f"; ctx.fillRect(185, 53, 58, 34);
+      ctx.fillStyle = "#fde047"; ctx.fillRect(190, 58, 10, 8);
+      ctx.fillStyle = "#f8fafc"; ctx.fillRect(215, 56, 14, 10);
+      ctx.fillStyle = "#38bdf8"; ctx.fillRect(217, 58, 10, 6);
+      
+      ctx.fillStyle = "#1e293b"; ctx.fillRect(156, 37, 24, 25);
+      ctx.fillStyle = "#475569"; ctx.fillRect(158, 39, 20, 21);
+      ctx.fillStyle = "#0f172a"; ctx.fillRect(160, 45, 16, 15);
+      fireAnimFrame = (fireAnimFrame + 0.15) % 3;
+      let flameH = Math.sin(Date.now() / 150) * 2;
+      ctx.fillStyle = "#dc2626"; ctx.beginPath(); ctx.arc(168, 55, 5 + flameH, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#ea580c"; ctx.beginPath(); ctx.arc(168, 54, 3.5 + flameH, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#fde047"; ctx.beginPath(); ctx.arc(168, 53, 2, 0, Math.PI*2); ctx.fill();
+      drawRoomLabel(ctx, "📋 BÀN TRÒN & LÒ SƯỞI", 175, 30);
 
       ctx.fillStyle = "#020617"; ctx.fillRect(277, 41, 24, 34);
       ctx.fillStyle = "#1e1b4b"; ctx.fillRect(278, 42, 22, 32);
@@ -388,9 +447,60 @@
     }
 
     function drawRoomLabel(ctx, text, x, y) {
-      ctx.font = "bold 8.5px sans-serif";
+      ctx.font = "bold 8px sans-serif";
       ctx.fillStyle = "#000000"; ctx.fillText(text, x+1, y+1);
       ctx.fillStyle = "#fde047"; ctx.fillText(text, x, y);
+    }
+
+    function updateAndDrawPets(ctx) {
+      PETS.forEach(p => {
+        let dx = p.tx - p.x, dy = p.ty - p.y;
+        let dist = Math.hypot(dx, dy);
+        let isMoving = dist > 1.5;
+
+        if (isMoving) {
+          p.x += (dx / dist) * 1.2;
+          p.y += (dy / dist) * 1.2;
+          p.frame = (p.frame + 0.15) % 4;
+        } else {
+          p.frame = 0;
+          p.wait = (p.wait || 0) - 1;
+          if (p.wait <= 0) {
+            p.tx = 385 + Math.random() * 70;
+            p.ty = 125 + Math.random() * 95;
+            p.wait = Math.floor(Math.random() * 150) + 90;
+          }
+        }
+
+        let x = Math.round(p.x), y = Math.round(p.y);
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.beginPath(); ctx.ellipse(x, y + 4, 5, 2.5, 0, 0, Math.PI*2); ctx.fill();
+
+        if (p.type === "rabbit") {
+          let hop = isMoving ? -Math.abs(Math.sin(p.frame * Math.PI)) * 4 : 0;
+          ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.ellipse(x, y + hop, 5, 4, 0, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(x + 3, y - 2 + hop, 3.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillRect(x + 1, y - 7 + hop, 1.8, 5);
+          ctx.fillRect(x + 3.5, y - 7 + hop, 1.8, 5);
+          ctx.fillStyle = "#fbcfe8";
+          ctx.fillRect(x + 1.2, y - 6 + hop, 1, 3.5);
+          ctx.fillRect(x + 3.7, y - 6 + hop, 1, 3.5);
+          ctx.fillStyle = p.eye;
+          ctx.fillRect(x + 4.5, y - 2 + hop, 1.2, 1.2);
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath(); ctx.arc(x - 5, y + 1 + hop, 2, 0, Math.PI*2); ctx.fill();
+        } else if (p.type === "chicken") {
+          let peck = !isMoving && Math.sin(Date.now() / 250) > 0.5 ? 2 : 0;
+          ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.ellipse(x, y, 4.5, 4, 0, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(x + 3, y - 2 + peck, 3, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#dc2626";
+          ctx.fillRect(x + 2.5, y - 5 + peck, 2, 2);
+          ctx.fillStyle = p.beak;
+          ctx.fillRect(x + 5.5, y - 2 + peck, 2, 1.5);
+        }
+      });
     }
 
     function drawStardewCharacter(ctx, c, isMoving) {
@@ -447,61 +557,7 @@
       ctx.beginPath(); ctx.arc(x - 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(x + 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x - 4.5, y - 9.5 + bob, 1.5, 1.5);
-      ctx.fillRect(x + 3.0, y - 9.5 + bob, 1.5, 1.5);
-
-      ctx.fillStyle = "rgba(244, 114, 182, 0.75)";
-      ctx.beginPath(); ctx.arc(x - 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
-
-      if (c.hat === "crown") {
-        ctx.fillStyle = "#eab308";
-        ctx.beginPath();
-        ctx.moveTo(x - 7, y - 17 + bob); ctx.lineTo(x - 5, y - 22 + bob); ctx.lineTo(x, y - 18 + bob);
-        ctx.lineTo(x + 5, y - 22 + bob); ctx.lineTo(x + 7, y - 17 + bob);
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#dc2626"; ctx.fillRect(x - 1, y - 19 + bob, 2, 2);
-      } else if (c.hat === "cap") {
-        ctx.fillStyle = "#047857";
-        ctx.beginPath(); ctx.arc(x, y - 14 + bob, 8.5, Math.PI, Math.PI*2); ctx.fill();
-        ctx.fillRect(x - 10, y - 15 + bob, 7, 3);
-      } else if (c.hat === "ribbon") {
-        ctx.fillStyle = "#f43f5e";
-        ctx.beginPath(); ctx.arc(x + 5, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(x + 9, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "#fff"; ctx.fillRect(x + 6.5, y - 18 + bob, 1.5, 2);
-      } else if (c.hat === "glasses") {
-        ctx.strokeStyle = "#ca8a04"; ctx.lineWidth = 1.2;
-        ctx.strokeRect(x - 6, y - 10.5 + bob, 4.5, 4);
-        ctx.strokeRect(x + 1.5, y - 10.5 + bob, 4.5, 4);
-        ctx.beginPath(); ctx.moveTo(x - 1.5, y - 8.5 + bob); ctx.lineTo(x + 1.5, y - 8.5 + bob); ctx.stroke();
-      }
-
-      ctx.font = "bold 8.5px sans-serif";
-      ctx.fillStyle = "#000000"; ctx.textAlign = "center";
-      ctx.fillText(c.name, x + 1, y + 25);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText(c.name, x, y + 24);
-
-      if (c.bubble && c.bTimer > 0) {
-        c.bTimer--;
-        let bw = Math.min(130, ctx.measureText(c.bubble).width + 14);
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.beginPath(); ctx.roundRect(x - bw/2 + 1, y - 35 + bob + 1, bw, 16, 5); ctx.fill();
-        ctx.fillStyle = "#0f172a";
-        ctx.beginPath(); ctx.roundRect(x - bw/2, y - 36 + bob, bw, 16, 5); ctx.fill();
-        ctx.strokeStyle = "#fde047"; ctx.lineWidth = 1.5; ctx.stroke();
-        ctx.fillStyle = "#fde047";
-        ctx.beginPath();
-        ctx.moveTo(x - 3, y - 20 + bob); ctx.lineTo(x + 3, y - 20 + bob); ctx.lineTo(x, y - 16 + bob);
-        ctx.fill();
-
-        ctx.font = "bold 8px sans-serif"; ctx.fillStyle = "#fef08a";
-        let t = c.bubble.length > 22 ? c.bubble.substring(0, 20) + '..' : c.bubble;
-        ctx.fillText(t, x, y - 25 + bob);
-      }
-    }
-
+      ctx.fillRect(x - 4.5, y
     function updateAndDrawCharacters(ctx) {
       let isWorkingTime = isProcessing;
 
@@ -533,7 +589,7 @@
                 c.tx = p.x; c.ty = p.y; c.state = "work";
                 c.wait = 200;
               } else {
-                let choices = ["arcade", "kitchen", "farm", "dorm", "toilet", "meeting"];
+                let choices = ["arcade", "kitchen", "farm", "dorm", "toilet", "meeting", "fireplace"];
                 let chosen = choices[Math.floor(Math.random() * choices.length)];
                 let list = SPOTS[chosen];
                 let spot = list[Math.floor(Math.random() * list.length)];
@@ -542,10 +598,11 @@
 
                 if(chosen === "arcade") c.bubble = "Làm ván game đã! 🎮";
                 else if(chosen === "kitchen") c.bubble = "Làm bát súp bí ngô 🥣";
-                else if(chosen === "farm") c.bubble = "Ra vườn ngắm bí ngô 🌾";
+                else if(chosen === "farm") c.bubble = "Ra vườn ngắm thỏ và bí ngô 🌾";
                 else if(chosen === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
                 else if(chosen === "toilet") c.bubble = "Rửa mặt cho tỉnh 🚽";
                 else if(chosen === "meeting") c.bubble = "Xem lại sổ tay 📋";
+                else if(chosen === "fireplace") c.bubble = "Sưởi ấm lò sưởi 🔥";
                 c.bTimer = 90;
               }
             }
@@ -554,6 +611,20 @@
 
         drawStardewCharacter(ctx, c, isMoving);
       });
+
+      updateAndDrawPets(ctx);
+
+      for(let i = floatingTexts.length - 1; i >= 0; i--) {
+        let f = floatingTexts[i];
+        ctx.font = "bold 9.5px sans-serif";
+        ctx.fillStyle = f.color;
+        ctx.globalAlpha = Math.max(0, f.alpha);
+        ctx.fillText(f.text, f.x, f.y);
+        ctx.globalAlpha = 1.0;
+        f.y -= 0.6;
+        f.alpha -= 0.02;
+        if (f.alpha <= 0) floatingTexts.splice(i, 1);
+      }
     }
 
     function drawLightingAndWeather(ctx) {
@@ -577,7 +648,7 @@
       ctx.fillStyle = overlay; ctx.fillRect(0, 0, W, H);
 
       if (isNight) {
-        [ {x: 88, y: 72}, {x: 205, y: 75}, {x: 310, y: 70}, {x: 85, y: 195}, {x: 300, y: 188} ].forEach(l => {
+        [ {x: 88, y: 72}, {x: 205, y: 75}, {x: 310, y: 70}, {x: 85, y: 195}, {x: 300, y: 188}, {x: 168, y: 55} ].forEach(l => {
           let g = ctx.createRadialGradient(l.x, l.y, 4, l.x, l.y, 55);
           g.addColorStop(0, "rgba(253, 224, 71, 0.44)");
           g.addColorStop(1, "transparent");
@@ -594,10 +665,12 @@
           if (p.y > H) { p.y = -10; p.x = Math.random() * W; }
         });
       } else {
-        ctx.fillStyle = "rgba(254, 240, 138, 0.45)";
+        ctx.fillStyle = isNight ? "rgba(253, 224, 71, 0.7)" : "rgba(254, 240, 138, 0.45)";
         weatherParticles.forEach(p => {
           p.sway += 0.02;
-          ctx.beginPath(); ctx.arc(p.x + Math.sin(p.sway) * 4, p.y, 1.5, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath();
+          ctx.arc(p.x + Math.sin(p.sway) * 4, p.y, isNight ? 1.8 : 1.5, 0, Math.PI * 2);
+          ctx.fill();
           p.y += p.speed;
           if (p.y > H) { p.y = -5; p.x = Math.random() * W; }
         });
@@ -611,7 +684,125 @@
       requestAnimationFrame(gameLoop);
     }
 
-    // TỰ ĐỘNG CHUYỂN TOÀN BỘ CACHE CŨ SANG 3.5 FLASH-LITE
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playChiptune(type) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === "coin") {
+          osc.type = "square";
+          osc.frequency.setValueAtTime(987.77, now);
+          osc.frequency.setValueAtTime(1318.51, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now); osc.stop(now + 0.35);
+        } else if (type === "step") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.exponentialRampToValueAtTime(40, now + 0.06);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.start(now); osc.stop(now + 0.06);
+        } else if (type === "msg") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.09);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now); osc.stop(now + 0.3);
+        }
+      } catch(e) {}
+    }
+
+    function toggleAudioEngine() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('btn-sound').innerText = soundEnabled ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
+    }
+
+    function downloadLuaFile(code, filename) {
+      try {
+        const cleanName = filename || `script_${Date.now()}.lua`;
+        const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = cleanName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        playChiptune("coin");
+      } catch(e) {
+        alert("Lỗi tải file: " + e.message);
+      }
+    }
+
+    function downloadAllScripts() {
+      if (!studioData.vaultScripts || studioData.vaultScripts.length === 0) {
+        alert("Chưa có đoạn script nào trong kho để tải!");
+        return;
+      }
+      let fullContent = "-- ==========================================\n" +
+                          "-- TỔNG HỢP SCRIPT SCRIPT VALLEY AI\n" +
+                          `-- Xuất ngày: ${new Date().toLocaleString('vi-VN')}\n` +
+                          "-- ==========================================\n\n";
+      studioData.vaultScripts.forEach((s, idx) => {
+        fullContent += `-- [Mục ${idx + 1}]: ${s.title} (${s.time})\n${s.code}\n\n------------------------------------------\n\n`;
+      });
+      downloadLuaFile(fullContent, `all_scripts_${Date.now()}.lua`);
+    }
+
+    function saveToVault(title, code) {
+      if (!studioData.vaultScripts) studioData.vaultScripts = [];
+      studioData.vaultScripts.unshift({ title: title, code: code, time: new Date().toLocaleTimeString('vi-VN') });
+      if (studioData.vaultScripts.length > 20) studioData.vaultScripts.pop();
+      renderVaultList();
+      syncWithGoogleSheet();
+    }
+
+    function renderVaultList() {
+      const el = document.getElementById('vault-list');
+      if (!el) return;
+      if (!studioData.vaultScripts || studioData.vaultScripts.length === 0) {
+        el.innerHTML = '<p style="color:var(--muted); text-align:center;">Chưa có đoạn script nào. Khi Huy viết code Luau, hệ thống sẽ tự lưu vào đây!</p>';
+        return;
+      }
+      el.innerHTML = studioData.vaultScripts.map((s, idx) => `
+        <div style="background:#090d16; border:1px solid #1e293b; border-radius:6px; padding:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <b style="color:var(--stardew-yellow);">${s.title} (${s.time})</b>
+            <div style="display:flex; gap:4px;">
+              <button class="btn-small" style="background:#16a34a;" onclick="copyScriptCode(${idx})">📋 Sao chép</button>
+              <button class="btn-small" style="background:#0284c7;" onclick="downloadVaultItem(${idx})">📥 Tải .lua</button>
+            </div>
+          </div>
+          <pre style="background:#000; color:#38bdf8; padding:5px; border-radius:4px; max-height:80px; overflow-x:auto; font-size:10px;">${escapeHtml(s.code)}</pre>
+        </div>
+      `).join('');
+    }
+
+    function downloadVaultItem(idx) {
+      const item = studioData.vaultScripts[idx];
+      if (item && item.code) downloadLuaFile(item.code, `script_${idx + 1}.lua`);
+    }
+
+    function copyScriptCode(idx) {
+      const item = studioData.vaultScripts[idx];
+      if (item && item.code) {
+        navigator.clipboard.writeText(item.code).then(() => alert("Đã sao chép đoạn mã Luau!")).catch(() => prompt("Mã Luau:", item.code));
+      }
+    }
     window.onload = async () => {
       resizeCanvas();
       initWeatherParticles();
@@ -627,7 +818,6 @@
       document.getElementById('gas-url').value = PERMANENT_GAS_URL;
       localStorage.setItem('gas_url', PERMANENT_GAS_URL);
 
-      // Tự động nâng cấp cache nếu dính bản 2.5 đã khai tử
       ['m1', 'm2', 'm3'].forEach(id => {
         let val = localStorage.getItem(id);
         if (!val || val.includes('2.5') || val.includes('3.1')) {
@@ -638,11 +828,48 @@
       });
 
       const saved = localStorage.getItem('studio_data_v2');
-      if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
-      renderChatHistory(); renderIdentityList();
+      if (saved) {
+        try { 
+          studioData = JSON.parse(saved);
+          if (studioData.pumpkinsHarvested) {
+            document.getElementById('barn-counter').innerText = `🎃 Kho: ${studioData.pumpkinsHarvested} Bí Ngô`;
+          }
+        } catch(e){}
+      }
+      renderChatHistory(); renderIdentityList(); renderVaultList();
 
       await loadFromGoogleSheet(false);
     };
+
+    async function updateVietnamWeather() {
+      try {
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=16.0544&longitude=108.2022&current_weather=true");
+        const d = await res.json();
+        if (d && d.current_weather) {
+          const code = d.current_weather.weathercode;
+          const temp = Math.round(d.current_weather.temperature);
+          if (code >= 51 && code <= 99) currentWeather = { type: "rain", temp: temp, text: `🌧️ Mưa rào • ${temp}°C` };
+          else if (code >= 1 && code <= 3) currentWeather = { type: "cloudy", temp: temp, text: `⛅ Nhiều mây • ${temp}°C` };
+          else currentWeather = { type: "clear", temp: temp, text: `☀️ Nắng đẹp • ${temp}°C` };
+        }
+      } catch(e) {
+        currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
+      }
+      initWeatherParticles();
+    }
+
+    function initWeatherParticles() {
+      weatherParticles = [];
+      const count = currentWeather.type === "rain" ? 70 : 18;
+      for (let i = 0; i < count; i++) {
+        weatherParticles.push({
+          x: Math.random() * W, y: Math.random() * H,
+          speed: currentWeather.type === "rain" ? (Math.random() * 4 + 5) : (Math.random() * 0.8 + 0.4),
+          len: currentWeather.type === "rain" ? (Math.random() * 5 + 6) : (Math.random() * 3 + 2),
+          sway: Math.random() * Math.PI * 2
+        });
+      }
+    }
 
     function forceResetLock() {
       isProcessing = false;
@@ -656,10 +883,14 @@
     }
 
     function parseAiThoughtAndSpeech(raw) {
-      if (!raw) return { thought: "", speech: "..." };
+      if (!raw) return { thought: "", speech: "" };
       let t = raw.trim();
-      let thought = "", speech = "";
 
+      if (t.includes("[IM LẶNG]") || t.includes("IM LẶNG") || t.length < 3) {
+        return { thought: "Thấy không cần thiết xen vào, giữ im lặng.", speech: "" };
+      }
+
+      let thought = "", speech = "";
       if (t.includes("[SUY LUẬN]:") || t.includes("[SUY NGHĨ]:")) {
         let parts = t.split(/\[LỜI NÓI\]:/i);
         let tPart = parts[0].replace(/\[SUY LUẬN\]:|\[SUY NGHĨ\]:/gi, '').trim();
@@ -669,10 +900,24 @@
       } else {
         speech = t;
       }
+
+      if (speech.includes("[IM LẶNG]")) {
+        return { thought: thought, speech: "" };
+      }
+
+      if (speech.includes("```lua") || speech.includes("```luau") || speech.includes("```")) {
+        let matches = speech.match(/```(?:lua|luau)?([\s\S]*?)```/);
+        if (matches && matches[1]) {
+          saveToVault("Script Tối Ưu", matches[1].trim());
+        }
+      }
+
       return { thought: thought, speech: speech };
     }
 
     function appendChatMessage(sender, thought, speech, type) {
+      if (!speech || speech.trim() === "" || speech.includes("[IM LẶNG]")) return;
+
       const feed = document.getElementById('chat-feed');
       const row = document.createElement('div');
       row.className = `msg-row msg-${type}`;
@@ -686,8 +931,19 @@
       let thoughtHtml = thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(thought)}</div>` : '';
       let speechHtml = `<div class="msg-speech">${escapeHtml(speech)}</div>`;
 
-      row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-box">${thoughtHtml}${speechHtml}</div>`;
+      let downloadButtonHtml = '';
+      if (speech.includes("```")) {
+        let codeMatch = speech.match(/```(?:lua|luau)?([\s\S]*?)```/);
+        if (codeMatch && codeMatch[1]) {
+          const encodedCode = encodeURIComponent(codeMatch[1].trim());
+          downloadButtonHtml = `<div style="margin-top:5px;"><button class="file-download-chip" onclick="downloadLuaFile(decodeURIComponent('${encodedCode}'), 'script.lua')">📥 Tải tệp script.lua về máy</button></div>`;
+        }
+      }
+
+      row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-box">${thoughtHtml}${speechHtml}${downloadButtonHtml}</div>`;
       feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
+
+      playChiptune("msg");
 
       studioData.chatHistory.push({ sender: label, thought: thought, text: speech, type: type });
       if (studioData.chatHistory.length > 50) studioData.chatHistory.shift();
@@ -697,23 +953,24 @@
     function renderChatHistory() {
       const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
       if (!studioData.chatHistory || studioData.chatHistory.length === 0) { 
-        appendChatMessage("Hệ thống", "", "Chào mừng Sếp tới dinh thự Script Valley AI!", "sys"); 
+        appendChatMessage("Hệ thống", "", "Chào mừng Sếp tới dinh thự nông trại Script Valley AI!", "sys"); 
         return; 
       }
       studioData.chatHistory.forEach(i => {
+        if (!i.text) return;
         const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
         let thoughtHtml = i.thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(i.thought)}</div>` : '';
         let speechHtml = `<div class="msg-speech">${escapeHtml(i.text)}</div>`;
-        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-box">${thoughtHtml}${speechHtml}</div>`;
-        feed.appendChild(row);
-      });
-      feed.scrollTop = feed.scrollHeight;
-    }
-
-    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
-
-    function setAgentBubble(id, text) {
-      let key = id === 'user' ? 'user' : `a${id}`;
+        
+        let downloadButtonHtml = '';
+        if (i.text.includes("```")) {
+          let codeMatch = i.text.match(/```(?:lua|luau)?([\s\S]*?)```/);
+          if (codeMatch && codeMatch[1]) {
+            const encodedCode = encodeURIComponent(codeMatch[1].trim());
+            downloadButtonHtml = `<div style="margin-top:5px;"><button class="file-download-chip" onclick="downloadLuaFile(decodeURIComponent('${encodedCode}'), 'script.lua')">📥 Tải tệp script.lua về máy</button></div>`;
+          }
+        }
+        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-box">${thoughtHtml}${speechHtml}${downloadButtonHtml}</div>`; feed.appendChild(row); }); feed.scrollTop = feed.scrollHeight; }  function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }  function setAgentBubble(id, text) { if (!text \vert{}\vert{} text.includes("[IM LẶNG]")) return; let key = id === 'user' ? 'user' : `a${id}`;
       if (CHARACTERS[key]) {
         CHARACTERS[key].bubble = text;
         CHARACTERS[key].bTimer = 220;
@@ -739,7 +996,7 @@
     function exportDataCode() {
       const fullPackage = { studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3'), gas: PERMANENT_GAS_URL };
       const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullPackage))));
-      navigator.clipboard.writeText(code).then(() => { alert("Đã sao chép mã sao lưu!"); }).catch(() => { prompt("Mã sao lưu:", code); });
+      navigator.clipboard.writeText(code).then(() => alert("Đã sao chép mã sao lưu!")).catch(() => prompt("Mã sao lưu:", code));
     }
 
     function importDataCode() {
@@ -769,7 +1026,7 @@
         if (data && data.studio) {
           studioData = data.studio;
           localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
-          renderChatHistory(); renderIdentityList();
+          renderChatHistory(); renderIdentityList(); renderVaultList();
           if (notify) alert("Đã đồng bộ dữ liệu từ Google Sheets!");
         }
       } catch(e) { if (notify) alert("Lỗi kết nối Sheets: " + e.message); }
@@ -789,11 +1046,10 @@
       `).join('');
     }
 
-    // GỌI CHUẨN 3.5 FLASH-LITE (TỰ ĐỘNG CHỐNG LỖI THINKING)
     async function callGeminiAdvanced(key, chosenModel, thinkingBudget, sys, user) {
       if(!key) throw new Error("Chưa có đủ API Key!");
       let cleanModel = (chosenModel || "gemini-3.5-flash-lite").trim();
-      if (cleanModel.includes('2.5')) cleanModel = "gemini-3.5-flash-lite";
+      if (cleanModel.includes('2.5') || cleanModel.includes('3.1')) cleanModel = "gemini-3.5-flash-lite";
       const cleanKey = key.trim();
       
       const payload = {
@@ -809,7 +1065,7 @@
       const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
+        const res = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){cleanModel}:generateContent?key=${cleanKey}`, {
           method:"POST", headers:{"Content-Type":"application/json"},
           body: JSON.stringify(payload),
           signal: controller.signal
@@ -833,6 +1089,15 @@
         }
         throw e;
       }
+    }
+
+    function detectTargetAgents(text) {
+      const lower = (text || "").toLowerCase();
+      const targets = [];
+      if (lower.includes("minh") || lower.includes("lead") || lower.includes("trưởng nhóm")) targets.push(1);
+      if (lower.includes("huy") || lower.includes("dev") || lower.includes("code") || lower.includes("luau") || lower.includes("script")) targets.push(2);
+      if (lower.includes("linh") || lower.includes("qa") || lower.includes("kiểm duyệt") || lower.includes("check") || lower.includes("soi")) targets.push(3);
+      return targets;
     }
 
     async function executeChain(inputTopic, isAutonomous = false) {
@@ -866,60 +1131,83 @@
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       const rNameMinh = getRoomNameByCoord(CHARACTERS.a1.x, CHARACTERS.a1.y);
-      const rNameHuy = getRoomNameByCoord(CHARACTERS.a2.x, CHARACTERS.a2.y);
-      const rNameLinh = getRoomNameByCoord(CHARACTERS.a3.x, CHARACTERS.a3.y);
-
-      if (!isAutonomous) {
-        CHARACTERS.a1.tx = SPOTS.work[0].x; CHARACTERS.a1.ty = SPOTS.work[0].y;
-        CHARACTERS.a2.tx = SPOTS.work[1].x; CHARACTERS.a2.ty = SPOTS.work[1].y;
-        CHARACTERS.a3.tx = SPOTS.work[2].x; CHARACTERS.a3.ty = SPOTS.work[2].y;
-      }
+      const directTargets = !isAutonomous ? detectTargetAgents(inputTopic) : [];
 
       try {
-        const ag1 = studioData.agents[0], ag2 = studioData.agents[1], ag3 = studioData.agents[2];
+        let primarySpeaker = 1;
+        if (directTargets.length === 1) primarySpeaker = directTargets[0];
 
-        // 1. MINH
-        setAgentBubble(1, "Đang suy luận...");
-        const sys1 = `Bạn là ${ag1.name} (${ag1.title}) tại Script Valley. Giờ: ${timeStr} VN, Thời tiết: ${currentWeather.text}. Đang ở ${rNameMinh}.
-Nhiệm vụ: Tự suy luận độc lập, không văn mẫu.
+        let r1 = "";
+        if (primarySpeaker === 2) {
+          CHARACTERS.a2.tx = SPOTS.work[1].x; CHARACTERS.a2.ty = SPOTS.work[1].y;
+          setAgentBubble(2, "Đang suy luận...");
+          const sys2 = `Bạn là Huy (Kỹ sư Luau). Sếp vừa nói trực tiếp với bạn: "${inputTopic}".
+Nếu Sếp yêu cầu viết code Luau, hãy đưa code rõ ràng trong khối \`\`\`lua ... \`\`\` để Sếp tải file về.
 BẮT BUỘC định dạng:
-[SUY LUẬN]: (1 câu suy ngẫm ngầm)
-[LỜI NÓI]: (câu nói thật với Sếp hoặc team, dưới 40 từ)`;
-        
-        const raw1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
-        const res1 = parseAiThoughtAndSpeech(raw1);
-        appendChatMessage("Minh", res1.thought, res1.speech, "a1");
-        setAgentBubble(1, res1.speech);
+[SUY LUẬN]: (1 câu suy nghĩ ngầm về kỹ thuật)
+[LỜI NÓI]: (câu đáp lại Sếp, kèm code nếu có)`;
+          const raw2 = await callGeminiAdvanced(k2, m2, th2, sys2, inputTopic);
+          const res2 = parseAiThoughtAndSpeech(raw2);
+          r1 = res2.speech;
+          appendChatMessage("Huy", res2.thought, res2.speech, "a2");
+          setAgentBubble(2, res2.speech);
+        } else if (primarySpeaker === 3) {
+          CHARACTERS.a3.tx = SPOTS.work[2].x; CHARACTERS.a3.ty = SPOTS.work[2].y;
+          setAgentBubble(3, "Đang suy luận...");
+          const sys3 = `Bạn là Linh (QA Kiểm duyệt). Sếp vừa hỏi bạn: "${inputTopic}". Sắc sảo, thực tế, chu đáo.
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu nhận định chuyên môn)
+[LỜI NÓI]: (câu trả lời Sếp)`;
+          const raw3 = await callGeminiAdvanced(k3, m3, th3, sys3, inputTopic);
+          const res3 = parseAiThoughtAndSpeech(raw3);
+          r1 = res3.speech;
+          appendChatMessage("Linh", res3.thought, res3.speech, "a3");
+          setAgentBubble(3, res3.speech);
+        } else {
+          CHARACTERS.a1.tx = SPOTS.work[0].x; CHARACTERS.a1.ty = SPOTS.work[0].y;
+          setAgentBubble(1, "Đang suy luận...");
+          const sys1 = `Bạn là Minh (Trưởng nhóm R&D). Giờ: ${timeStr} VN, Thời tiết: ${currentWeather.text}. Đang ở ${rNameMinh}. Sếp vừa nói: "${inputTopic}". Điềm đạm, ấm áp, có tầm nhìn.
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu suy nghĩ ngầm)
+[LỜI NÓI]: (câu trả lời Sếp)`;
+          const raw1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
+          const res1 = parseAiThoughtAndSpeech(raw1);
+          r1 = res1.speech;
+          appendChatMessage("Minh", res1.thought, res1.speech, "a1");
+          setAgentBubble(1, res1.speech);
+        }
 
         await new Promise(r => setTimeout(r, 1000));
 
-        // 2. HUY
-        setAgentBubble(2, "Đang suy luận...");
-        const sys2 = `Bạn là ${ag2.name} (${ag2.title}). Đang ở ${rNameHuy}. Dân IT vui vẻ, gọi Minh là anh Lead, Linh là bà Linh.
-Minh vừa nói: "${res1.speech}".
-BẮT BUỘC định dạng:
-[SUY LUẬN]: (1 câu suy nghĩ ngầm về code/game/đồ ăn)
-[LỜI NÓI]: (câu đáp lại anh Minh dí dỏm, dưới 45 từ)`;
+        if (primarySpeaker !== 2) {
+          const sysHuy = `Bạn là Huy (Kỹ sư Luau). Vừa nghe: "${r1}". 
+ĐÁNH GIÁ: Nếu câu chuyện không cần bổ sung code, không liên quan đến bạn hoặc mọi thứ đã rõ ràng, hãy trả lời đúng duy nhất: [IM LẶNG]. 
+Nếu thấy cần lên tiếng hoặc viết code, hãy định dạng:
+[SUY LUẬN]: (suy nghĩ)
+[LỜI NÓI]: (câu nói)`;
+          const rawH = await callGeminiAdvanced(k2, m2, th2, sysHuy, r1);
+          const resH = parseAiThoughtAndSpeech(rawH);
+          if (resH.speech) {
+            appendChatMessage("Huy", resH.thought, resH.speech, "a2");
+            setAgentBubble(2, resH.speech);
+            r1 = resH.speech;
+            await new Promise(r => setTimeout(r, 1000));
+          }
+        }
 
-        const raw2 = await callGeminiAdvanced(k2, m2, th2, sys2, res1.speech);
-        const res2 = parseAiThoughtAndSpeech(raw2);
-        appendChatMessage("Huy", res2.thought, res2.speech, "a2");
-        setAgentBubble(2, res2.speech);
-
-        await new Promise(r => setTimeout(r, 1000));
-
-        // 3. LINH
-        setAgentBubble(3, "Đang suy luận...");
-        const sys3 = `Bạn là ${ag3.name} (${ag3.title}). Đang ở ${rNameLinh}. Sắc sảo, thích trêu Huy nhưng giữ an toàn dự án.
-Huy vừa nói: "${res2.speech}".
-BẮT BUỘC định dạng:
-[SUY LUẬN]: (1 câu nhận xét ngầm lời ông Huy)
-[LỜI NÓI]: (câu chốt hạ duyên dáng, dưới 40 từ)`;
-
-        const raw3 = await callGeminiAdvanced(k3, m3, th3, sys3, res2.speech);
-        const res3 = parseAiThoughtAndSpeech(raw3);
-        appendChatMessage("Linh", res3.thought, res3.speech, "a3");
-        setAgentBubble(3, res3.speech);
+        if (primarySpeaker !== 3) {
+          const sysLinh = `Bạn là Linh (QA). Vừa nghe đồng nghiệp nói: "${r1}". 
+ĐÁNH GIÁ: Nếu không có code cần soi, không có nguy cơ lỗi hoặc không có gì quan trọng cần nhắc nhở, hãy trả lời đúng duy nhất: [IM LẶNG]. 
+Nếu cần thẩm định/bắt lỗi/nhắc nhở an toàn app, hãy định dạng:
+[SUY LUẬN]: (nhận định an toàn)
+[LỜI NÓI]: (câu chốt hạ duyên dáng)`;
+          const rawL = await callGeminiAdvanced(k3, m3, th3, sysLinh, r1);
+          const resL = parseAiThoughtAndSpeech(rawL);
+          if (resL.speech) {
+            appendChatMessage("Linh", resL.thought, resL.speech, "a3");
+            setAgentBubble(3, resL.speech);
+          }
+        }
 
         addXP(25);
       } catch(e) {
@@ -929,7 +1217,7 @@ BẮT BUỘC định dạng:
         document.getElementById('btn-send-chat').disabled = false;
         if (hardWatchdog) clearTimeout(hardWatchdog);
         if(isFlowActive) {
-          flowTimeout = setTimeout(runAutonomousDiscussion, Math.floor(Math.random() * 4000) + 10000);
+          flowTimeout = setTimeout(runAutonomousDiscussion, Math.floor(Math.random() * 4000) + 12000);
         }
       }
     }
@@ -938,8 +1226,8 @@ BẮT BUỘC định dạng:
       if(isProcessing || !isFlowActive) return;
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      const lastMsg = studioData.chatHistory.length > 0 ? studioData.chatHistory[studioData.chatHistory.length - 1].text : "Một ngày mới tại thung lũng.";
-      const openTopic = `[Thời gian: ${timeStr} Giờ VN, Thời tiết: ${currentWeather.text}]. Hãy tự khởi xướng suy nghĩ tiếp nối: "${lastMsg}".`;
+      const lastMsg = studioData.chatHistory.length > 0 ? studioData.chatHistory[studioData.chatHistory.length - 1].text : "Một buổi chiều bình yên.";
+      const openTopic = `[Thời gian: ${timeStr} Giờ VN, Thời tiết: ${currentWeather.text}]. Bạn tự quan sát môi trường và tự khởi xướng ý tưởng/câu chuyện mới tiếp nối: "${lastMsg}".`;
       executeChain(openTopic, true);
     }
 
@@ -947,7 +1235,7 @@ BẮT BUỘC định dạng:
       const inp = document.getElementById('chat-input'), msg = inp.value.trim();
       if(!msg) return;
       if(isProcessing) {
-        alert("Ba bạn AI đang suy luận câu trước, bạn đợi vài giây nhé!");
+        alert("Nhân sự đang suy luận, bạn đợi vài giây nhé!");
         return;
       }
       appendChatMessage("Sếp", "", msg, "user");
@@ -962,7 +1250,7 @@ BẮT BUỘC định dạng:
       if(isFlowActive) {
         btn.innerText = "🎙️ Tự đàm đạo: BẬT";
         btn.classList.add('btn-active');
-        appendChatMessage("Hệ thống", "", "Đã bật chế độ Tự đàm đạo!", "sys");
+        appendChatMessage("Hệ thống", "", "Đã bật chế độ Tự đàm đạo! Các bạn sẽ trao đổi khi thấy cần thiết.", "sys");
         runAutonomousDiscussion();
       } else {
         btn.innerText = "🎙️ Tự đàm đạo: TẮT";
