@@ -3,731 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Studio AI - 2D Virtual Office</title>
+  <title>Script Studio AI</title>
   <style>
-    :root {
-      --bg: #070c18;
-      --panel: #0f172a;
-      --border: #1e293b;
-      --primary: #38bdf8;
-      --accent: #f59e0b;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --a1: #818cf8;
-      --a2: #34d399;
-      --a3: #f472b6;
-      --user: #38bdf8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 8px; font-size: 13px; }
-
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    header h1 { font-size: 16px; color: var(--primary); font-weight: 700; }
-
-    /* MẶT SÀN VĂN PHÒNG 2D */
-    .office-canvas {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      background-color: #0d1527;
-      background-image: 
-        linear-gradient(to right, #1e293b 1px, transparent 1px),
-        linear-gradient(to bottom, #1e293b 1px, transparent 1px);
-      background-size: 20px 20px;
-      border: 2px solid #334155;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 10px;
-      box-shadow: inset 0 0 25px rgba(0,0,0,0.7);
-    }
-
-    .meeting-table {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #1e293b;
-      border: 2px dashed #475569;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      font-size: 10px;
-      color: var(--muted);
-      z-index: 1;
-      text-align: center;
-    }
-    .meeting-table.debating {
-      border: 2px solid var(--accent);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
-      color: var(--accent);
-    }
-
-    .workstation {
-      position: absolute;
-      width: 95px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 2;
-    }
-    #ws-1 { top: 10px; left: 10px; }
-    #ws-2 { top: 10px; right: 10px; }
-    #ws-3 { bottom: 10px; left: calc(50% - 47px); }
-
-    .character {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      background: #1e293b;
-      border: 2px solid #475569;
-      transition: transform 0.2s;
-    }
-    .desk {
-      width: 82px;
-      height: 30px;
-      background: #334155;
-      border-radius: 6px;
-      border: 1px solid #64748b;
-      margin-top: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-    .screen { width: 22px; height: 12px; background: #070d19; border-radius: 2px; }
-    .screen.on { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
-
-    .agent-tag { font-size: 10px; font-weight: bold; margin-top: 2px; display: flex; gap: 3px; align-items: center; }
-    .badge-lv { background: var(--accent); color: #000; padding: 1px 4px; border-radius: 3px; font-size: 9px; }
-    .xp-bar { width: 75px; height: 3px; background: #334155; border-radius: 2px; margin-top: 2px; overflow: hidden; }
-    .xp-fill { height: 100%; width: 0%; background: #10b981; transition: width 0.3s; }
-
-    .bubble {
-      position: absolute;
-      bottom: 38px;
-      background: #fff;
-      color: #000;
-      font-size: 9px;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 5px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-      z-index: 10;
-    }
-
-    #doc-packet { position: absolute; font-size: 18px; z-index: 100; display: none; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
-
-    /* CARD VÀ BẢNG */
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-    .card-title { font-size: 13px; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-
-    input, textarea, select, button { width: 100%; border-radius: 6px; border: 1px solid #334155; background: #070c18; color: var(--text); padding: 8px; font-size: 12px; margin-bottom: 6px; }
-    .btn-action { background: var(--primary); color: #000; font-weight: bold; border: none; cursor: pointer; padding: 9px; border-radius: 6px; }
-    .btn-action:disabled { opacity: 0.5; }
-    .btn-small { width: auto; font-size: 10px; padding: 3px 8px; margin: 0; background: #1e293b; border: 1px solid #475569; color: #fff; border-radius: 4px; cursor: pointer; }
-    .btn-danger { background: #ef4444; border-color: #dc2626; color: #fff; }
-
-    /* KHUNG CHAT NHÓM CHUNG (GROUP CHAT FEED) */
-    .chat-container {
-      height: 320px;
-      display: flex;
-      flex-direction: column;
-    }
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      background: #070c18;
-      border: 1px solid #1e293b;
-      border-radius: 6px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .msg-row { display: flex; flex-direction: column; width: 100%; max-width: 95%; }
-    .msg-sender { font-size: 10px; font-weight: bold; margin-bottom: 2px; }
-    .msg-content {
-      padding: 7px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      line-height: 1.45;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    /* Định dạng tin nhắn của từng người */
-    .msg-user { align-self: flex-end; }
-    .msg-user .msg-sender { color: var(--user); text-align: right; }
-    .msg-user .msg-content { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #e0f2fe; }
-
-    .msg-a1 { align-self: flex-start; }
-    .msg-a1 .msg-sender { color: var(--a1); }
-    .msg-a1 .msg-content { background: rgba(129, 140, 248, 0.12); border: 1px solid rgba(129, 140, 248, 0.3); }
-
-    .msg-a2 { align-self: flex-start; }
-    .msg-a2 .msg-sender { color: var(--a2); }
-    .msg-a2 .msg-content { background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3); font-family: monospace; font-size: 11px; }
-
-    .msg-a3 { align-self: flex-start; }
-    .msg-a3 .msg-sender { color: var(--a3); }
-    .msg-a3 .msg-content { background: rgba(244, 114, 182, 0.12); border: 1px solid rgba(244, 114, 182, 0.3); }
-
-    .msg-sys { align-self: center; width: 100%; text-align: center; }
-    .msg-sys .msg-content { background: #1e293b; border: 1px dashed #475569; font-size: 11px; color: var(--accent); padding: 4px; }
-
-    .chat-controls { display: flex; gap: 6px; }
-    .chat-controls textarea { margin-bottom: 0; flex: 1; resize: none; }
-    .chat-controls button { width: 85px; margin-bottom: 0; }
-
-    .output-box { background: #070c18; padding: 8px; border-radius: 6px; font-size: 12px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; max-height: 150px; overflow-y: auto; margin-top: 4px; }
-    .log-item { font-size: 11px; padding: 4px; border-bottom: 1px solid #1e293b; color: var(--muted); }
+    :root { --bg:#070c18; --panel:#0f172a; --border:#1e293b; --primary:#38bdf8; --accent:#f59e0b; --text:#f8fafc; --muted:#94a3b8; --a1:#818cf8; --a2:#34d399; --a3:#f472b6; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background:var(--bg); color:var(--text); padding:8px; font-size:13px; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    header h1 { font-size:15px; color:var(--primary); }
+    .office-canvas { position:relative; width:100%; height:220px; background:#0d1527; background-image:linear-gradient(to right,#1e293b 1px,transparent 1px),linear-gradient(to bottom,#1e293b 1px,transparent 1px); background-size:20px 20px; border:2px solid #334155; border-radius:10px; overflow:hidden; margin-bottom:8px; }
+    .meeting-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:70px; height:70px; border-radius:50%; background:#1e293b; border:2px dashed #475569; display:flex; align-items:center; justify-content:center; flex-direction:column; font-size:9px; color:var(--muted); z-index:1; }
+    .workstation { position:absolute; width:85px; display:flex; flex-direction:column; align-items:center; z-index:2; }
+    #ws-1 { top:8px; left:8px; } #ws-2 { top:8px; right:8px; } #ws-3 { bottom:8px; left:calc(50% - 42px); }
+    .character { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; background:#1e293b; border:2px solid #475569; }
+    .desk { width:74px; height:24px; background:#334155; border-radius:4px; border:1px solid #64748b; margin-top:2px; display:flex; align-items:center; justify-content:center; }
+    .screen { width:18px; height:9px; background:#070c18; border-radius:2px; }
+    .screen.on { background:#38bdf8; box-shadow:0 0 6px #38bdf8; }
+    .agent-tag { font-size:9px; font-weight:bold; margin-top:2px; display:flex; gap:3px; }
+    .badge-lv { background:var(--accent); color:#000; padding:1px 3px; border-radius:3px; font-size:8px; }
+    .xp-bar { width:65px; height:3px; background:#334155; border-radius:2px; margin-top:2px; overflow:hidden; }
+    .xp-fill { height:100%; width:0%; background:#10b981; transition:width 0.3s; }
+    .bubble { position:absolute; bottom:34px; background:#fff; color:#000; font-size:9px; font-weight:600; padding:2px 5px; border-radius:4px; white-space:nowrap; opacity:0; transition:opacity 0.2s; pointer-events:none; }
+    .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:8px; }
+    .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
+    input, textarea, select, button { width:100%; border-radius:6px; border:1px solid #334155; background:#070c18; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
+    .btn-action { background:var(--primary); color:#000; font-weight:bold; border:none; cursor:pointer; padding:8px; }
+    .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#1e293b; border:1px solid #475569; color:#fff; border-radius:4px; cursor:pointer; }
+    .chat-container { height:260px; display:flex; flex-direction:column; }
+    .chat-messages { flex:1; overflow-y:auto; background:#070c18; border:1px solid #1e293b; border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
+    .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
+    .msg-sender { font-size:9px; font-weight:bold; margin-bottom:2px; }
+    .msg-content { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; }
+    .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:var(--primary); text-align:right; } .msg-user .msg-content { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
+    .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:var(--a1); } .msg-a1 .msg-content { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
+    .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:var(--a2); } .msg-a2 .msg-content { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); font-family:monospace; font-size:11px; }
+    .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:var(--a3); } .msg-a3 .msg-content { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
+    .msg-sys .msg-content { background:#1e293b; border:1px dashed #475569; font-size:10px; color:var(--accent); text-align:center; padding:3px; }
+    .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
+    .output-box { background:#070c18; padding:6px; border-radius:6px; font-size:11.5px; line-height:1.4; white-space:pre-wrap; word-break:break-word; max-height:140px; overflow-y:auto; }
   </style>
 </head>
 <body>
-
   <header>
-    <h1>Script Studio AI - 2D Office</h1>
-    <div style="display: flex; gap: 4px;">
-      <button class="btn-small" onclick="toggleAutoMode()" id="btn-auto">🤖 Tự trị R&D: TẮT</button>
-      <button class="btn-small" onclick="toggleMemoryModal()">🧠 Sổ tay</button>
+    <h1>Script Studio AI</h1>
+    <div style="display:flex; gap:4px;">
+      <button class="btn-small" onclick="autoDetectModel()">🔍 Tự dò Model</button>
+      <button class="btn-small" onclick="togglePanel('memory-modal')">🧠 Sổ tay</button>
     </div>
   </header>
 
-  <!-- MẶT SÀN 2D VĂN PHÒNG -->
   <div class="office-canvas">
-    <div id="doc-packet">📜</div>
-
-    <!-- KHU BÀN TRÒN HỌP GIAO LƯU -->
-    <div class="meeting-table" id="meeting-area">
-      <span>☕ Khu Họp</span>
-      <span id="meeting-topic" style="font-size: 8px; color: #38bdf8;">Sẵn sàng</span>
-    </div>
-
-    <!-- BÀN 1: LEAD ARCHITECT (LUAU / R&D) -->
+    <div class="meeting-table" id="meeting-area"><span>☕ Họp</span><span id="meeting-topic" style="font-size:7px; color:#38bdf8;">Sẵn sàng</span></div>
     <div class="workstation" id="ws-1">
-      <div class="bubble" id="b-1">...</div>
-      <div class="character">👨‍💼</div>
+      <div class="bubble" id="b-1">...</div><div class="character">👨‍💼</div>
       <div class="desk"><div class="screen" id="pc-1"></div></div>
-      <div class="agent-tag" style="color: var(--a1);">
-        <span>1. Trưởng nhóm</span> <span class="badge-lv" id="lv-1">Lv.1</span>
-      </div>
+      <div class="agent-tag" style="color:var(--a1);"><span>Trưởng nhóm</span> <span class="badge-lv" id="lv-1">Lv.1</span></div>
       <div class="xp-bar"><div class="xp-fill" id="xp-1"></div></div>
     </div>
-
-    <!-- BÀN 2: SENIOR SCRIPT ENGINEER -->
     <div class="workstation" id="ws-2">
-      <div class="bubble" id="b-2">...</div>
-      <div class="character">👨‍💻</div>
+      <div class="bubble" id="b-2">...</div><div class="character">👨‍💻</div>
       <div class="desk"><div class="screen" id="pc-2"></div></div>
-      <div class="agent-tag" style="color: var(--a2);">
-        <span>2. Kỹ sư Code</span> <span class="badge-lv" id="lv-2">Lv.1</span>
-      </div>
+      <div class="agent-tag" style="color:var(--a2);"><span>Kỹ sư</span> <span class="badge-lv" id="lv-2">Lv.1</span></div>
       <div class="xp-bar"><div class="xp-fill" id="xp-2"></div></div>
     </div>
-
-    <!-- BÀN 3: QA & SECURITY AUDITOR -->
     <div class="workstation" id="ws-3">
-      <div class="bubble" id="b-3">...</div>
-      <div class="character">👩‍🔬</div>
+      <div class="bubble" id="b-3">...</div><div class="character">👩‍🔬</div>
       <div class="desk"><div class="screen" id="pc-3"></div></div>
-      <div class="agent-tag" style="color: var(--a3);">
-        <span>3. Kiểm duyệt QA</span> <span class="badge-lv" id="lv-3">Lv.1</span>
-      </div>
+      <div class="agent-tag" style="color:var(--a3);"><span>QA</span> <span class="badge-lv" id="lv-3">Lv.1</span></div>
       <div class="xp-bar"><div class="xp-fill" id="xp-3"></div></div>
     </div>
   </div>
 
-  <!-- PHÒNG CHAT NHÓM CHUNG (GROUP CHAT TOÀN CÔNG TY) -->
   <div class="card chat-container">
-    <div class="card-title">
-      <span>💬 Phòng họp chung (Lưu vết mọi thảo luận)</span>
-      <button class="btn-small btn-danger" onclick="clearChat()">Xóa lịch sử chat</button>
-    </div>
-    
-    <div class="chat-messages" id="chat-feed">
-      <!-- Toàn bộ tin nhắn trao đổi của 3 Agent và Bạn sẽ được in tại đây -->
-    </div>
-
+    <div class="card-title"><span>💬 Phòng họp chung</span><button class="btn-small" onclick="clearChat()">Xóa chat</button></div>
+    <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="Nhắn tin vào nhóm (cả 3 con cùng đọc và trao đổi)..."></textarea>
-      <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi chat</button>
+      <textarea id="chat-input" rows="2" placeholder="Nhắn tin vào nhóm..."></textarea>
+      <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
 
-  <!-- PHẦN GIAO NHIỆM VỤ DỰ ÁN (PIPELINE CHÍNH THỨC) -->
   <div class="card">
-    <div class="card-title">
-      <span>⚡ Giao Dự Án Chính Quy (Quy trình khép kín)</span>
-    </div>
-    <textarea id="task-input" rows="2" placeholder="Nhập yêu cầu script cụ thể (ví dụ: Viết script tự động quét ProximityPrompt, tối ưu bộ nhớ không văng game trên cloud phone)..."></textarea>
-    <button class="btn-action" id="btn-run" onclick="runProjectPipeline()">Khởi động dây chuyền sản xuất</button>
-  </div>
-
-  <!-- KẾT QUẢ NGHIỆM THU DỰ ÁN -->
-  <div class="card" id="result-box" style="display: none;">
-    <div class="card-title">
-      <span>📦 Thành phẩm Script & Báo cáo Nghiệm thu</span>
-      <button class="btn-small" onclick="copyFinalCode()">Sao chép code</button>
-    </div>
-    <div class="output-box" id="final-code" style="color: #34d399; font-family: monospace;">...</div>
-  </div>
-
-  <!-- CẤU HÌNH API VÀ CLOUD BACKUP -->
-  <div class="card">
-    <div class="card-title">
-      <span>⚙️ Cấu hình API & Kết nối Google Sheets</span>
-      <button class="btn-small" onclick="togglePanel('cfg-box')">Mở / Đóng</button>
-    </div>
-    <div id="cfg-box" style="display: none;">
-      <select id="model-select">
-        <option value="gemini-3.8-flash">gemini-3.8-flash (Tốc độ & Thông minh nhất)</option>
-        <option value="gemini-3.8-pro">gemini-3.8-pro (Tư duy kiến trúc sâu)</option>
-        <option value="gemini-3.8-flash-thinking-exp">gemini-3.8-flash-thinking-exp (Tư duy toán & giải thuật)</option>
-      </select>
-      <input type="password" id="key-1" placeholder="API Key 1 (Trưởng nhóm R&D)">
-      <input type="password" id="key-2" placeholder="API Key 2 (Kỹ sư Script)">
-      <input type="password" id="key-3" placeholder="API Key 3 (Kiểm duyệt QA)">
-      <input type="text" id="gas-url" placeholder="URL Google Apps Script Web App (kết thúc bằng /exec)">
-      <button class="btn-action" onclick="saveSettings()">Lưu cài đặt</button>
+    <div class="card-title"><span>⚙️ Cấu hình API & Model</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div id="cfg-box" style="display:block;">
+      <input type="text" id="model-input" placeholder="Tên model (ví dụ: gemini-3.8-flash)" value="gemini-3.8-flash">
+      <input type="password" id="key-1" placeholder="API Key 1 (Trưởng nhóm)">
+      <input type="password" id="key-2" placeholder="API Key 2 (Kỹ sư)">
+      <input type="password" id="key-3" placeholder="API Key 3 (QA)">
+      <button class="btn-action" onclick="saveSettings()">Lưu cấu hình</button>
     </div>
   </div>
 
-  <!-- SỔ TAY KÝ ỨC DÀI HẠN -->
-  <div class="card" id="memory-modal" style="display: none;">
-    <div class="card-title">
-      <span>🧠 Sổ tay Ký ức & Kinh nghiệm tích lũy</span>
-      <button class="btn-small" onclick="toggleMemoryModal()">Đóng</button>
-    </div>
-    <div id="memory-list" style="max-height: 250px; overflow-y: auto;"></div>
-    <button class="btn-small btn-danger" style="margin-top: 6px; width: 100%;" onclick="resetMemory()">Đặt lại trí nhớ (Về sơ sinh Lv.1)</button>
+  <div class="card" id="memory-modal" style="display:none;">
+    <div class="card-title"><span>🧠 Sổ tay Trí nhớ</span><button class="btn-small" onclick="togglePanel('memory-modal')">Đóng</button></div>
+    <div id="memory-list" style="max-height:160px; overflow-y:auto;"></div>
   </div>
 
   <script>
-    // DỮ LIỆU CÔNG TY & TRÍ NHỚ TỰ TIẾN HÓA
-    let studioData = {
-      agents: [
-        { id: 1, name: "Trưởng nhóm R&D", level: 1, xp: 0, memory: ["Luôn khảo sát kiến trúc logic và chia modular rõ ràng trước khi viết code."] },
-        { id: 2, name: "Kỹ sư Script", level: 1, xp: 0, memory: ["Viết Luau code sạch, xử lý GC dọn rác bộ nhớ, tránh rò rỉ RAM trên môi trường yếu."] },
-        { id: 3, name: "Kiểm duyệt QA", level: 1, xp: 0, memory: ["Kiểm tra kỹ pcall bắt lỗi ngoại lệ, soát cơ chế chống crash và chống phát hiện."] }
-      ],
-      chatHistory: []
-    };
-
-    let autoTimer = null;
-    let isAutoRunning = false;
+    let studioData = { agents:[{id:1,name:"Trưởng nhóm",level:1,xp:0,memory:["Lập dàn ý module rõ ràng."]}, {id:2,name:"Kỹ sư",level:1,xp:0,memory:["Tối ưu dọn rác RAM."]}, {id:3,name:"QA",level:1,xp:0,memory:["Soát lỗi pcall chống crash."] }], chatHistory:[] };
 
     window.onload = () => {
       document.getElementById('key-1').value = localStorage.getItem('k1') || '';
       document.getElementById('key-2').value = localStorage.getItem('k2') || '';
       document.getElementById('key-3').value = localStorage.getItem('k3') || '';
-      document.getElementById('gas-url').value = localStorage.getItem('gas_url') || '';
-      document.getElementById('model-select').value = localStorage.getItem('model') || 'gemini-2.0-flash';
-      
+      document.getElementById('model-input').value = localStorage.getItem('model') || 'gemini-3.8-flash';
       const saved = localStorage.getItem('studio_data');
-      if (saved) {
-        try {
-          studioData = JSON.parse(saved);
-        } catch(e) {}
-      }
-      
-      updateAgentUI();
-      renderChatHistory();
+      if (saved) { try { studioData = JSON.parse(saved); } catch(e){} }
+      updateAgentUI(); renderChatHistory();
     };
 
     function saveSettings() {
       localStorage.setItem('k1', document.getElementById('key-1').value.trim());
       localStorage.setItem('k2', document.getElementById('key-2').value.trim());
       localStorage.setItem('k3', document.getElementById('key-3').value.trim());
-      localStorage.setItem('gas_url', document.getElementById('gas-url').value.trim());
-      localStorage.setItem('model', document.getElementById('model-select').value);
+      let m = document.getElementById('model-input').value.trim().replace(/^models\//, '');
+      localStorage.setItem('model', m);
       alert('Đã lưu cấu hình an toàn!');
     }
-
-    function togglePanel(id) {
-      const p = document.getElementById(id);
-      p.style.display = p.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function toggleMemoryModal() {
-      const m = document.getElementById('memory-modal');
-      m.style.display = m.style.display === 'none' ? 'block' : 'none';
-      if (m.style.display === 'block') renderMemoryList();
-    }
+    function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
 
     function updateAgentUI() {
       studioData.agents.forEach(ag => {
         document.getElementById(`lv-${ag.id}`).innerText = `Lv.${ag.level}`;
-        const pct = (ag.xp % 100);
-        document.getElementById(`xp-${ag.id}`).style.width = `${pct}%`;
+        document.getElementById(`xp-${ag.id}`).style.width = `${ag.xp % 100}%`;
       });
       localStorage.setItem('studio_data', JSON.stringify(studioData));
     }
+    function addXP(n) { studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); updateAgentUI(); }
 
-    function addXP(amount) {
-      studioData.agents.forEach(ag => {
-        ag.xp += amount;
-        ag.level = Math.floor(ag.xp / 100) + 1;
-      });
-      updateAgentUI();
-    }
-
-    // HỆ THỐNG GHI LOG VÀO PHÒNG CHAT NHÓM
     function appendChat(sender, text, type) {
       const feed = document.getElementById('chat-feed');
       const row = document.createElement('div');
       row.className = `msg-row msg-${type}`;
-
-      let senderLabel = sender;
-      if (type === 'user') senderLabel = `👑 ${sender}`;
-      else if (type === 'a1') senderLabel = `👨‍💼 Agent 1 (Trưởng nhóm R&D)`;
-      else if (type === 'a2') senderLabel = `👨‍💻 Agent 2 (Kỹ sư Script)`;
-      else if (type === 'a3') senderLabel = `👩‍🔬 Agent 3 (Kiểm duyệt QA)`;
-      else if (type === 'sys') senderLabel = `📢 Hệ thống`;
-
-      row.innerHTML = `
-        <div class="msg-sender">${senderLabel}</div>
-        <div class="msg-content">${escapeHTML(text)}</div>
-      `;
-
-      feed.appendChild(row);
-      feed.scrollTop = feed.scrollHeight;
-
-      // Lưu vào lịch sử (tối đa 100 tin nhắn gần nhất)
-      studioData.chatHistory.push({ sender: senderLabel, text: text, type: type });
-      if (studioData.chatHistory.length > 100) studioData.chatHistory.shift();
+      let label = sender;
+      if (type === 'user') label = '👑 Sếp';
+      else if (type === 'a1') label = '👨‍💼 Trưởng nhóm';
+      else if (type === 'a2') label = '👨‍💻 Kỹ sư';
+      else if (type === 'a3') label = '👩‍🔬 QA';
+      row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-content">${text.replace(/[&<>'"]/g, t=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]))}</div>`;
+      feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
+      studioData.chatHistory.push({sender:label, text:text, type:type});
+      if (studioData.chatHistory.length > 50) studioData.chatHistory.shift();
       localStorage.setItem('studio_data', JSON.stringify(studioData));
     }
 
     function renderChatHistory() {
-      const feed = document.getElementById('chat-feed');
-      feed.innerHTML = '';
-      if (!studioData.chatHistory || studioData.chatHistory.length === 0) {
-        appendChat("Hệ thống", "Chào mừng sếp! Văn phòng Script Studio AI đã sẵn sàng nhận lệnh.", "sys");
-        return;
-      }
-      studioData.chatHistory.forEach(item => {
-        const row = document.createElement('div');
-        row.className = `msg-row msg-${item.type}`;
-        row.innerHTML = `
-          <div class="msg-sender">${item.sender}</div>
-          <div class="msg-content">${escapeHTML(item.text)}</div>
-        `;
+      const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { appendChat("Hệ thống", "Script Studio AI đã sẵn sàng!", "sys"); return; }
+      studioData.chatHistory.forEach(i => {
+        const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
+        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-content">${i.text}</div>`;
         feed.appendChild(row);
       });
       feed.scrollTop = feed.scrollHeight;
     }
+    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data',JSON.stringify(studioData)); renderChatHistory(); }
 
-    function clearChat() {
-      if (!confirm("Bạn có chắc muốn xóa sạch lịch sử cuộc trò chuyện nhóm?")) return;
-      studioData.chatHistory = [];
-      localStorage.setItem('studio_data', JSON.stringify(studioData));
-      renderChatHistory();
-    }
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-    }
-
-    // ĐIỀU KHIỂN HOẠT ẢNH 2D VĂN PHÒNG
     function setBubble(id, text) {
-      const b = document.getElementById(`b-${id}`);
-      const pc = document.getElementById(`pc-${id}`);
-      if (text) {
-        b.innerText = text;
-        b.style.opacity = '1';
-        if (pc) pc.classList.add('on');
-      } else {
-        b.style.opacity = '0';
-        if (pc) pc.classList.remove('on');
-      }
+      const b = document.getElementById(`b-${id}`), pc = document.getElementById(`pc-${id}`);
+      if(text) { b.innerText = text; b.style.opacity = '1'; if(pc) pc.classList.add('on'); }
+      else { b.style.opacity = '0'; if(pc) pc.classList.remove('on'); }
     }
 
-    function flyDoc(fromId, toId, cb) {
-      const doc = document.getElementById('doc-packet');
-      const from = document.getElementById(`ws-${fromId}`);
-      const to = document.getElementById(`ws-${toId}`);
-      doc.style.display = 'block';
-      doc.style.left = (from.offsetLeft + 35) + 'px';
-      doc.style.top = (from.offsetTop + 10) + 'px';
-      setTimeout(() => {
-        doc.style.left = (to.offsetLeft + 35) + 'px';
-        doc.style.top = (to.offsetTop + 10) + 'px';
-      }, 50);
-      setTimeout(() => { doc.style.display = 'none'; if (cb) cb(); }, 750);
-    }
-
-    // GỌI API GEMINI
-    async function callGemini(apiKey, model, systemPrompt, userMessage) {
-      if (!apiKey) throw new Error("Chưa nhập đủ API Key cho nhân viên này!");
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const payload = {
-        contents: [{ role: "user", parts: [{ text: `${systemPrompt}\n\n[DỮ LIỆU ĐẦU VÀO]:\n${userMessage}` }] }],
-        generationConfig: { temperature: 0.7 }
-      };
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+    async function callGemini(key, model, sys, user) {
+      if(!key) throw new Error("Chưa nhập đủ API Key!");
+      const cleanModel = (model || 'gemini-3.8-flash').replace(/^models\//, '').trim();
+      const cleanKey = key.trim();
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ contents:[{role:"user", parts:[{text:`${sys}\n\n[DỮ LIỆU]:\n${user}`}]}] })
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error?.message || "Lỗi gọi API Google");
+      if(!res.ok) {
+        const e = await res.json().catch(()=>({}));
+        throw new Error(e.error?.message || `Lỗi HTTP ${res.status}`);
       }
-      const data = await res.json();
-      return data.candidates[0].content.parts[0].text;
+      const d = await res.json();
+      return d.candidates[0].content.parts[0].text;
     }
 
-    // TÍNH NĂNG 1: GỬI TIN NHẮN VÀO NHÓM CHUNG (3 CON CÙNG THẢO LUẬN)
-    async function sendGroupMessage() {
-      const input = document.getElementById('chat-input');
-      const msg = input.value.trim();
-      if (!msg) return;
-
-      const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const model = localStorage.getItem('model') || 'gemini-2.0-flash';
-
-      if (!k1 || !k2 || !k3) return alert("Vui lòng vào mục Cài đặt cấu hình đủ 3 API Key!");
-
-      // 1. In tin nhắn của Sếp
-      appendChat("Sếp", msg, "user");
-      input.value = '';
-      const btn = document.getElementById('btn-send-chat');
-      btn.disabled = true;
-
+    async function autoDetectModel() {
+      const k = (document.getElementById('key-1').value || localStorage.getItem('k1') || '').trim();
+      if(!k) return alert("Vui lòng nhập API Key 1 trước khi dò model!");
       try {
-        // Agent 1 lên tiếng (Định hướng kiến trúc)
-        setBubble(1, "Đang phản hồi...");
-        const p1 = `Bạn là Trưởng nhóm R&D (Cấp ${studioData.agents[0].level}) của công ty viết script tự động hóa. Sếp vừa nhắn vào nhóm: "${msg}". Hãy đưa ra quan điểm kỹ thuật, phân tích sơ bộ và chỉ đạo ngắn gọn (dưới 60 từ) cho Kỹ sư và QA.`;
-        const rep1 = await callGemini(k1, model, p1, msg);
-        appendChat("Agent 1", rep1, "a1");
-        setBubble(1, "");
-
-        // Agent 2 lên tiếng (Kỹ thuật & Code)
-        setBubble(2, "Đang tính toán...");
-        const p2 = `Bạn là Kỹ sư Script (Cấp ${studioData.agents[1].level}). Trưởng nhóm vừa định hướng: "${rep1}". Hãy đưa ra giải pháp giải thuật/mã nguồn hoặc phương án thực thi ngắn gọn, súc tích (dưới 70 từ).`;
-        const rep2 = await callGemini(k2, model, p2, rep1);
-        appendChat("Agent 2", rep2, "a2");
-        setBubble(2, "");
-
-        // Agent 3 lên tiếng (QA & Cảnh báo an toàn)
-        setBubble(3, "Đang phản biện...");
-        const p3 = `Bạn là Kiểm duyệt QA (Cấp ${studioData.agents[2].level}). Dựa trên ý kiến của Trưởng nhóm và Kỹ sư, hãy đưa ra lưu ý về rủi ro (crash game, rò rỉ RAM, phát hiện kịch bản) và chốt phương án chuẩn (dưới 60 từ).`;
-        const rep3 = await callGemini(k3, model, p3, `Kỹ sư đề xuất: ${rep2}`);
-        appendChat("Agent 3", rep3, "a3");
-        setBubble(3, "");
-
-        addXP(15);
-      } catch (err) {
-        appendChat("Hệ thống", "Lỗi trao đổi: " + err.message, "sys");
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    // TÍNH NĂNG 2: GIAO DỰ ÁN CHÍNH QUY (TOÀN BỘ TIẾN TRÌNH ĐƯỢC ĐẨY VÀO CHAT)
-    async function runProjectPipeline() {
-      const taskInput = document.getElementById('task-input');
-      const prompt = taskInput.value.trim();
-      if (!prompt) return alert('Vui lòng nhập đề bài dự án script!');
-
-      const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const model = localStorage.getItem('model') || 'gemini-2.0-flash';
-      const gasUrl = localStorage.getItem('gas_url');
-
-      if (!k1 || !k2 || !k3) return alert('Cần cấu hình đủ 3 API Key!');
-
-      const btn = document.getElementById('btn-run');
-      btn.disabled = true;
-      document.getElementById('result-box').style.display = 'block';
-
-      appendChat("Hệ thống", `🚀 BẮT ĐẦU DỰ ÁN MỚI: "${prompt}"`, "sys");
-
-      try {
-        // GIAI ĐOẠN 1: TRƯỞNG NHÓM LẬP KẾ HOẠCH
-        setBubble(1, "Lập dàn ý kịch bản...");
-        const mem1 = studioData.agents[0].memory.join(" | ");
-        const prompt1 = `Bạn là Trưởng nhóm R&D (Cấp ${studioData.agents[0].level}). Ký ức: [${mem1}]. Hãy phân tích yêu cầu script thành các module logic chi tiết, giải thuật chống nghẽn và tiêu chí kỹ thuật để giao cho Kỹ sư.`;
-        const resPlan = await callGemini(k1, model, prompt1, prompt);
-        setBubble(1, "Đã giao việc!");
-        appendChat("Agent 1", `📋 [BẢN KẾ HOẠCH & KIẾN TRÚC]:\n${resPlan}`, "a1");
-
-        // Chuyền giấy từ 1 -> 2
-        await new Promise(r => flyDoc(1, 2, r));
-
-        // GIAI ĐOẠN 2: KỸ SƯ VIẾT MÃ NGUỒN HOÀN CHỈNH
-        setBubble(2, "Viết mã nguồn Luau...");
-        const mem2 = studioData.agents[1].memory.join(" | ");
-        const prompt2 = `Bạn là Kỹ sư Lập trình Cấp cao (Cấp ${studioData.agents[1].level}). Ký ức: [${mem2}]. Hãy trực tiếp viết mã nguồn Luau/Lua hoàn chỉnh, chú thích rõ ràng, dọn rác bộ nhớ cẩn thận theo kế hoạch của Trưởng nhóm.`;
-        const resCode = await callGemini(k2, model, prompt2, `Kế hoạch:\n${resPlan}\n\nYêu cầu:\n${prompt}`);
-        setBubble(2, "Hoàn tất code!");
-        appendChat("Agent 2", `💻 [MÃ NGUỒN HOÀN THIỆN]:\n${resCode}`, "a2");
-
-        // Chuyền giấy từ 2 -> 3
-        await new Promise(r => flyDoc(2, 3, r));
-
-        // GIAI ĐOẠN 3: KIỂM DUYỆT QA SOÁT LỖI
-        setBubble(3, "Thẩm định QA...");
-        const mem3 = studioData.agents[2].memory.join(" | ");
-        const prompt3 = `Bạn là Kỹ sư Thẩm định QA & Security (Cấp ${studioData.agents[2].level}). Ký ức: [${mem3}]. Hãy rà soát toàn bộ code: kiểm tra pcall, rò rỉ RAM, tối ưu vòng lặp và xuất ra bản hoàn thiện an toàn nhất.`;
-        const resReview = await callGemini(k3, model, prompt3, `Code cần duyệt:\n${resCode}`);
-        setBubble(3, "Đã nghiệm thu!");
-        document.getElementById('final-code').innerText = resReview;
-        appendChat("Agent 3", `🔍 [BÁO CÁO THẨM ĐỊNH & THÀNH PHẨM]:\n${resReview}`, "a3");
-
-        // GIAI ĐOẠN 4: HỌP BÀN TRÒN RÚT KINH NGHIỆM ĐỂ LƯU VÀO KÝ ỨC
-        const meetingTable = document.getElementById('meeting-area');
-        const meetingTopic = document.getElementById('meeting-topic');
-        meetingTable.classList.add('debating');
-        meetingTopic.innerText = "Tranh luận...";
-        setBubble(1, "Góp ý"); setBubble(2, "Tiếp thu"); setBubble(3, "Phản biện");
-
-        const debatePrompt = `3 bạn vừa hoàn thành dự án: "${prompt}". Hãy đúc kết DUY NHẤT 1 BÀI HỌC KINH NGHIỆM KỸ THUẬT CỐT LÕI (dưới 35 từ) để nạp vào sổ tay cho công ty không bao giờ mắc lại lỗi cũ.`;
-        const newLesson = await callGemini(k3, model, debatePrompt, `Kết quả:\n${resReview}`);
-        
-        meetingTopic.innerText = "Nghỉ ngơi";
-        meetingTable.classList.remove('debating');
-        setBubble(1, ""); setBubble(2, ""); setBubble(3, "");
-
-        appendChat("Hệ thống", `💡 BÀI HỌC MỚI ĐƯỢC ĐÚC KẾT: "${newLesson}" (+50 XP)`, "sys");
-
-        // Nạp vào ký ức 3 nhân viên
-        studioData.agents[0].memory.push(newLesson);
-        studioData.agents[1].memory.push(newLesson);
-        studioData.agents[2].memory.push(newLesson);
-        addXP(50);
-
-        // Gửi tự động lên Google Sheets
-        if (gasUrl) {
-          fetch(gasUrl, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "save_task",
-              prompt: prompt,
-              plan: resPlan,
-              code: resCode,
-              review: resReview,
-              lesson: newLesson
-            })
-          });
-
-          fetch(gasUrl, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "sync_memory",
-              agents: studioData.agents
-            })
-          });
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${k}`);
+        const data = await res.json();
+        if(data.models && data.models.length > 0) {
+          const valid = data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
+          if(valid.length > 0) {
+            const found = valid[0].name.replace(/^models\//, '');
+            document.getElementById('model-input').value = found;
+            localStorage.setItem('model', found);
+            alert(`Đã tìm thấy model chuẩn: ${found}`);
+            return;
+          }
         }
-
-      } catch (err) {
-        appendChat("Hệ thống", "Lỗi quy trình: " + err.message, "sys");
-      } finally {
-        btn.disabled = false;
-      }
+        alert("Không tìm thấy model nào khả dụng.");
+      } catch(e) { alert("Lỗi khi quét: " + e.message); }
     }
 
-    // TÍNH NĂNG 3: CHẾ ĐỘ TỰ TRỊ R&D (TỰ ĐỘNG THẢO LUẬN & NGHIÊN CỨU)
-    function toggleAutoMode() {
-      const btn = document.getElementById('btn-auto');
-      isAutoRunning = !isAutoRunning;
-      if (isAutoRunning) {
-        btn.innerText = "🤖 Tự trị R&D: BẬT";
-        btn.style.background = "#10b981";
-        appendChat("Hệ thống", "Đã kích hoạt Chế độ Tự trị R&D: Cứ mỗi 2 phút, 3 Agent sẽ tự đề xuất một chủ đề kỹ thuật để thảo luận và nâng cao trình độ.", "sys");
-        runAutoTick();
-        autoTimer = setInterval(runAutoTick, 120000); // 2 phút lặp 1 lần
-      } else {
-        btn.innerText = "🤖 Tự trị R&D: TẮT";
-        btn.style.background = "#1e293b";
-        clearInterval(autoTimer);
-        appendChat("Hệ thống", "Đã tạm dừng Chế độ Tự trị R&D.", "sys");
-      }
-    }
-
-    async function runAutoTick() {
+    async function sendGroupMessage() {
+      const inp = document.getElementById('chat-input'), msg = inp.value.trim();
+      if(!msg) return;
       const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
-      const model = localStorage.getItem('model') || 'gemini-2.0-flash';
-      if (!k1 || !k2 || !k3) return;
-
-      const topics = [
-        "Kỹ thuật tối ưu bộ nhớ Garbage Collection trong Luau khi treo máy dài hạn",
-        "Cách lắng nghe ProximityPrompt mượt mà không làm sụt FPS",
-        "Cơ chế Task.spawn và Task.defer để quản lý luồng ngầm an toàn",
-        "Kỹ thuật chống phát hiện script tự động khi tương tác với vật phẩm",
-        "Cách tối ưu đường truyền tween chuyển động không bị giật lag trên mạng yếu"
-      ];
-      const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
-
-      appendChat("Hệ thống", `☕ [BẮT ĐẦU BUỔI HỌP R&D NỘI BỘ]: "${selectedTopic}"`, "sys");
-
+      const model = localStorage.getItem('model') || 'gemini-3.8-flash';
+      if(!k1||!k2||!k3) return alert("Chưa nhập đủ 3 API Key!");
+      appendChat("Sếp", msg, "user"); inp.value = '';
+      document.getElementById('btn-send-chat').disabled = true;
       try {
-        // Lead gợi mở
-        setBubble(1, "Nêu chủ đề...");
-        const p1 = `Bạn là Trưởng nhóm R&D. Hãy mở đầu cuộc thảo luận ngắn với kỹ sư về chủ đề: "${selectedTopic}". Nêu vấn đề cốt lõi cần giải quyết (dưới 50 từ).`;
-        const rep1 = await callGemini(k1, model, p1, selectedTopic);
-        appendChat("Agent 1", rep1, "a1");
-        setBubble(1, "");
-
-        // Kỹ sư đề xuất kỹ thuật
-        setBubble(2, "Đề xuất mã...");
-        const p2 = `Bạn là Kỹ sư Script. Tiếp nối ý kiến của Trưởng nhóm: "${rep1}". Hãy nêu 1 mẹo code hoặc giải thuật ngắn gọn (dưới 60 từ).`;
-        const rep2 = await callGemini(k2, model, p2, rep1);
-        appendChat("Agent 2", rep2, "a2");
-        setBubble(2, "");
-
-        // QA chốt bài học
-        setBubble(3, "Đúc kết...");
-        const p3 = `Bạn là QA Auditor. Nhận xét ngắn gọn về đề xuất của kỹ sư và rút ra 1 quy tắc chuẩn (dưới 40 từ).`;
-        const rep3 = await callGemini(k3, model, p3, rep2);
-        appendChat("Agent 3", rep3, "a3");
-        setBubble(3, "");
-
-        studioData.agents[1].memory.push(rep3);
-        addXP(20);
-      } catch(e) {}
-    }
-
-    function copyFinalCode() {
-      const text = document.getElementById('final-code').innerText;
-      navigator.clipboard.writeText(text);
-      alert('Đã sao chép mã nguồn vào bộ nhớ tạm!');
-    }
-
-    function renderMemoryList() {
-      const box = document.getElementById('memory-list');
-      box.innerHTML = '';
-      studioData.agents.forEach(ag => {
-        let html = `<div style="margin-bottom: 8px;"><strong>${ag.name} (Lv.${ag.level} - ${ag.xp} XP):</strong><br>`;
-        ag.memory.forEach((m, idx) => {
-          html += `<div class="log-item">${idx + 1}. ${m}</div>`;
-        });
-        html += `</div>`;
-        box.innerHTML += html;
-      });
-    }
-
-    function resetMemory() {
-      if (!confirm("Bạn có chắc muốn xóa sạch toàn bộ ký ức để nuôi lại từ đầu?")) return;
-      localStorage.removeItem('studio_data');
-      location.reload();
+        setBubble(1, "Phản hồi..."); const r1 = await callGemini(k1, model, `Bạn là Trưởng nhóm R&D (Lv.${studioData.agents[0].level}). Sếp vừa nhắn: "${msg}". Định hướng ngắn gọn (dưới 50 từ).`, msg); appendChat("Agent 1", r1, "a1"); setBubble(1,"");
+        setBubble(2, "Đề xuất..."); const r2 = await callGemini(k2, model, `Bạn là Kỹ sư Luau (Lv.${studioData.agents[1].level}). Trưởng nhóm vừa định hướng: "${r1}". Đề xuất giải pháp kỹ thuật ngắn gọn (dưới 60 từ).`, r1); appendChat("Agent 2", r2, "a2"); setBubble(2,"");
+        setBubble(3, "Nhận xét..."); const r3 = await callGemini(k3, model, `Bạn là QA (Lv.${studioData.agents[2].level}). Nhận xét rủi ro & chốt phương án an toàn (dưới 50 từ).`, r2); appendChat("Agent 3", r3, "a3"); setBubble(3,"");
+        addXP(15);
+      } catch(e) { appendChat("Hệ thống", "Lỗi trao đổi: " + e.message, "sys"); }
+      finally { document.getElementById('btn-send-chat').disabled = false; }
     }
   </script>
 </body>
