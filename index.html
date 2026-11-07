@@ -14,42 +14,34 @@
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
     header h1 { font-size:16px; color:var(--stardew-yellow); text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
     .btn-header { display:flex; gap:4px; }
-    
     .game-viewport { position:relative; width:100%; height:310px; background:#365e1b; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
     #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
-    
     .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(18,26,41,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:var(--stardew-yellow); display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
     .time-text { font-size:11px; color:#38bdf8; letter-spacing:0.5px; }
     .weather-text { font-size:9.5px; color:#fef08a; }
-    
     .top-left-tools { position:absolute; top:8px; left:8px; display:flex; gap:4px; }
     .btn-sound { background:rgba(18,26,41,0.85); border:1px solid #475569; color:#fde047; font-size:10px; padding:3px 7px; border-radius:5px; cursor:pointer; }
     .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(18,26,41,0.85); border:1px solid #475569; padding:3px 8px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
     .barn-badge { position:absolute; bottom:8px; right:8px; background:rgba(18,26,41,0.85); border:1px solid #eab308; padding:3px 8px; border-radius:4px; font-size:9.5px; color:#fde047; font-weight:bold; pointer-events:none; }
-
     .card { background:var(--panel); border:1px solid var(--panel-border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
     input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--panel-border); background:#0a0f1c; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
     .btn-action { background:#16a34a; color:#fff; font-weight:bold; border:none; cursor:pointer; padding:8px; box-shadow:0 2px 4px rgba(0,0,0,0.4); }
     .btn-small { width:auto; font-size:10px; padding:3px 6px; margin:0; background:#22314a; border:1px solid #374b6e; color:#fff; border-radius:4px; cursor:pointer; }
     .btn-active { background:#15803d; border-color:#4ade80; }
-    
     .chat-container { height:290px; display:flex; flex-direction:column; }
     .chat-messages { flex:1; overflow-y:auto; background:#080c16; border:1px solid var(--panel-border); border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
     .msg-row { display:flex; flex-direction:column; width:100%; max-width:96%; }
     .msg-sender { font-size:9.5px; font-weight:bold; margin-bottom:2px; display:flex; justify-content:space-between; }
-    
     .msg-box { padding:6px 8px; border-radius:6px; font-size:11.5px; line-height:1.45; word-break:break-word; }
     .msg-thought { font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.5); border-left:3px solid #ca8a04; padding:4px 6px; margin-bottom:5px; border-radius:3px; font-style:italic; line-height:1.35; }
     .msg-speech { font-size:11.8px; color:#f8fafc; font-weight:500; }
     .file-download-chip { display:inline-flex; align-items:center; gap:5px; background:#047857; color:#fff; padding:4px 8px; border-radius:4px; font-size:10.5px; font-weight:bold; margin-top:6px; cursor:pointer; border:1px solid #10b981; }
-
     .msg-user { align-self:flex-end; } .msg-user .msg-sender { color:#38bdf8; text-align:right; } .msg-user .msg-box { background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); }
     .msg-a1 { align-self:flex-start; } .msg-a1 .msg-sender { color:#818cf8; } .msg-a1 .msg-box { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.3); }
     .msg-a2 { align-self:flex-start; } .msg-a2 .msg-sender { color:#34d399; } .msg-a2 .msg-box { background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); font-family:monospace; font-size:11.2px; }
     .msg-a3 { align-self:flex-start; } .msg-a3 .msg-sender { color:#f472b6; } .msg-a3 .msg-box { background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); }
     .msg-sys .msg-box { background:#1e293b; border:1px dashed #475569; font-size:10px; color:#fde047; text-align:center; padding:3px; }
-    
     .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
   </style>
 </head>
@@ -159,7 +151,6 @@
     <div class="card-title"><span>🧭 Định hướng & Kỷ niệm</span><button class="btn-small" onclick="togglePanel('identity-modal')">Đóng</button></div>
     <div id="identity-list" style="max-height:200px; overflow-y:auto; font-size:11px;"></div>
   </div>
-
   <script>
     const PERMANENT_GAS_URL = "https://script.google.com/macros/s/AKfycbwIGM0I7BIg9oWfz8q6U_M8dt8_JPyJaOpSdhVIZ9NmQNUJrwhGhomB4BRY1cvQwdYk/exec";
 
@@ -180,6 +171,7 @@
     let flowTimeout = null;
     let hardWatchdog = null;
     let soundEnabled = true;
+
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     const W = 480, H = 270;
@@ -240,7 +232,6 @@
         return "Khu Nhà Nghỉ Giường Gỗ";
       }
     }
-
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -346,8 +337,6 @@
         ctx.fillStyle = "#ef5350"; ctx.fillRect(p[0] + treeSway - 1, p[1] - 1, 1.5, 1.5);
         ctx.fillStyle = "#b71c1c";
       });
-
-      // 2. NỘI THẤT DINH THỰ CHÍNH
       ctx.fillStyle = "#271202"; ctx.fillRect(10, 10, 345, 250);
       ctx.fillStyle = "#4e2608"; ctx.fillRect(12, 12, 341, 246);
       ctx.fillStyle = "#271202"; ctx.fillRect(8, 5, 349, 14);
@@ -734,7 +723,6 @@
       drawLightingAndWeather(ctx);
       requestAnimationFrame(gameLoop);
     }
-
     let audioCtx = null;
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1021,7 +1009,17 @@
             downloadButtonHtml = `<div style="margin-top:5px;"><button class="file-download-chip" onclick="downloadLuaFile(decodeURIComponent('${encodedCode}'), 'script.lua')">📥 Tải tệp script.lua về máy</button></div>`;
           }
         }
-        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-box">${thoughtHtml}${speechHtml}${downloadButtonHtml}</div>`; feed.appendChild(row); }); feed.scrollTop = feed.scrollHeight; }  function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }  function setAgentBubble(id, text) { if (!text \vert{}\vert{} text.includes("[IM LẶNG]")) return; let key = id === 'user' ? 'user' : `a${id}`;
+        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-box">${thoughtHtml}${speechHtml}${downloadButtonHtml}</div>`;
+        feed.appendChild(row);
+      });
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
+
+    function setAgentBubble(id, text) {
+      if (!text || text.includes("[IM LẶNG]")) return;
+      let key = id === 'user' ? 'user' : `a${id}`;
       if (CHARACTERS[key]) {
         CHARACTERS[key].bubble = text;
         CHARACTERS[key].bTimer = 220;
@@ -1096,7 +1094,6 @@
         </div>
       `).join('');
     }
-
     async function callGeminiAdvanced(key, chosenModel, thinkingBudget, sys, user) {
       if(!key) throw new Error("Chưa có đủ API Key!");
       let cleanModel = (chosenModel || "gemini-3.5-flash-lite").trim();
