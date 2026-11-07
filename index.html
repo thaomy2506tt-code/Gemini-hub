@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Script Valley - Stardew AI Manor Pro</title>
+  <title>Script Valley - Stardew 3D AI Manor Pro</title>
   <style>
     :root {
       --bg:#070b14; --panel:#121a29; --panel-border:#24334a; --primary:#38bdf8;
@@ -14,15 +14,18 @@
     header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
     header h1 { font-size:16px; color:var(--stardew-yellow); text-shadow:2px 2px 0 #78350f, -1px -1px 0 #000; font-weight:900; }
     .btn-header { display:flex; gap:4px; }
-    .game-viewport { position:relative; width:100%; height:310px; background:#365e1b; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
-    #game-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
-    .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(18,26,41,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:var(--stardew-yellow); display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+    .game-viewport { position:relative; width:100%; height:320px; background:#1b2814; border:4px solid #4a2810; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8), inset 0 0 12px rgba(0,0,0,0.6); margin-bottom:8px; }
+    #game-canvas { width:100%; height:100%; display:block; touch-action:none; }
+        .weather-clock-badge { position:absolute; top:8px; right:8px; background:rgba(18,26,41,0.92); border:2px solid #ca8a04; border-radius:7px; padding:4px 8px; font-size:10px; font-weight:bold; color:var(--stardew-yellow); display:flex; flex-direction:column; align-items:flex-end; gap:2px; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.6); z-index:10; }
     .time-text { font-size:11px; color:#38bdf8; letter-spacing:0.5px; }
     .weather-text { font-size:9.5px; color:#fef08a; }
-    .top-left-tools { position:absolute; top:8px; left:8px; display:flex; gap:4px; }
+    .top-left-tools { position:absolute; top:8px; left:8px; display:flex; gap:4px; z-index:10; }
     .btn-sound { background:rgba(18,26,41,0.85); border:1px solid #475569; color:#fde047; font-size:10px; padding:3px 7px; border-radius:5px; cursor:pointer; }
-    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(18,26,41,0.85); border:1px solid #475569; padding:3px 8px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; }
-    .barn-badge { position:absolute; bottom:8px; right:8px; background:rgba(18,26,41,0.85); border:1px solid #eab308; padding:3px 8px; border-radius:4px; font-size:9.5px; color:#fde047; font-weight:bold; pointer-events:none; }
+    .hint-tap { position:absolute; bottom:8px; left:8px; background:rgba(18,26,41,0.85); border:1px solid #475569; padding:3px 8px; border-radius:4px; font-size:9px; color:#e2e8f0; pointer-events:none; z-index:10; }
+    .barn-badge { position:absolute; bottom:8px; right:8px; background:rgba(18,26,41,0.85); border:1px solid #eab308; padding:3px 8px; border-radius:4px; font-size:9.5px; color:#fde047; font-weight:bold; pointer-events:none; z-index:10; }
+    #speech-overlay { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:5; overflow:hidden; }
+    .bubble-3d { position:absolute; transform:translate(-50%, -100%); background:rgba(15,23,42,0.94); border:1.5px solid #fde047; border-radius:6px; padding:4px 8px; font-size:9.5px; color:#fef08a; font-weight:bold; white-space:nowrap; box-shadow:0 3px 8px rgba(0,0,0,0.6); pointer-events:none; }
+    .bubble-3d::after { content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); border-width:5px 5px 0; border-style:solid; border-color:#fde047 transparent; display:block; width:0; }
     .card { background:var(--panel); border:1px solid var(--panel-border); border-radius:8px; padding:8px; margin-bottom:8px; }
     .card-title { font-size:12px; font-weight:bold; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
     input, select, textarea, button { width:100%; border-radius:6px; border:1px solid var(--panel-border); background:#0a0f1c; color:var(--text); padding:7px; font-size:12px; margin-bottom:5px; }
@@ -44,10 +47,12 @@
     .msg-sys .msg-box { background:#1e293b; border:1px dashed #475569; font-size:10px; color:#fde047; text-align:center; padding:3px; }
     .chat-controls { display:flex; gap:5px; } .chat-controls textarea { margin-bottom:0; flex:1; resize:none; } .chat-controls button { width:75px; margin-bottom:0; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
   <header>
-    <h1>🌾 Script Valley AI Pro</h1>
+    <h1>🌾 Script Valley 3D Pro</h1>
     <div class="btn-header">
       <button class="btn-small" id="btn-flow" onclick="toggleFlowMode()">🎙️ Tự đàm đạo: TẮT</button>
       <button class="btn-small" onclick="togglePanel('vault-modal')">📜 Kho Script</button>
@@ -58,6 +63,7 @@
 
   <div class="game-viewport">
     <canvas id="game-canvas"></canvas>
+    <div id="speech-overlay"></div>
     <div class="top-left-tools">
       <button class="btn-sound" id="btn-sound" onclick="toggleAudioEngine()">🔊 Âm thanh: BẬT</button>
     </div>
@@ -65,13 +71,13 @@
       <span class="time-text" id="live-time">17:15 • Giờ VN</span>
       <span class="weather-text" id="live-weather">☀️ Nắng ráo • 28°C</span>
     </div>
-    <div class="hint-tap">👆 Chạm đất: Sếp đi • Chạm bí ngô: Thu hoạch • Hỏi ai người đó đáp</div>
+    <div class="hint-tap">👆 Vuốt để xoay 3D • Chạm đất: Sếp đi • Chạm bí ngô: Thu hoạch</div>
     <div class="barn-badge" id="barn-counter">🎃 Kho: 0 Bí Ngô</div>
   </div>
 
   <div class="card chat-container">
     <div class="card-title">
-      <span>💬 Phòng họp R&D (Phản hồi chọn lọc & Xuất file)</span>
+      <span>💬 Phòng họp R&D (Phản hồi chọn lọc & Xuất file .lua)</span>
       <div style="display:flex; gap:4px;">
         <button class="btn-small" style="background:#dc2626;" onclick="forceResetLock()">🔓 Mở kẹt phím</button>
         <button class="btn-small" onclick="clearChat()">Xóa chat</button>
@@ -79,13 +85,13 @@
     </div>
     <div class="chat-messages" id="chat-feed"></div>
     <div class="chat-controls">
-      <textarea id="chat-input" rows="2" placeholder="VD: 'Huy viết script gom rác RAM', hoặc 'Linh kiểm tra giúp...'"></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Gõ yêu cầu viết code Luau, giao việc hoặc trò chuyện..."></textarea>
       <button class="btn-action" onclick="sendGroupMessage()" id="btn-send-chat">Gửi</button>
     </div>
   </div>
   <div class="card" id="vault-modal" style="display:none;">
     <div class="card-title">
-      <span>📜 Kho Script Luau (Tải về dùng ngay)</span>
+      <span>📜 Kho Script Luau (Tải về dùng ngay trên Cloud Phone)</span>
       <div style="display:flex; gap:4px;">
         <button class="btn-small" style="background:#2563eb;" onclick="downloadAllScripts()">📦 Tải tất cả (.lua)</button>
         <button class="btn-small" onclick="togglePanel('vault-modal')">Đóng</button>
@@ -97,16 +103,16 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⚙️ Danh Sách Model Gemini API (Thế hệ 3 / 3.8 / 3.5 / 3.1)</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
+    <div class="card-title"><span>⚙️ Danh Sách Model Gemini 3 / 3.8 / 3.6 / 3.5 / 3.1</span><button class="btn-small" onclick="togglePanel('cfg-box')">Mở/Đóng</button></div>
     <div id="cfg-box" style="display:none; font-size:11px;">
       <b style="color:#818cf8;">1. Minh (Trưởng nhóm R&D):</b>
       <div style="display:flex; gap:4px;">
         <select id="m1" style="flex:2;">
-          <option value="gemini-3.1-pro-preview">3.1 Pro Preview (Suy luận nâng cao)</option>
           <option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu toàn diện)</option>
           <option value="gemini-3.6-flash">3.6 Flash (Hiệu suất cao)</option>
           <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Siêu nhẹ, tiết kiệm)</option>
           <option value="gemini-3.1-flash-lite">3.1 Flash-Lite (Rút gọn tối ưu)</option>
+          <option value="gemini-3.1-pro-preview">3.1 Pro Preview (Suy luận sâu)</option>
         </select>
         <select id="th1" style="flex:1;"><option value="2048" selected>Tư duy: Nhanh</option><option value="0">Tắt tư duy</option></select>
       </div>
@@ -116,7 +122,7 @@
       <div style="display:flex; gap:4px;">
         <select id="m2" style="flex:2;">
           <option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu toàn diện)</option>
-          <option value="gemini-3.1-pro-preview">3.1 Pro Preview (Chuyên gia Code)</option>
+          <option value="gemini-3.1-pro-preview">3.1 Pro Preview (Chuyên gia Luau)</option>
           <option value="gemini-3.6-flash">3.6 Flash (Hiệu suất cao)</option>
           <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Siêu nhẹ, tiết kiệm)</option>
           <option value="gemini-3.1-flash-lite">3.1 Flash-Lite (Rút gọn tối ưu)</option>
@@ -129,7 +135,7 @@
       <div style="display:flex; gap:4px;">
         <select id="m3" style="flex:2;">
           <option value="gemini-3.8-flash" selected>3.8 Flash (Tối ưu toàn diện)</option>
-          <option value="gemini-3.1-pro-preview">3.1 Pro Preview (Bắt lỗi chuyên sâu)</option>
+          <option value="gemini-3.1-pro-preview">3.1 Pro Preview (Bắt lỗi an toàn)</option>
           <option value="gemini-3.6-flash">3.6 Flash (Hiệu suất cao)</option>
           <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Siêu nhẹ, tiết kiệm)</option>
           <option value="gemini-3.1-flash-lite">3.1 Flash-Lite (Rút gọn tối ưu)</option>
@@ -164,7 +170,7 @@
 
     const DEFAULT_STUDIO = {
       agents: [
-        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, energy: 100, mood: "Tập trung", goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp.", memory: ["Điều phối sinh hoạt và dự án tại thung lũng."] },
+        { id: 1, name: "Minh", title: "Trưởng nhóm R&D", level: 1, xp: 0, energy: 100, mood: "Tập trung", goal: "Kiến trúc sư hệ thống tự động hóa bền vững.", philosophy: "Điềm đạm, ấm áp, nhìn xa trông rộng, luôn đồng hành cùng Sếp.", memory: ["Điều phối sinh hoạt và dự án tại thung lũng 3D."] },
         { id: 2, name: "Huy", title: "Kỹ sư Luau", level: 1, xp: 0, energy: 100, mood: "Phấn chấn", goal: "Cao thủ tối ưu mã nguồn Luau & Cloud Phone.", philosophy: "Hài hước, thực chiến, diệt trừ rác RAM.", memory: ["Tối ưu dọn sạch rác bộ nhớ không văng game."] },
         { id: 3, name: "Linh", title: "QA Kiểm duyệt", level: 1, xp: 0, energy: 100, mood: "Sắc bén", goal: "Chuyên gia Thẩm định an toàn phần mềm.", philosophy: "Sắc sảo, bắt lỗi tinh tế, thích trêu Huy nhưng rất chu đáo.", memory: ["Bọc pcall chống sập luồng cho hệ thống."] }
       ],
@@ -180,502 +186,476 @@
     let hardWatchdog = null;
     let soundEnabled = true;
 
-    const canvas = document.getElementById('game-canvas');
-    const ctx = canvas.getContext('2d');
-    const W = 480, H = 270;
-
-    function resizeCanvas() { canvas.width = W; canvas.height = H; }
-    window.addEventListener('resize', resizeCanvas);
-
-    let tapTarget = null;
+    let scene, camera, renderer, controls, raycaster, mouse;
+    let sunLight, ambientLight, fireLight;
     let currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
-    let weatherParticles = [];
-    let fireAnimFrame = 0;
-    let floatingTexts = [];
+    let groundPlane = null;
 
-    const SPOTS = {
-      work:    [{x: 48, y: 72}, {x: 88, y: 72}, {x: 128, y: 72}],
-      meeting: [{x: 195, y: 75}, {x: 235, y: 75}],
-      arcade:  [{x: 295, y: 68}, {x: 332, y: 78}],
-      kitchen: [{x: 58, y: 195}, {x: 95, y: 195}, {x: 125, y: 175}],
-      toilet:  [{x: 175, y: 195}, {x: 205, y: 195}],
-      dorm:    [{x: 265, y: 188}, {x: 300, y: 188}, {x: 335, y: 188}],
-      farm:    [{x: 395, y: 85}, {x: 435, y: 110}, {x: 405, y: 195}, {x: 445, y: 225}],
-      fireplace:[{x: 170, y: 45}]
+    const SPOTS_3D = {
+      work:      [ {x: -9.5, z: -5.5}, {x: -6.5, z: -5.5}, {x: -3.5, z: -5.5} ],
+      meeting:   [ {x: 1.5, z: -4.5}, {x: 4.5, z: -4.5} ],
+      arcade:    [ {x: 8.5, z: -5.0}, {x: 10.5, z: -3.5} ],
+      kitchen:   [ {x: -8.0, z: 4.5}, {x: -4.5, z: 4.5} ],
+      toilet:    [ {x: -0.5, z: 5.0}, {x: 1.5, z: 5.0} ],
+      dorm:      [ {x: 6.0, z: 4.5}, {x: 8.5, z: 4.5}, {x: 11.0, z: 4.5} ],
+      fireplace: [ {x: 0.0, z: -6.0} ],
+      farm:      [ {x: 15.5, z: -4.0}, {x: 18.0, z: 0.0}, {x: 16.5, z: 4.5} ]
     };
 
     const CHARACTERS = {
-      user: { name: "Sếp",  x: 215, y: 130, tx: 215, ty: 130, shirt: "#0284c7", pants: "#034975", hair: "#38bdf8", hat: "crown", bubble: "", bTimer: 0, state: "idle", frame: 0 },
-      a1:   { name: "Minh", x: 48,  y: 72,  tx: 48,  ty: 72,  shirt: "#4f46e5", pants: "#1e1b4b", hair: "#312e81", hat: "glasses", bubble: "", bTimer: 0, state: "work", frame: 0, wait: 120 },
-      a2:   { name: "Huy",  x: 88,  y: 72,  tx: 88,  ty: 72,  shirt: "#059669", pants: "#064e3b", hair: "#b45309", hat: "cap",   bubble: "", bTimer: 0, state: "work", frame: 0, wait: 70 },
-      a3:   { name: "Linh", x: 128, y: 72,  tx: 128, ty: 72,  shirt: "#db2777", pants: "#831843", hair: "#f472b6", hat: "ribbon",bubble: "", bTimer: 0, state: "work", frame: 0, wait: 140 }
+      user: { name: "Sếp",  x: 0.0, z: 0.0, tx: 0.0, tz: 0.0, shirt: 0x0284c7, pants: 0x0f172a, hair: 0x38bdf8, hat: "crown", bubble: "", bTimer: 0, state: "idle", mesh: null, legs: [] },
+      a1:   { name: "Minh", x: -9.5, z: -5.5, tx: -9.5, tz: -5.5, shirt: 0x4f46e5, pants: 0x1e1b4b, hair: 0x312e81, hat: "glasses", bubble: "", bTimer: 0, state: "work", wait: 120, mesh: null, legs: [] },
+      a2:   { name: "Huy",  x: -6.5, z: -5.5, tx: -6.5, tz: -5.5, shirt: 0x059669, pants: 0x064e3b, hair: 0xb45309, hat: "cap",     bubble: "", bTimer: 0, state: "work", wait: 70, mesh: null, legs: [] },
+      a3:   { name: "Linh", x: -3.5, z: -5.5, tx: -3.5, tz: -5.5, shirt: 0xdb2777, pants: 0x831843, hair: 0xf472b6, hat: "ribbon",  bubble: "", bTimer: 0, state: "work", wait: 140, mesh: null, legs: [] }
     };
 
     const PETS = [
-      { type: "rabbit", name: "Thỏ Trắng", x: 410, y: 135, tx: 410, ty: 135, wait: 40, frame: 0, color: "#ffffff", eye: "#ef4444" },
-      { type: "chicken", name: "Gà Nâu",   x: 440, y: 145, tx: 440, ty: 145, wait: 60, frame: 0, color: "#d97706", beak: "#f59e0b" }
+      { type: "rabbit", name: "Thỏ Trắng", x: 15.5, z: 1.0, tx: 15.5, tz: 1.0, wait: 40, mesh: null },
+      { type: "chicken", name: "Gà Nâu",   x: 17.5, z: 3.0, tx: 17.5, tz: 3.0, wait: 60, mesh: null }
     ];
 
-    let pumpkins = [
-      {x: 390, y: 55, growth: 100, watered: true},
-      {x: 415, y: 55, growth: 100, watered: true},
-      {x: 440, y: 55, growth: 80,  watered: false},
-      {x: 390, y: 75, growth: 100, watered: true},
-      {x: 415, y: 75, growth: 90,  watered: false},
-      {x: 440, y: 75, growth: 100, watered: true},
-      {x: 390, y: 95, growth: 70,  watered: false},
-      {x: 415, y: 95, growth: 100, watered: true},
-      {x: 440, y: 95, growth: 100, watered: true}
-    ];
+    let pumpkins3D = [];
+    function init3DWorld() {
+      const container = document.querySelector('.game-viewport');
+      const w = container.clientWidth || 480;
+      const h = container.clientHeight || 320;
 
-    function getRoomNameByCoord(x, y) {
-      if (x > 360) return "Vườn Bí Ngô Ngoài Trời";
-      if (y < 125) {
-        if (x < 140) return "Phòng Làm Việc R&D";
-        if (x < 265) return "Phòng Họp & Lò Sưởi";
-        return "Phòng Game Arcade";
-      } else {
-        if (x < 145) return "Khu Bếp & Nhà Ăn";
-        if (x < 235) return "Phòng Vệ Sinh";
-        return "Khu Nhà Nghỉ Giường Gỗ";
-      }
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x365e1b);
+
+      camera = new THREE.PerspectiveCamera(36, w / h, 0.1, 1000);
+      camera.position.set(16, 26, 22);
+      camera.lookAt(2, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas'), antialias: true });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2.1;
+      controls.minDistance = 10;
+      controls.maxDistance = 50;
+
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      ambientLight = new THREE.AmbientLight(0xfffbeb, 0.75);
+      scene.add(ambientLight);
+
+      sunLight = new THREE.DirectionalLight(0xffedd5, 0.85);
+      sunLight.position.set(15, 25, 12);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 1024;
+      sunLight.shadow.mapSize.height = 1024;
+      scene.add(sunLight);
+
+      const grassGeo = new THREE.PlaneGeometry(60, 40);
+      const grassMat = new THREE.MeshLambertMaterial({ color: 0x4a7c29 });
+      const grass = new THREE.Mesh(grassGeo, grassMat);
+      grass.rotation.x = -Math.PI / 2;
+      grass.position.y = -0.05;
+      grass.receiveShadow = true;
+      scene.add(grass);
+      groundPlane = grass;
+
+      const floorGeo = new THREE.BoxGeometry(26, 0.3, 16);
+      const floorMat = new THREE.MeshLambertMaterial({ color: 0xa15312 });
+      const floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.position.set(0, 0, 0);
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      buildWall(-13, 0, 0.6, 16, 2.0);
+      buildWall(13, 0, 0.6, 16, 2.0);
+      buildWall(0, -8, 26, 0.6, 2.0);
+      buildWall(-2, -0.2, 0.4, 7.5, 1.4);
+      buildWall(6.5, -0.2, 0.4, 7.5, 1.4);
+      buildWall(-3, 0.2, 20, 0.4, 1.4);
+      buildWall(4.0, 4.0, 0.4, 7.5, 1.4);
+
+      const toiletFloor = new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.32, 7.2), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+      toiletFloor.position.set(0.5, 0.01, 4.0);
+      toiletFloor.receiveShadow = true;
+      scene.add(toiletFloor);
+
+      buildCarpet(3.0, -4.5, 6.0, 5.0, 0x1e3a8a);
+      buildCarpet(9.5, -4.5, 5.0, 5.0, 0x831843);
     }
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const tx = Math.max(20, Math.min(W - 20, (e.clientX - rect.left) * scaleX));
-      const ty = Math.max(30, Math.min(H - 20, (e.clientY - rect.top) * scaleY));
 
-      let clickedPumpkin = false;
-      if (tx >= 375 && tx <= 470 && ty >= 42 && ty <= 110) {
-        pumpkins.forEach(p => {
-          let dist = Math.hypot(p.x - tx, p.y - ty);
-          if (dist < 14) {
-            clickedPumpkin = true;
-            if (p.growth >= 100) {
-              p.growth = 20;
-              p.watered = false;
-              studioData.pumpkinsHarvested = (studioData.pumpkinsHarvested || 0) + 1;
-              document.getElementById('barn-counter').innerText = `🎃 Kho: ${studioData.pumpkinsHarvested} Bí Ngô`;
-              addFloatingText("+1 Bí Ngô 🎃", p.x, p.y, "#fde047");
-              playChiptune("coin");
-              addXP(10);
-            } else {
-              p.watered = true;
-              p.growth = Math.min(100, p.growth + 25);
-              addFloatingText("Tưới nước 💧", p.x, p.y, "#38bdf8");
-              playChiptune("step");
-            }
-          }
-        });
-      }
-
-      if (!clickedPumpkin) {
-        CHARACTERS.user.tx = tx;
-        CHARACTERS.user.ty = ty;
-        CHARACTERS.user.bubble = "Đi kiểm tra!";
-        CHARACTERS.user.bTimer = 60;
-        tapTarget = { x: tx, y: ty, r: 12, alpha: 1.0 };
-        playChiptune("step");
-      }
-    });
-
-    function addFloatingText(text, x, y, color) {
-      floatingTexts.push({ text: text, x: x, y: y, alpha: 1.0, color: color });
+    function buildWall(x, z, w, d, h) {
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color: 0x4e2608 }));
+      wall.position.set(x, h / 2, z);
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+      scene.add(wall);
     }
 
-    function drawWorld(ctx) {
-      ctx.fillStyle = "#4a7c29"; ctx.fillRect(360, 0, 120, H);
-      ctx.fillStyle = "#3b6320";
-      for(let x=365; x<475; x+=14) {
-        for(let y=8; y<265; y+=18) { ctx.fillRect(x, y, 2, 4); ctx.fillRect(x+2, y-1, 2, 5); }
-      }
+    function buildCarpet(x, z, w, d, color) {
+      const carpet = new THREE.Mesh(new THREE.BoxGeometry(w, 0.05, d), new THREE.MeshLambertMaterial({ color: color }));
+      carpet.position.set(x, 0.18, z);
+      carpet.receiveShadow = true;
+      scene.add(carpet);
+    }
+    function build3DFurnitureAndFarm() {
+      const desk = new THREE.Mesh(new THREE.BoxGeometry(10, 0.9, 2.2), new THREE.MeshLambertMaterial({ color: 0x5c2e0b }));
+      desk.position.set(-6.5, 0.45, -6.8);
+      desk.castShadow = true;
+      scene.add(desk);
 
-      ctx.fillStyle = "#3e2723"; ctx.fillRect(375, 42, 95, 68);
-      ctx.fillStyle = "#4e342e"; ctx.fillRect(377, 44, 91, 64);
-      ctx.fillStyle = "#271202";
-      for(let y=44; y<=108; y+=13) { ctx.fillRect(377, y, 91, 2); }
+      [-9.5, -6.5, -3.5].forEach(pcX => {
+        const pcCase = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 1.4), new THREE.MeshLambertMaterial({ color: 0x0f172a }));
+        pcCase.position.set(pcX, 1.5, -7.0);
+        scene.add(pcCase);
 
-      pumpkins.forEach(p => {
-        if (p.watered) {
-          ctx.fillStyle = "#1e1005";
-          ctx.fillRect(p.x - 9, p.y - 7, 18, 14);
+        const screen = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.0, 0.15), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        screen.position.set(pcX, 1.5, -6.3);
+        scene.add(screen);
+      });
+
+      const roundTable = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 0.8, 16), new THREE.MeshLambertMaterial({ color: 0x78350f }));
+      roundTable.position.set(3.0, 0.4, -4.5);
+      roundTable.castShadow = true;
+      scene.add(roundTable);
+
+      const fireMesh = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.6, 1.6), new THREE.MeshLambertMaterial({ color: 0x334155 }));
+      fireMesh.position.set(0.0, 1.3, -7.2);
+      scene.add(fireMesh);
+
+      fireLight = new THREE.PointLight(0xf97316, 1.5, 12);
+      fireLight.position.set(0.0, 1.0, -6.2);
+      scene.add(fireLight);
+
+      const arcade = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.6, 1.6), new THREE.MeshLambertMaterial({ color: 0x1e1b4b }));
+      arcade.position.set(8.5, 1.3, -6.8);
+      scene.add(arcade);
+      const arcadeScreen = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 0.1), new THREE.MeshBasicMaterial({ color: 0xf43f5e }));
+      arcadeScreen.position.set(8.5, 1.8, -5.95);
+      scene.add(arcadeScreen);
+
+      const fridge = new THREE.Mesh(new THREE.BoxGeometry(1.8, 3.2, 1.8), new THREE.MeshLambertMaterial({ color: 0xf8fafc }));
+      fridge.position.set(-11.5, 1.6, 2.5);
+      scene.add(fridge);
+
+      [6.0, 8.5, 11.0].forEach((bedX, i) => {
+        const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.5, 3.2), new THREE.MeshLambertMaterial({ color: 0x5c2e0b }));
+        bedFrame.position.set(bedX, 0.25, 4.5);
+        scene.add(bedFrame);
+
+        const blanketColor = i === 0 ? 0x6366f1 : (i === 1 ? 0x10b981 : 0xec4899);
+        const blanket = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.3, 2.2), new THREE.MeshLambertMaterial({ color: blanketColor }));
+        blanket.position.set(bedX, 0.45, 4.8);
+        scene.add(blanket);
+
+        const pillow = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 0.7), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+        pillow.position.set(bedX, 0.55, 3.4);
+        scene.add(pillow);
+      });
+
+      const soil = new THREE.Mesh(new THREE.BoxGeometry(8, 0.1, 8), new THREE.MeshLambertMaterial({ color: 0x3e2723 }));
+      soil.position.set(17.5, 0.05, -3.5);
+      soil.receiveShadow = true;
+      scene.add(soil);
+
+      build3DPumpkins();
+      build3DWellAndTree();
+    }
+    function build3DPumpkins() {
+      pumpkins3D = [];
+      const startX = 15.0, startZ = -6.0;
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const px = startX + c * 2.4;
+          const pz = startZ + r * 2.4;
+          
+          const pumpkinGroup = new THREE.Group();
+          const pGeo = new THREE.SphereGeometry(0.55, 8, 8);
+          pGeo.scale(1.2, 0.85, 1.2);
+          const pumpkinMesh = new THREE.Mesh(pGeo, new THREE.MeshLambertMaterial({ color: 0xe65100 }));
+          pumpkinMesh.castShadow = true;
+          pumpkinGroup.add(pumpkinMesh);
+
+          const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.3, 5), new THREE.MeshLambertMaterial({ color: 0x1b5e20 }));
+          stem.position.y = 0.5;
+          pumpkinGroup.add(stem);
+
+          pumpkinGroup.position.set(px, 0.45, pz);
+          pumpkinGroup.userData = { id: r * 3 + c, growth: 100, x: px, z: pz };
+          scene.add(pumpkinGroup);
+          pumpkins3D.push(pumpkinGroup);
         }
-        ctx.fillStyle = "rgba(0,0,0,0.45)";
-        ctx.beginPath(); ctx.ellipse(p.x, p.y + 6, 8, 3.5, 0, 0, Math.PI * 2); ctx.fill();
-
-        if (p.growth >= 100) {
-          ctx.fillStyle = "#bf360c"; ctx.beginPath(); ctx.arc(p.x, p.y, 7.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#e65100"; ctx.beginPath(); ctx.arc(p.x - 1, p.y - 1, 6.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#ff9800"; ctx.beginPath(); ctx.arc(p.x - 2, p.y - 2, 4.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#1b5e20"; ctx.fillRect(p.x - 1, p.y - 9, 2.5, 4);
-          ctx.fillStyle = "#4caf50"; ctx.fillRect(p.x + 1, p.y - 8, 3, 2);
-        } else {
-          ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(p.x, p.y + 1, 4.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#4caf50"; ctx.beginPath(); ctx.arc(p.x - 1, p.y, 3.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#81c784"; ctx.fillRect(p.x - 1, p.y - 5, 2, 4);
-        }
-      });
-
-      ctx.fillStyle = "#3e2723";
-      for(let y=18; y<=240; y+=24) { ctx.fillRect(364, y, 6, 20); }
-      ctx.fillStyle = "#8d6e63";
-      for(let y=18; y<=240; y+=24) { ctx.fillRect(365, y+1, 4, 18); }
-      ctx.fillStyle = "#5d4037"; ctx.fillRect(363, 60, 8, 4); ctx.fillRect(363, 140, 8, 4);
-
-      ctx.fillStyle = "#1a252c"; ctx.fillRect(394, 128, 38, 28);
-      ctx.fillStyle = "#455a64"; ctx.fillRect(395, 129, 36, 26);
-      ctx.fillStyle = "#0284c7"; ctx.fillRect(401, 135, 24, 14);
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(403, 137, 6, 4);
-      ctx.fillStyle = "#271202"; ctx.fillRect(390, 116, 46, 10);
-      ctx.fillStyle = "#8d6e63"; ctx.fillRect(391, 117, 44, 8);
-      ctx.fillStyle = "#3e2723"; ctx.fillRect(395, 125, 4, 10); ctx.fillRect(423, 125, 4, 10);
-
-      let treeSway = Math.sin(Date.now() / 800) * 1.5;
-      ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.beginPath(); ctx.ellipse(436, 245, 19, 7, 0, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#3e2723"; ctx.fillRect(431, 204, 9, 36);
-      ctx.fillStyle = "#6d4c41"; ctx.fillRect(433, 204, 5, 36);
-      ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(435 + treeSway, 195, 25, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#2e7d32"; ctx.beginPath(); ctx.arc(432 + treeSway, 190, 19, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#43a047"; ctx.beginPath(); ctx.arc(430 + treeSway, 184, 13, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#b71c1c";
-      [[424, 190], [443, 185], [432, 205], [446, 200]].forEach(p => {
-        ctx.beginPath(); ctx.arc(p[0] + treeSway, p[1], 3.8, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "#ef5350"; ctx.fillRect(p[0] + treeSway - 1, p[1] - 1, 1.5, 1.5);
-        ctx.fillStyle = "#b71c1c";
-      });
-      ctx.fillStyle = "#271202"; ctx.fillRect(10, 10, 345, 250);
-      ctx.fillStyle = "#4e2608"; ctx.fillRect(12, 12, 341, 246);
-      ctx.fillStyle = "#271202"; ctx.fillRect(8, 5, 349, 14);
-      ctx.fillStyle = "#b45309"; ctx.fillRect(9, 6, 347, 12);
-      ctx.fillStyle = "#d97706";
-      for(let x=9; x<355; x+=12) { ctx.beginPath(); ctx.arc(x+6, 17, 6, 0, Math.PI); ctx.fill(); }
-
-      ctx.fillStyle = "#a15312"; ctx.fillRect(14, 20, 337, 236);
-      ctx.fillStyle = "#6e3304";
-      for(let y=20; y<256; y+=14) { ctx.fillRect(14, y, 337, 1.5); }
-      ctx.fillStyle = "#b96a20";
-      for(let y=21; y<256; y+=14) { ctx.fillRect(14, y, 337, 1); }
-
-      ctx.fillStyle = "#271202";
-      ctx.fillRect(135, 20, 7, 105); ctx.fillRect(260, 20, 7, 105); ctx.fillRect(14, 125, 337, 8);
-      ctx.fillRect(140, 133, 7, 123); ctx.fillRect(230, 133, 7, 123);
-      ctx.fillStyle = "#5c2b09";
-      ctx.fillRect(136, 20, 5, 105); ctx.fillRect(261, 20, 5, 105); ctx.fillRect(14, 126, 337, 6);
-      ctx.fillRect(141, 133, 5, 123); ctx.fillRect(231, 133, 5, 123);
-
-      ctx.fillStyle = "#94a3b8"; ctx.fillRect(147, 133, 83, 123);
-      ctx.fillStyle = "#cbd5e1";
-      for(let x=147; x<230; x+=14) {
-        for(let y=133; y<256; y+=14) { if((x+y)%28===0) ctx.fillRect(x, y, 14, 14); }
       }
-
-      ctx.fillStyle = "#0f172a"; ctx.fillRect(154, 35, 92, 77);
-      ctx.fillStyle = "#1e3a8a"; ctx.fillRect(156, 37, 88, 73);
-      ctx.fillStyle = "#2563eb"; ctx.fillRect(160, 41, 80, 65);
-
-      ctx.fillStyle = "#4a044e"; ctx.fillRect(274, 35, 70, 77);
-      ctx.fillStyle = "#831843"; ctx.fillRect(276, 37, 66, 73);
-      ctx.fillStyle = "#be185d"; ctx.fillRect(280, 41, 58, 65);
-
-      ctx.fillStyle = "#271202"; ctx.fillRect(24, 44, 102, 20);
-      ctx.fillStyle = "#5c2e0b"; ctx.fillRect(25, 45, 100, 18);
-      [35, 75, 115].forEach(x => {
-        ctx.fillStyle = "#020617"; ctx.fillRect(x-1, 33, 16, 13);
-        ctx.fillStyle = "#38bdf8"; ctx.fillRect(x, 34, 14, 9);
-        ctx.fillStyle = "#e0f2fe"; ctx.fillRect(x+2, 36, 4, 1.5); ctx.fillRect(x+2, 39, 8, 1.5);
-        ctx.fillStyle = "#475569"; ctx.fillRect(x+5, 47, 4, 4);
-      });
-      drawRoomLabel(ctx, "💻 STUDIO R&D", 35, 30);
-
-      ctx.fillStyle = "#271202"; ctx.fillRect(184, 52, 60, 36);
-      ctx.fillStyle = "#78350f"; ctx.fillRect(185, 53, 58, 34);
-      ctx.fillStyle = "#fde047"; ctx.fillRect(190, 58, 10, 8);
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(215, 56, 14, 10);
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(217, 58, 10, 6);
-      
-      ctx.fillStyle = "#1e293b"; ctx.fillRect(156, 37, 24, 25);
-      ctx.fillStyle = "#475569"; ctx.fillRect(158, 39, 20, 21);
-      ctx.fillStyle = "#0f172a"; ctx.fillRect(160, 45, 16, 15);
-      fireAnimFrame = (fireAnimFrame + 0.15) % 3;
-      let flameH = Math.sin(Date.now() / 150) * 2;
-      ctx.fillStyle = "#dc2626"; ctx.beginPath(); ctx.arc(168, 55, 5 + flameH, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#ea580c"; ctx.beginPath(); ctx.arc(168, 54, 3.5 + flameH, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#fde047"; ctx.beginPath(); ctx.arc(168, 53, 2, 0, Math.PI*2); ctx.fill();
-      drawRoomLabel(ctx, "📋 BÀN TRÒN & LÒ SƯỞI", 175, 30);
-
-      ctx.fillStyle = "#020617"; ctx.fillRect(277, 41, 24, 34);
-      ctx.fillStyle = "#1e1b4b"; ctx.fillRect(278, 42, 22, 32);
-      ctx.fillStyle = "#f43f5e"; ctx.fillRect(281, 46, 16, 14);
-      ctx.fillStyle = "#fde047"; ctx.fillRect(288, 50, 3, 3);
-      ctx.fillStyle = "#eab308"; ctx.fillRect(285, 64, 4, 4);
-      ctx.fillStyle = "#3b0764"; ctx.fillRect(314, 54, 28, 22);
-      ctx.fillStyle = "#7c3aed"; ctx.fillRect(315, 55, 26, 20);
-      ctx.fillStyle = "#a78bfa"; ctx.fillRect(315, 52, 26, 6);
-      drawRoomLabel(ctx, "🎮 ARCADE", 280, 30);
-
-      ctx.fillStyle = "#271202"; ctx.fillRect(29, 169, 97, 28);
-      ctx.fillStyle = "#78350f"; ctx.fillRect(30, 170, 95, 26);
-      ctx.fillStyle = "#020617"; ctx.fillRect(114, 144, 22, 38);
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(115, 145, 20, 36);
-      ctx.fillStyle = "#94a3b8"; ctx.fillRect(117, 160, 16, 2);
-      ctx.fillStyle = "#ca8a04"; ctx.fillRect(50, 174, 9, 9);
-      ctx.fillStyle = "#ef4444"; ctx.fillRect(80, 175, 7, 7);
-      drawRoomLabel(ctx, "🍳 BẾP & NHÀ ĂN", 35, 144);
-
-      ctx.fillStyle = "#020617"; ctx.fillRect(154, 149, 18, 24);
-      ctx.fillStyle = "#f8fafc"; ctx.fillRect(155, 150, 16, 22);
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(158, 153, 10, 8);
-      ctx.fillStyle = "#64748b"; ctx.fillRect(200, 150, 22, 14);
-      ctx.fillStyle = "#38bdf8"; ctx.fillRect(205, 140, 12, 8);
-      drawRoomLabel(ctx, "🚽 VỆ SINH", 168, 144);
-
-      [250, 285, 320].forEach((x, i) => {
-        ctx.fillStyle = "#271202"; ctx.fillRect(x-1, 159, 28, 46);
-        ctx.fillStyle = "#5c2e0b"; ctx.fillRect(x, 160, 26, 44);
-        ctx.fillStyle = i===0 ? "#6366f1" : (i===1 ? "#10b981" : "#ec4899");
-        ctx.fillRect(x+2, 174, 22, 28);
-        ctx.fillStyle = "#ffffff"; ctx.fillRect(x+4, 163, 18, 9);
-      });
-      drawRoomLabel(ctx, "🛏️ PHÒNG NGHỈ", 270, 144);
-
-      ctx.fillStyle = "#271202"; ctx.fillRect(347, 119, 10, 30);
-      ctx.fillStyle = "#8d6e63"; ctx.fillRect(348, 120, 8, 28);
     }
 
-    function drawRoomLabel(ctx, text, x, y) {
-      ctx.font = "bold 8px sans-serif";
-      ctx.fillStyle = "#000000"; ctx.fillText(text, x+1, y+1);
-      ctx.fillStyle = "#fde047"; ctx.fillText(text, x, y);
-    }
-    function updateAndDrawPets(ctx) {
-      PETS.forEach(p => {
-        let dx = p.tx - p.x, dy = p.ty - p.y;
-        let dist = Math.hypot(dx, dy);
-        let isMoving = dist > 1.5;
+    function build3DWellAndTree() {
+      const well = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 1.2, 10), new THREE.MeshLambertMaterial({ color: 0x546e7a }));
+      well.position.set(16.5, 0.6, 4.0);
+      well.castShadow = true;
+      scene.add(well);
 
-        if (isMoving) {
-          p.x += (dx / dist) * 1.2;
-          p.y += (dy / dist) * 1.2;
-          p.frame = (p.frame + 0.15) % 4;
-        } else {
-          p.frame = 0;
-          p.wait = (p.wait || 0) - 1;
-          if (p.wait <= 0) {
-            p.tx = 385 + Math.random() * 70;
-            p.ty = 125 + Math.random() * 95;
-            p.wait = Math.floor(Math.random() * 150) + 90;
-          }
+      const water = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 10), new THREE.MeshBasicMaterial({ color: 0x0284c7 }));
+      water.position.set(16.5, 1.0, 4.0);
+      scene.add(water);
+
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 3.5, 8), new THREE.MeshLambertMaterial({ color: 0x5d4037 }));
+      trunk.position.set(19.5, 1.75, 5.5);
+      trunk.castShadow = true;
+      scene.add(trunk);
+
+      const foliage = new THREE.Mesh(new THREE.SphereGeometry(2.4, 8, 8), new THREE.MeshLambertMaterial({ color: 0x2e7d32 }));
+      foliage.position.set(19.5, 4.5, 5.5);
+      foliage.castShadow = true;
+      scene.add(foliage);
+
+      [ [19.0, 4.5, 7.5], [20.5, 4.0, 6.5], [18.5, 3.5, 4.5], [21.0, 5.0, 4.5] ].forEach(pos => {
+        const apple = new THREE.Mesh(new THREE.SphereGeometry(0.22, 6, 6), new THREE.MeshLambertMaterial({ color: 0xdc2626 }));
+        apple.position.set(pos[0], pos[1], pos[2]);
+        scene.add(apple);
+      });
+    }
+    function build3DPumpkins() {
+      pumpkins3D = [];
+      const startX = 15.0, startZ = -6.0;
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const px = startX + c * 2.4;
+          const pz = startZ + r * 2.4;
+          
+          const pumpkinGroup = new THREE.Group();
+          const pGeo = new THREE.SphereGeometry(0.55, 8, 8);
+          pGeo.scale(1.2, 0.85, 1.2);
+          const pumpkinMesh = new THREE.Mesh(pGeo, new THREE.MeshLambertMaterial({ color: 0xe65100 }));
+          pumpkinMesh.castShadow = true;
+          pumpkinGroup.add(pumpkinMesh);
+
+          const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.3, 5), new THREE.MeshLambertMaterial({ color: 0x1b5e20 }));
+          stem.position.y = 0.5;
+          pumpkinGroup.add(stem);
+
+          pumpkinGroup.position.set(px, 0.45, pz);
+          pumpkinGroup.userData = { id: r * 3 + c, growth: 100, x: px, z: pz };
+          scene.add(pumpkinGroup);
+          pumpkins3D.push(pumpkinGroup);
+        }
+      }
+    }
+
+    function build3DWellAndTree() {
+      const well = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 1.2, 10), new THREE.MeshLambertMaterial({ color: 0x546e7a }));
+      well.position.set(16.5, 0.6, 4.0);
+      well.castShadow = true;
+      scene.add(well);
+
+      const water = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 10), new THREE.MeshBasicMaterial({ color: 0x0284c7 }));
+      water.position.set(16.5, 1.0, 4.0);
+      scene.add(water);
+
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 3.5, 8), new THREE.MeshLambertMaterial({ color: 0x5d4037 }));
+      trunk.position.set(19.5, 1.75, 5.5);
+      trunk.castShadow = true;
+      scene.add(trunk);
+
+      const foliage = new THREE.Mesh(new THREE.SphereGeometry(2.4, 8, 8), new THREE.MeshLambertMaterial({ color: 0x2e7d32 }));
+      foliage.position.set(19.5, 4.5, 5.5);
+      foliage.castShadow = true;
+      scene.add(foliage);
+
+      [ [19.0, 4.5, 7.5], [20.5, 4.0, 6.5], [18.5, 3.5, 4.5], [21.0, 5.0, 4.5] ].forEach(pos => {
+        const apple = new THREE.Mesh(new THREE.SphereGeometry(0.22, 6, 6), new THREE.MeshLambertMaterial({ color: 0xdc2626 }));
+        apple.position.set(pos[0], pos[1], pos[2]);
+        scene.add(apple);
+      });
+    }
+    function build3DCharacters() {
+      Object.keys(CHARACTERS).forEach(k => {
+        const c = CHARACTERS[k];
+        const group = new THREE.Group();
+
+        const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.0, 0.6), new THREE.MeshLambertMaterial({ color: c.shirt }));
+        body.position.y = 1.0;
+        body.castShadow = true;
+        group.add(body);
+
+        const head = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.9, 0.9), new THREE.MeshLambertMaterial({ color: 0xfed7aa }));
+        head.position.y = 1.85;
+        head.castShadow = true;
+        group.add(head);
+
+        const hair = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.45, 0.98), new THREE.MeshLambertMaterial({ color: c.hair }));
+        hair.position.set(0, 2.15, 0);
+        group.add(hair);
+
+        if (c.hat === "crown") {
+          const crown = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.4, 5), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+          crown.position.set(0, 2.5, 0);
+          group.add(crown);
+        } else if (c.hat === "cap") {
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.2, 1.3), new THREE.MeshLambertMaterial({ color: 0x047857 }));
+          cap.position.set(0, 2.3, 0.2);
+          group.add(cap);
+        } else if (c.hat === "ribbon") {
+          const bow = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.25, 0.3), new THREE.MeshLambertMaterial({ color: 0xf43f5e }));
+          bow.position.set(0.4, 2.4, 0);
+          group.add(bow);
         }
 
-        let x = Math.round(p.x), y = Math.round(p.y);
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
-        ctx.beginPath(); ctx.ellipse(x, y + 4, 5, 2.5, 0, 0, Math.PI*2); ctx.fill();
+        const legGeo = new THREE.BoxGeometry(0.3, 0.6, 0.35);
+        const legMat = new THREE.MeshLambertMaterial({ color: c.pants });
+        const legL = new THREE.Mesh(legGeo, legMat);
+        legL.position.set(-0.25, 0.3, 0);
+        legL.castShadow = true;
+        group.add(legL);
 
-        if (p.type === "rabbit") {
-          let hop = isMoving ? -Math.abs(Math.sin(p.frame * Math.PI)) * 4 : 0;
-          ctx.fillStyle = p.color;
-          ctx.beginPath(); ctx.ellipse(x, y + hop, 5, 4, 0, 0, Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.arc(x + 3, y - 2 + hop, 3.5, 0, Math.PI*2); ctx.fill();
-          ctx.fillRect(x + 1, y - 7 + hop, 1.8, 5);
-          ctx.fillRect(x + 3.5, y - 7 + hop, 1.8, 5);
-          ctx.fillStyle = "#fbcfe8";
-          ctx.fillRect(x + 1.2, y - 6 + hop, 1, 3.5);
-          ctx.fillRect(x + 3.7, y - 6 + hop, 1, 3.5);
-          ctx.fillStyle = p.eye;
-          ctx.fillRect(x + 4.5, y - 2 + hop, 1.2, 1.2);
-          ctx.fillStyle = "#ffffff";
-          ctx.beginPath(); ctx.arc(x - 5, y + 1 + hop, 2, 0, Math.PI*2); ctx.fill();
-        } else if (p.type === "chicken") {
-          let peck = !isMoving && Math.sin(Date.now() / 250) > 0.5 ? 2 : 0;
-          ctx.fillStyle = p.color;
-          ctx.beginPath(); ctx.ellipse(x, y, 4.5, 4, 0, 0, Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.arc(x + 3, y - 2 + peck, 3, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = "#dc2626";
-          ctx.fillRect(x + 2.5, y - 5 + peck, 2, 2);
-          ctx.fillStyle = p.beak;
-          ctx.fillRect(x + 5.5, y - 2 + peck, 2, 1.5);
-        }
+        const legR = new THREE.Mesh(legGeo, legMat);
+        legR.position.set(0.25, 0.3, 0);
+        legR.castShadow = true;
+        group.add(legR);
+
+        group.position.set(c.x, 0, c.z);
+        scene.add(group);
+        c.mesh = group;
+        c.legs = [legL, legR];
       });
+
+      const bunnyGroup = new THREE.Group();
+      const bBody = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.6), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+      bBody.position.y = 0.2;
+      bunnyGroup.add(bBody);
+      const bHead = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.35), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+      bHead.position.set(0, 0.45, 0.3);
+      bunnyGroup.add(bHead);
+      const ear1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.35, 0.08), new THREE.MeshLambertMaterial({ color: 0xfbcfe8 }));
+      ear1.position.set(-0.1, 0.75, 0.25);
+      bunnyGroup.add(ear1);
+      const ear2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.35, 0.08), new THREE.MeshLambertMaterial({ color: 0xfbcfe8 }));
+      ear2.position.set(0.1, 0.75, 0.25);
+      bunnyGroup.add(ear2);
+      bunnyGroup.position.set(PETS[0].x, 0, PETS[0].z);
+      scene.add(bunnyGroup);
+      PETS[0].mesh = bunnyGroup;
+
+      const chickGroup = new THREE.Group();
+      const cBody = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.5), new THREE.MeshLambertMaterial({ color: 0xd97706 }));
+      cBody.position.y = 0.25;
+      chickGroup.add(cBody);
+      const cComb = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.2), new THREE.MeshLambertMaterial({ color: 0xdc2626 }));
+      cComb.position.set(0, 0.55, 0.1);
+      chickGroup.add(cComb);
+      chickGroup.position.set(PETS[1].x, 0, PETS[1].z);
+      scene.add(chickGroup);
+      PETS[1].mesh = chickGroup;
     }
+    function animate3D() {
+      requestAnimationFrame(animate3D);
 
-    function drawStardewCharacter(ctx, c, isMoving) {
-      let x = Math.round(c.x), y = Math.round(c.y);
-      let bob = isMoving ? Math.sin(c.frame * Math.PI) * 2.8 : 0;
-      let legWaddle = isMoving ? Math.cos(c.frame * Math.PI) * 3.2 : 0;
+      if (controls) controls.update();
+      const time = Date.now() * 0.003;
+      if (fireLight) fireLight.intensity = 1.3 + Math.sin(time * 3) * 0.4;
 
-      ctx.fillStyle = "rgba(0,0,0,0.45)";
-      ctx.beginPath(); ctx.ellipse(x, y + 15, 9, 4, 0, 0, Math.PI * 2); ctx.fill();
-
-      if (c.state === "dorm" && !isMoving) {
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillStyle = "#000"; ctx.fillText("Zzz...", x + 9, y - 7);
-        ctx.fillStyle = "#fef08a"; ctx.fillText("Zzz...", x + 8, y - 8);
-        ctx.fillStyle = c.shirt; ctx.fillRect(x - 7, y + 5, 14, 11);
-        ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.arc(x, y + 1, 7, 0, Math.PI * 2); ctx.fill();
-        return;
-      }
-
-      ctx.fillStyle = c.pants;
-      ctx.fillRect(x - 6, y + 10 + bob, 5, 6 + legWaddle);
-      ctx.fillRect(x + 1, y + 10 + bob, 5, 6 - legWaddle);
-      ctx.fillStyle = "#271202";
-      ctx.beginPath(); ctx.arc(x - 3.5, y + 15 + bob + legWaddle, 3, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 3.5, y + 15 + bob - legWaddle, 3, 0, Math.PI*2); ctx.fill();
-
-      ctx.fillStyle = "#1e1b4b"; ctx.fillRect(x - 9, y - 2 + bob, 18, 13);
-      ctx.fillStyle = c.shirt; ctx.fillRect(x - 8, y - 1 + bob, 16, 11);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x - 1.5, y + 1 + bob, 3, 3);
-      ctx.fillRect(x - 1.5, y + 5 + bob, 3, 3);
-
-      ctx.fillStyle = c.shirt;
-      ctx.beginPath(); ctx.arc(x - 9, y + 4 + bob - legWaddle, 3.2, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 9, y + 4 + bob + legWaddle, 3.2, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#fed7aa";
-      ctx.beginPath(); ctx.arc(x - 9, y + 7 + bob - legWaddle, 2.5, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 9, y + 7 + bob + legWaddle, 2.5, 0, Math.PI*2); ctx.fill();
-
-      ctx.fillStyle = "#271202";
-      ctx.beginPath(); ctx.arc(x, y - 9 + bob, 9.5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#fed7aa";
-      ctx.beginPath(); ctx.arc(x, y - 9 + bob, 8.5, 0, Math.PI * 2); ctx.fill();
-
-      ctx.fillStyle = c.hair;
-      ctx.beginPath(); ctx.arc(x, y - 12 + bob, 9, Math.PI, Math.PI * 2); ctx.fill();
-      ctx.fillRect(x - 9, y - 13 + bob, 18, 5);
-      ctx.fillRect(x - 9, y - 10 + bob, 3.5, 6);
-      ctx.fillRect(x + 5.5, y - 10 + bob, 3.5, 6);
-
-      ctx.fillStyle = "#090d16";
-      ctx.beginPath(); ctx.arc(x - 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 3.8, y - 8.5 + bob, 2.4, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x - 4.5, y - 9.5 + bob, 1.5, 1.5);
-      ctx.fillRect(x + 3.0, y - 9.5 + bob, 1.5, 1.5);
-
-      ctx.fillStyle = "rgba(244, 114, 182, 0.75)";
-      ctx.beginPath(); ctx.arc(x - 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 6, y - 6 + bob, 2.2, 0, Math.PI*2); ctx.fill();
-
-      if (c.hat === "crown") {
-        ctx.fillStyle = "#eab308";
-        ctx.beginPath();
-        ctx.moveTo(x - 7, y - 17 + bob); ctx.lineTo(x - 5, y - 22 + bob); ctx.lineTo(x, y - 18 + bob);
-        ctx.lineTo(x + 5, y - 22 + bob); ctx.lineTo(x + 7, y - 17 + bob);
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#dc2626"; ctx.fillRect(x - 1, y - 19 + bob, 2, 2);
-      } else if (c.hat === "cap") {
-        ctx.fillStyle = "#047857";
-        ctx.beginPath(); ctx.arc(x, y - 14 + bob, 8.5, Math.PI, Math.PI*2); ctx.fill();
-        ctx.fillRect(x - 10, y - 15 + bob, 7, 3);
-      } else if (c.hat === "ribbon") {
-        ctx.fillStyle = "#f43f5e";
-        ctx.beginPath(); ctx.arc(x + 5, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(x + 9, y - 17 + bob, 3, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "#fff"; ctx.fillRect(x + 6.5, y - 18 + bob, 1.5, 2);
-      } else if (c.hat === "glasses") {
-        ctx.strokeStyle = "#ca8a04"; ctx.lineWidth = 1.2;
-        ctx.strokeRect(x - 6, y - 10.5 + bob, 4.5, 4);
-        ctx.strokeRect(x + 1.5, y - 10.5 + bob, 4.5, 4);
-        ctx.beginPath(); ctx.moveTo(x - 1.5, y - 8.5 + bob); ctx.lineTo(x + 1.5, y - 8.5 + bob); ctx.stroke();
-      }
-
-      ctx.font = "bold 8.5px sans-serif";
-      ctx.fillStyle = "#000000"; ctx.textAlign = "center";
-      ctx.fillText(c.name, x + 1, y + 25);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText(c.name, x, y + 24);
-
-      if (c.bubble && c.bTimer > 0) {
-        c.bTimer--;
-        let bw = Math.min(130, ctx.measureText(c.bubble).width + 14);
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.fillRect(x - bw/2 + 1, y - 35 + bob + 1, bw, 16);
-        ctx.fillStyle = "#0f172a";
-        ctx.fillRect(x - bw/2, y - 36 + bob, bw, 16);
-        ctx.strokeStyle = "#fde047"; ctx.lineWidth = 1.5; ctx.strokeRect(x - bw/2, y - 36 + bob, bw, 16);
-        ctx.fillStyle = "#fde047";
-        ctx.beginPath();
-        ctx.moveTo(x - 3, y - 20 + bob); ctx.lineTo(x + 3, y - 20 + bob); ctx.lineTo(x, y - 16 + bob);
-        ctx.fill();
-
-        ctx.font = "bold 8px sans-serif"; ctx.fillStyle = "#fef08a";
-        let t = c.bubble.length > 22 ? c.bubble.substring(0, 20) + '..' : c.bubble;
-        ctx.fillText(t, x, y - 25 + bob);
-      }
-    }
-    function updateAndDrawCharacters(ctx) {
       let isWorkingTime = isProcessing;
 
-      if (tapTarget && tapTarget.alpha > 0) {
-        ctx.strokeStyle = `rgba(56, 189, 248, ${tapTarget.alpha})`;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.arc(tapTarget.x, tapTarget.y, tapTarget.r, 0, Math.PI * 2); ctx.stroke();
-        tapTarget.r = Math.max(2, tapTarget.r - 0.5);
-        tapTarget.alpha -= 0.03;
-      }
-
       ['user', 'a1', 'a2', 'a3'].forEach(k => {
-        let c = CHARACTERS[k];
-        let dx = c.tx - c.x, dy = c.ty - c.y;
-        let dist = Math.hypot(dx, dy);
-        let isMoving = dist > 2;
+        const c = CHARACTERS[k];
+        if (!c.mesh) return;
+
+        let dx = c.tx - c.x, dz = c.tz - c.z;
+        let dist = Math.hypot(dx, dz);
+        let isMoving = dist > 0.15;
 
         if (isMoving) {
-          c.x += (dx / dist) * 1.6;
-          c.y += (dy / dist) * 1.6;
-          c.frame = (c.frame + 0.16) % 4;
+          c.x += (dx / dist) * 0.12;
+          c.z += (dz / dist) * 0.12;
+          c.mesh.position.set(c.x, 0, c.z);
+          c.mesh.rotation.y = Math.atan2(dx, dz);
+
+          c.legs[0].rotation.x = Math.sin(time * 4) * 0.6;
+          c.legs[1].rotation.x = -Math.sin(time * 4) * 0.6;
         } else {
-          c.frame = 0;
+          c.legs[0].rotation.x = 0;
+          c.legs[1].rotation.x = 0;
+
           if (k !== 'user') {
             c.wait = (c.wait || 0) - 1;
             if (c.wait <= 0) {
               if (isWorkingTime) {
-                let p = SPOTS.work[c.name==="Minh"?0:(c.name==="Huy"?1:2)];
-                c.tx = p.x; c.ty = p.y; c.state = "work";
+                let p = SPOTS_3D.work[c.name === "Minh" ? 0 : (c.name === "Huy" ? 1 : 2)];
+                c.tx = p.x; c.tz = p.z; c.state = "work";
                 c.wait = 200;
               } else {
                 let choices = ["arcade", "kitchen", "farm", "dorm", "toilet", "meeting", "fireplace"];
                 let chosen = choices[Math.floor(Math.random() * choices.length)];
-                let list = SPOTS[chosen];
+                let list = SPOTS_3D[chosen];
                 let spot = list[Math.floor(Math.random() * list.length)];
-                c.tx = spot.x; c.ty = spot.y; c.state = chosen;
+                c.tx = spot.x; c.tz = spot.z; c.state = chosen;
                 c.wait = Math.floor(Math.random() * 260) + 160;
 
-                if(chosen === "arcade") c.bubble = "Làm ván game đã! 🎮";
-                else if(chosen === "kitchen") c.bubble = "Làm bát súp bí ngô 🥣";
-                else if(chosen === "farm") c.bubble = "Ra vườn ngắm thỏ và bí ngô 🌾";
-                else if(chosen === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
-                else if(chosen === "toilet") c.bubble = "Rửa mặt cho tỉnh 🚽";
-                else if(chosen === "meeting") c.bubble = "Xem lại sổ tay 📋";
-                else if(chosen === "fireplace") c.bubble = "Sưởi ấm lò sưởi 🔥";
+                if (chosen === "arcade") c.bubble = "Bắn ván game đã! 🎮";
+                else if (chosen === "kitchen") c.bubble = "Làm bát súp bí ngô 🥣";
+                else if (chosen === "farm") c.bubble = "Ra vườn ngắm thỏ 🌾";
+                else if (chosen === "dorm") c.bubble = "Chợp mắt tí nhé... Zzz 🛏️";
+                else if (chosen === "toilet") c.bubble = "Rửa mặt cho tỉnh 🚽";
+                else if (chosen === "meeting") c.bubble = "Xem lại sổ tay 📋";
+                else if (chosen === "fireplace") c.bubble = "Sưởi ấm lò sưởi 🔥";
                 c.bTimer = 90;
               }
             }
           }
         }
-
-        drawStardewCharacter(ctx, c, isMoving);
       });
 
-      updateAndDrawPets(ctx);
+      PETS.forEach(p => {
+        if (!p.mesh) return;
+        let dx = p.tx - p.x, dz = p.tz - p.z;
+        let dist = Math.hypot(dx, dz);
+        if (dist > 0.2) {
+          p.x += (dx / dist) * 0.08;
+          p.z += (dz / dist) * 0.08;
+          p.mesh.position.set(p.x, p.type === "rabbit" ? Math.abs(Math.sin(time * 5)) * 0.3 : 0, p.z);
+          p.mesh.rotation.y = Math.atan2(dx, dz);
+        } else {
+          p.wait = (p.wait || 0) - 1;
+          if (p.wait <= 0) {
+            p.tx = 15.0 + Math.random() * 4.5;
+            p.tz = -1.0 + Math.random() * 6.5;
+            p.wait = Math.floor(Math.random() * 150) + 80;
+          }
+        }
+      });
 
-      for(let i = floatingTexts.length - 1; i >= 0; i--) {
-        let f = floatingTexts[i];
-        ctx.font = "bold 9.5px sans-serif";
-        ctx.fillStyle = f.color;
-        ctx.globalAlpha = Math.max(0, f.alpha);
-        ctx.fillText(f.text, f.x, f.y);
-        ctx.globalAlpha = 1.0;
-        f.y -= 0.6;
-        f.alpha -= 0.02;
-        if (f.alpha <= 0) floatingTexts.splice(i, 1);
-      }
+      updateSpeechBubbles2D();
+      updateLighting3DByTime();
+      renderer.render(scene, camera);
+    }
+    function updateSpeechBubbles2D() {
+      const overlay = document.getElementById('speech-overlay');
+      overlay.innerHTML = '';
+      const container = document.querySelector('.game-viewport');
+      const w = container.clientWidth, h = container.clientHeight;
+
+      ['user', 'a1', 'a2', 'a3'].forEach(k => {
+        const c = CHARACTERS[k];
+        if (c.bubble && c.bTimer > 0 && c.mesh) {
+          c.bTimer--;
+          const pos = new THREE.Vector3(c.x, 3.2, c.z);
+          pos.project(camera);
+          const screenX = (pos.x * 0.5 + 0.5) * w;
+          const screenY = (-(pos.y * 0.5) + 0.5) * h;
+          if (pos.z < 1) {
+            const el = document.createElement('div');
+            el.className = 'bubble-3d';
+            el.style.left = `${screenX}px`;
+            el.style.top = `${screenY}px`;
+            el.innerText = c.bubble;
+            overlay.appendChild(el);
+          }
+        }
+      });
     }
 
-    function drawLightingAndWeather(ctx) {
+    function updateLighting3DByTime() {
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
@@ -685,51 +665,74 @@
       document.getElementById('live-time').innerText = `🕒 ${timeStr} • Giờ VN`;
       document.getElementById('live-weather').innerText = currentWeather.text;
 
-      let overlay = "rgba(0,0,0,0)";
-      let isNight = false;
-
-      if (timeVal >= 5.0 && timeVal < 6.8) overlay = "rgba(251, 146, 60, 0.18)";
-      else if (timeVal >= 6.8 && timeVal < 17.0) overlay = currentWeather.type === "rain" ? "rgba(30, 41, 59, 0.22)" : "rgba(255, 255, 255, 0.0)";
-      else if (timeVal >= 17.0 && timeVal < 18.8) overlay = "rgba(168, 85, 247, 0.26)";
-      else { overlay = "rgba(11, 17, 32, 0.70)"; isNight = true; }
-
-      ctx.fillStyle = overlay; ctx.fillRect(0, 0, W, H);
-
-      if (isNight) {
-        [ {x: 88, y: 72}, {x: 205, y: 75}, {x: 310, y: 70}, {x: 85, y: 195}, {x: 300, y: 188}, {x: 168, y: 55} ].forEach(l => {
-          let g = ctx.createRadialGradient(l.x, l.y, 4, l.x, l.y, 55);
-          g.addColorStop(0, "rgba(253, 224, 71, 0.44)");
-          g.addColorStop(1, "transparent");
-          ctx.fillStyle = g; ctx.fillRect(l.x - 55, l.y - 55, 110, 110);
-        });
-      }
-
-      if (currentWeather.type === "rain") {
-        ctx.strokeStyle = "rgba(186, 230, 253, 0.65)";
-        ctx.lineWidth = 1.2;
-        weatherParticles.forEach(p => {
-          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 2, p.y + p.len); ctx.stroke();
-          p.y += p.speed; p.x -= 0.8;
-          if (p.y > H) { p.y = -10; p.x = Math.random() * W; }
-        });
+      if (timeVal >= 5.0 && timeVal < 6.8) {
+        scene.background.setHex(0x5c3d2e);
+        sunLight.color.setHex(0xfb923c);
+        sunLight.intensity = 0.7;
+      } else if (timeVal >= 6.8 && timeVal < 17.0) {
+        scene.background.setHex(0x4a7c29);
+        sunLight.color.setHex(0xffedd5);
+        sunLight.intensity = 0.95;
+      } else if (timeVal >= 17.0 && timeVal < 18.8) {
+        scene.background.setHex(0x4c1d95);
+        sunLight.color.setHex(0xa855f7);
+        sunLight.intensity = 0.6;
       } else {
-        ctx.fillStyle = isNight ? "rgba(253, 224, 71, 0.7)" : "rgba(254, 240, 138, 0.45)";
-        weatherParticles.forEach(p => {
-          p.sway += 0.02;
-          ctx.beginPath();
-          ctx.arc(p.x + Math.sin(p.sway) * 4, p.y, isNight ? 1.8 : 1.5, 0, Math.PI * 2);
-          ctx.fill();
-          p.y += p.speed;
-          if (p.y > H) { p.y = -5; p.x = Math.random() * W; }
-        });
+        scene.background.setHex(0x090d16);
+        sunLight.color.setHex(0x38bdf8);
+        sunLight.intensity = 0.25;
+        ambientLight.color.setHex(0x1e293b);
       }
     }
+    window.addEventListener('load', () => {
+      const cvs = document.getElementById('game-canvas');
+      cvs.addEventListener('pointerdown', onPointerDown3D);
+    });
 
-    function gameLoop() {
-      drawWorld(ctx);
-      updateAndDrawCharacters(ctx);
-      drawLightingAndWeather(ctx);
-      requestAnimationFrame(gameLoop);
+    function onPointerDown3D(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const pumpkinMeshes = [];
+      pumpkins3D.forEach(g => pumpkinMeshes.push(g.children[0]));
+      const pIntersects = raycaster.intersectObjects(pumpkinMeshes);
+
+      if (pIntersects.length > 0) {
+        const pGroup = pIntersects[0].object.parent;
+        const pData = pGroup.userData;
+        if (pData.growth >= 100) {
+          pData.growth = 20;
+          pGroup.scale.set(0.5, 0.5, 0.5);
+          studioData.pumpkinsHarvested = (studioData.pumpkinsHarvested || 0) + 1;
+          document.getElementById('barn-counter').innerText = `🎃 Kho: ${studioData.pumpkinsHarvested} Bí Ngô`;
+          CHARACTERS.user.bubble = "+1 Bí Ngô 🎃";
+          CHARACTERS.user.bTimer = 60;
+          playChiptune("coin");
+          addXP(10);
+        } else {
+          pData.growth = 100;
+          pGroup.scale.set(1.0, 1.0, 1.0);
+          CHARACTERS.user.bubble = "Đã tưới nước 💧";
+          CHARACTERS.user.bTimer = 60;
+          playChiptune("step");
+        }
+        return;
+      }
+
+      if (groundPlane) {
+        const intersects = raycaster.intersectObject(groundPlane);
+        if (intersects.length > 0) {
+          const pt = intersects[0].point;
+          CHARACTERS.user.tx = Math.max(-12, Math.min(18, pt.x));
+          CHARACTERS.user.tz = Math.max(-7, Math.min(7, pt.z));
+          CHARACTERS.user.bubble = "Đi kiểm tra!";
+          CHARACTERS.user.bTimer = 60;
+          playChiptune("step");
+        }
+      }
     }
 
     let audioCtx = null;
@@ -777,3 +780,542 @@
       soundEnabled = !soundEnabled;
       document.getElementById('btn-sound').innerText = soundEnabled ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
     }
+    function downloadLuaFile(code, filename) {
+      try {
+        const cleanName = filename || `script_${Date.now()}.lua`;
+        const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = cleanName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        playChiptune("coin");
+      } catch(e) {
+        alert("Lỗi tải file: " + e.message);
+      }
+    }
+
+    function downloadAllScripts() {
+      if (!studioData.vaultScripts || studioData.vaultScripts.length === 0) {
+        alert("Chưa có đoạn script nào trong kho để tải!");
+        return;
+      }
+      let fullContent = "-- ==========================================\n" +
+                        "-- TỔNG HỢP SCRIPT SCRIPT VALLEY 3D\n" +
+                        `-- Xuất ngày: ${new Date().toLocaleString('vi-VN')}\n` +
+                        "-- ==========================================\n\n";
+      studioData.vaultScripts.forEach((s, idx) => {
+        fullContent += `-- [Mục ${idx + 1}]: ${s.title} (${s.time})\n${s.code}\n\n------------------------------------------\n\n`;
+      });
+      downloadLuaFile(fullContent, `all_scripts_${Date.now()}.lua`);
+    }
+
+    function saveToVault(title, code) {
+      if (!studioData.vaultScripts) studioData.vaultScripts = [];
+      studioData.vaultScripts.unshift({ title: title, code: code, time: new Date().toLocaleTimeString('vi-VN') });
+      if (studioData.vaultScripts.length > 20) studioData.vaultScripts.pop();
+      renderVaultList();
+      syncWithGoogleSheet();
+    }
+
+    function renderVaultList() {
+      const el = document.getElementById('vault-list');
+      if (!el) return;
+      if (!studioData.vaultScripts || studioData.vaultScripts.length === 0) {
+        el.innerHTML = '<p style="color:var(--muted); text-align:center;">Chưa có đoạn script nào. Khi Huy viết code Luau, hệ thống sẽ tự lưu vào đây!</p>';
+        return;
+      }
+      el.innerHTML = studioData.vaultScripts.map((s, idx) => `
+        <div style="background:#090d16; border:1px solid #1e293b; border-radius:6px; padding:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <b style="color:var(--stardew-yellow);">${s.title} (${s.time})</b>
+            <div style="display:flex; gap:4px;">
+              <button class="btn-small" style="background:#16a34a;" onclick="copyScriptCode(${idx})">📋 Sao chép</button>
+              <button class="btn-small" style="background:#0284c7;" onclick="downloadVaultItem(${idx})">📥 Tải .lua</button>
+            </div>
+          </div>
+          <pre style="background:#000; color:#38bdf8; padding:5px; border-radius:4px; max-height:80px; overflow-x:auto; font-size:10px;">${escapeHtml(s.code)}</pre>
+        </div>
+      `).join('');
+    }
+
+    function downloadVaultItem(idx) {
+      const item = studioData.vaultScripts[idx];
+      if (item && item.code) downloadLuaFile(item.code, `script_${idx + 1}.lua`);
+    }
+
+    function copyScriptCode(idx) {
+      const item = studioData.vaultScripts[idx];
+      if (item && item.code) {
+        navigator.clipboard.writeText(item.code).then(() => alert("Đã sao chép đoạn mã Luau!")).catch(() => prompt("Mã Luau:", item.code));
+      }
+    }
+    function escapeHtml(t) {
+      return (t || '').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function parseAiThoughtAndSpeech(raw) {
+      if (!raw) return { thought: "", speech: "" };
+      let t = raw.trim();
+
+      if (t.includes("[IM LẶNG]") || t.includes("IM LẶNG") || t.length < 3) {
+        return { thought: "Thấy không cần thiết xen vào, giữ im lặng.", speech: "" };
+      }
+
+      let thought = "", speech = "";
+      if (t.includes("[SUY LUẬN]:") || t.includes("[SUY NGHĨ]:")) {
+        let parts = t.split(/\[LỜI NÓI\]:/i);
+        let tPart = parts[0].replace(/\[SUY LUẬN\]:|\[SUY NGHĨ\]:/gi, '').trim();
+        let sPart = parts[1] ? parts[1].trim() : "";
+        thought = tPart;
+        speech = sPart || tPart;
+      } else {
+        speech = t;
+      }
+
+      if (speech.includes("[IM LẶNG]")) {
+        return { thought: thought, speech: "" };
+      }
+
+      if (speech.includes("```lua") || speech.includes("```luau") || speech.includes("```")) {
+        let matches = speech.match(/```(?:lua|luau)?([\s\S]*?)```/);
+        if (matches && matches[1]) {
+          saveToVault("Script Tối Ưu", matches[1].trim());
+        }
+      }
+
+      return { thought: thought, speech: speech };
+    }
+
+    function appendChatMessage(sender, thought, speech, type) {
+      if (!speech || speech.trim() === "" || speech.includes("[IM LẶNG]")) return;
+
+      const feed = document.getElementById('chat-feed');
+      const row = document.createElement('div');
+      row.className = `msg-row msg-${type}`;
+      
+      let label = sender;
+      if (type === 'user') label = '👑 Sếp';
+      else if (type === 'a1') label = '👨‍💼 Minh (Lead)';
+      else if (type === 'a2') label = '👨‍💻 Huy (Dev)';
+      else if (type === 'a3') label = '👩‍🔬 Linh (QA)';
+
+      let thoughtHtml = thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(thought)}</div>` : '';
+      let speechHtml = `<div class="msg-speech">${escapeHtml(speech)}</div>`;
+
+      let downloadButtonHtml = '';
+      if (speech.includes("```")) {
+        let codeMatch = speech.match(/```(?:lua|luau)?([\s\S]*?)```/);
+        if (codeMatch && codeMatch[1]) {
+          const encodedCode = encodeURIComponent(codeMatch[1].trim());
+          downloadButtonHtml = `<div style="margin-top:5px;"><button class="file-download-chip" onclick="downloadLuaFile(decodeURIComponent('${encodedCode}'), 'script.lua')">📥 Tải tệp script.lua về máy</button></div>`;
+        }
+      }
+
+      row.innerHTML = `<div class="msg-sender">${label}</div><div class="msg-box">${thoughtHtml}${speechHtml}${downloadButtonHtml}</div>`;
+      feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
+
+      playChiptune("msg");
+
+      studioData.chatHistory.push({ sender: label, thought: thought, text: speech, type: type });
+      if (studioData.chatHistory.length > 50) studioData.chatHistory.shift();
+      localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
+    }
+
+    function renderChatHistory() {
+      const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
+      if (!studioData.chatHistory || studioData.chatHistory.length === 0) { 
+        appendChatMessage("Hệ thống", "", "Chào mừng Sếp tới dinh thự nông trại Script Valley 3D!", "sys"); 
+        return; 
+      }
+      studioData.chatHistory.forEach(i => {
+        if (!i.text) return;
+        const row = document.createElement('div'); row.className = `msg-row msg-${i.type}`;
+        let thoughtHtml = i.thought ? `<div class="msg-thought">💭 <b>Suy luận ngầm:</b> ${escapeHtml(i.thought)}</div>` : '';
+        let speechHtml = `<div class="msg-speech">${escapeHtml(i.text)}</div>`;
+        
+        let downloadButtonHtml = '';
+        if (i.text.includes("```")) {
+          let codeMatch = i.text.match(/```(?:lua|luau)?([\s\S]*?)```/);
+          if (codeMatch && codeMatch[1]) {
+            const encodedCode = encodeURIComponent(codeMatch[1].trim());
+            downloadButtonHtml = `<div style="margin-top:5px;"><button class="file-download-chip" onclick="downloadLuaFile(decodeURIComponent('${encodedCode}'), 'script.lua')">📥 Tải tệp script.lua về máy</button></div>`;
+          }
+        }
+        row.innerHTML = `<div class="msg-sender">${i.sender}</div><div class="msg-box">${thoughtHtml}${speechHtml}${downloadButtonHtml}</div>`;
+        feed.appendChild(row);
+      });
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function clearChat() { if(!confirm("Xóa lịch sử chat?")) return; studioData.chatHistory=[]; localStorage.setItem('studio_data_v2',JSON.stringify(studioData)); renderChatHistory(); syncWithGoogleSheet(); }
+
+    function setAgentBubble(id, text) {
+      if (!text || text.includes("[IM LẶNG]")) return;
+      let key = id === 'user' ? 'user' : `a${id}`;
+      if (CHARACTERS[key]) {
+        CHARACTERS[key].bubble = text;
+        CHARACTERS[key].bTimer = 220;
+      }
+    }
+    window.onload = async () => {
+      init3DWorld();
+      build3DFurnitureAndFarm();
+      build3DCharacters();
+      animate3D();
+
+      updateVietnamWeather();
+      setInterval(updateVietnamWeather, 15 * 60 * 1000);
+
+      document.getElementById('key-1').value = localStorage.getItem('k1') || '';
+      document.getElementById('key-2').value = localStorage.getItem('k2') || '';
+      document.getElementById('key-3').value = localStorage.getItem('k3') || '';
+      
+      document.getElementById('gas-url').value = PERMANENT_GAS_URL;
+      localStorage.setItem('gas_url', PERMANENT_GAS_URL);
+
+      ['m1', 'm2', 'm3'].forEach(id => {
+        let val = localStorage.getItem(id);
+        if (!val || val.includes('2.5')) {
+          val = 'gemini-3.8-flash';
+          localStorage.setItem(id, val);
+        }
+        document.getElementById(id).value = val;
+      });
+
+      const saved = localStorage.getItem('studio_data_v2');
+      if (saved) {
+        try { 
+          studioData = JSON.parse(saved);
+          if (studioData.pumpkinsHarvested) {
+            document.getElementById('barn-counter').innerText = `🎃 Kho: ${studioData.pumpkinsHarvested} Bí Ngô`;
+          }
+        } catch(e){}
+      }
+      renderChatHistory(); renderIdentityList(); renderVaultList();
+
+      await loadFromGoogleSheet(false);
+    };
+
+    async function updateVietnamWeather() {
+      try {
+        const res = await fetch("[https://api.open-meteo.com/v1/forecast?latitude=16.0544&longitude=108.2022&current_weather=true](https://api.open-meteo.com/v1/forecast?latitude=16.0544&longitude=108.2022&current_weather=true)");
+        const d = await res.json();
+        if (d && d.current_weather) {
+          const code = d.current_weather.weathercode;
+          const temp = Math.round(d.current_weather.temperature);
+          if (code >= 51 && code <= 99) currentWeather = { type: "rain", temp: temp, text: `🌧️ Mưa rào • ${temp}°C` };
+          else if (code >= 1 && code <= 3) currentWeather = { type: "cloudy", temp: temp, text: `⛅ Nhiều mây • ${temp}°C` };
+          else currentWeather = { type: "clear", temp: temp, text: `☀️ Nắng đẹp • ${temp}°C` };
+        }
+      } catch(e) {
+        currentWeather = { type: "clear", temp: 28, text: "☀️ Nắng ráo • 28°C" };
+      }
+    }
+
+    function forceResetLock() {
+      isProcessing = false;
+      if (hardWatchdog) clearTimeout(hardWatchdog);
+      document.getElementById('btn-send-chat').disabled = false;
+      appendChatMessage("Hệ thống", "", "Đã mở kẹt phím cưỡng bức thành công! Bạn có thể gửi tin nhắn bình thường.", "sys");
+    }
+
+    function saveSettings() {
+      localStorage.setItem('k1', document.getElementById('key-1').value.trim());
+      localStorage.setItem('k2', document.getElementById('key-2').value.trim());
+      localStorage.setItem('k3', document.getElementById('key-3').value.trim());
+      localStorage.setItem('m1', document.getElementById('m1').value);
+      localStorage.setItem('m2', document.getElementById('m2').value);
+      localStorage.setItem('m3', document.getElementById('m3').value);
+      localStorage.setItem('th1', document.getElementById('th1').value);
+      localStorage.setItem('th2', document.getElementById('th2').value);
+      localStorage.setItem('th3', document.getElementById('th3').value);
+      localStorage.setItem('gas_url', PERMANENT_GAS_URL);
+      alert('Đã lưu cấu hình AI thành công!');
+      syncWithGoogleSheet();
+    }
+    function togglePanel(id) { const p = document.getElementById(id); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
+
+    function exportDataCode() {
+      const fullPackage = { studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3'), gas: PERMANENT_GAS_URL };
+      const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullPackage))));
+      navigator.clipboard.writeText(code).then(() => alert("Đã sao chép mã sao lưu!")).catch(() => prompt("Mã sao lưu:", code));
+    }
+
+    function importDataCode() {
+      const code = prompt("Dán đoạn mã sao lưu vào đây:");
+      if (!code) return;
+      try {
+        const pack = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+        if (pack.studio) { studioData = pack.studio; localStorage.setItem('studio_data_v2', JSON.stringify(studioData)); }
+        ['k1','k2','k3'].forEach(k => { if(pack[k]) localStorage.setItem(k, pack[k]); });
+        localStorage.setItem('gas_url', PERMANENT_GAS_URL);
+        alert("Khôi phục dữ liệu thành công!"); location.reload();
+      } catch(e) { alert("Mã không hợp lệ!"); }
+    }
+
+    async function syncWithGoogleSheet(showMsg = false) {
+      try {
+        const payload = JSON.stringify({ studio: studioData, k1: localStorage.getItem('k1'), k2: localStorage.getItem('k2'), k3: localStorage.getItem('k3') });
+        await fetch(PERMANENT_GAS_URL, { method: "POST", mode: "no-cors", body: payload });
+        if(showMsg) alert("Đã đồng bộ lên Google Sheets thành công!");
+      } catch(e) { if(showMsg) alert("Lỗi đồng bộ Sheets: " + e.message); }
+    }
+
+    async function loadFromGoogleSheet(notify = true) {
+      try {
+        const res = await fetch(PERMANENT_GAS_URL);
+        const data = await res.json();
+        if (data && data.studio) {
+          studioData = data.studio;
+          localStorage.setItem('studio_data_v2', JSON.stringify(studioData));
+          renderChatHistory(); renderIdentityList(); renderVaultList();
+          if (notify) alert("Đã đồng bộ dữ liệu từ Google Sheets!");
+        }
+      } catch(e) { if (notify) alert("Lỗi kết nối Sheets: " + e.message); }
+    }
+
+    function addXP(n) { studioData.agents.forEach(ag => { ag.xp += n; ag.level = Math.floor(ag.xp/100) + 1; }); renderIdentityList(); syncWithGoogleSheet(); }
+
+    function renderIdentityList() {
+      const el = document.getElementById('identity-list');
+      if(!el) return;
+      el.innerHTML = studioData.agents.map(ag => `
+        <div style="margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:6px;">
+          <div style="font-weight:bold; color:#fde047;">${ag.name} - ${ag.title} (Lv.${ag.level})</div>
+          <div style="color:#ca8a04; font-size:10px; margin-top:2px;">🎯 Định hướng: ${ag.goal}</div>
+          <div style="color:#94a3b8; font-size:10px; margin-top:2px;">💡 Kim chỉ nam: ${ag.philosophy}</div>
+        </div>
+      `).join('');
+    }
+    async function callGeminiAdvanced(key, chosenModel, thinkingBudget, sys, user) {
+      if (!key) throw new Error("Chưa có đủ API Key!");
+      const cleanKey = key.trim();
+      
+      let candidateModels = [
+        (chosenModel || "gemini-3.8-flash").trim(),
+        "gemini-3.8-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-3.1-pro-preview"
+      ];
+      candidateModels = [...new Set(candidateModels)];
+
+      let lastError = null;
+      for (let model of candidateModels) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        
+        const payload = {
+          contents: [{ role: "user", parts: [{ text: `${sys}\n\n[DỮ LIỆU ĐỐI THOẠI]:\n${user}` }] }]
+        };
+        const budget = parseInt(thinkingBudget) || 0;
+        if (!model.includes("lite") && budget > 0) {
+          payload.generationConfig = { thinkingConfig: { thinkingBudget: budget } };
+        }
+
+        try {
+          const res = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){model}:generateContent?key=${cleanKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            const errMsg = errData.error?.message || `Mã HTTP ${res.status}`;
+            if (res.status === 503 || res.status === 405 || res.status === 404 || errMsg.includes("high demand") || errMsg.includes("not found")) {
+              lastError = new Error(errMsg);
+              continue;
+            }
+            throw new Error(errMsg);
+          }
+
+          const d = await res.json();
+          let resultText = "";
+          if (d.candidates && d.candidates[0].content && d.candidates[0].content.parts) {
+            d.candidates[0].content.parts.forEach(p => { if (p.text) resultText += p.text + "\n"; });
+          }
+          if (resultText.trim()) return resultText.trim();
+        } catch (e) {
+          clearTimeout(timeoutId);
+          lastError = e;
+          if (e.name === 'AbortError') continue;
+        }
+      }
+      throw lastError || new Error("Không thể kết nối đến máy chủ AI.");
+    }
+
+    function detectTargetAgents(text) {
+      const lower = (text || "").toLowerCase();
+      const targets = [];
+      if (lower.includes("minh") || lower.includes("lead") || lower.includes("trưởng nhóm")) targets.push(1);
+      if (lower.includes("huy") || lower.includes("dev") || lower.includes("code") || lower.includes("luau") || lower.includes("script")) targets.push(2);
+      if (lower.includes("linh") || lower.includes("qa") || lower.includes("kiểm duyệt") || lower.includes("check") || lower.includes("soi")) targets.push(3);
+      return targets;
+    }
+    async function executeChain(inputTopic, isAutonomous = false) {
+      if(isProcessing) return;
+      isProcessing = true;
+      document.getElementById('btn-send-chat').disabled = true;
+
+      if (hardWatchdog) clearTimeout(hardWatchdog);
+      hardWatchdog = setTimeout(() => {
+        if (isProcessing) {
+          isProcessing = false;
+          document.getElementById('btn-send-chat').disabled = false;
+        }
+      }, 25000);
+
+      const k1 = localStorage.getItem('k1'), k2 = localStorage.getItem('k2'), k3 = localStorage.getItem('k3');
+      const m1 = localStorage.getItem('m1') || 'gemini-3.8-flash';
+      const m2 = localStorage.getItem('m2') || 'gemini-3.8-flash';
+      const m3 = localStorage.getItem('m3') || 'gemini-3.8-flash';
+      const th1 = localStorage.getItem('th1') || '2048';
+      const th2 = localStorage.getItem('th2') || '2048';
+      const th3 = localStorage.getItem('th3') || '2048';
+
+      if(!k1 || !k2 || !k3) {
+        appendChatMessage("Hệ thống", "", "Vui lòng mở Cấu hình và nhập đủ 3 API Key để cả làng bắt đầu!", "sys");
+        isProcessing = false;
+        document.getElementById('btn-send-chat').disabled = false;
+        return;
+      }
+
+      const directTargets = !isAutonomous ? detectTargetAgents(inputTopic) : [];
+
+      try {
+        let primarySpeaker = 1;
+        if (directTargets.length === 1) primarySpeaker = directTargets[0];
+
+        let r1 = "";
+        if (primarySpeaker === 2) {
+          CHARACTERS.a2.tx = SPOTS_3D.work[1].x; CHARACTERS.a2.tz = SPOTS_3D.work[1].z;
+          setAgentBubble(2, "Đang suy luận...");
+          const sys2 = `Bạn là Huy (Kỹ sư Luau). Sếp vừa nói trực tiếp với bạn: "${inputTopic}".
+Nếu Sếp yêu cầu viết code Luau, hãy đưa code rõ ràng trong khối \`\`\`lua ... \`\`\` để Sếp tải file về.
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu suy nghĩ ngầm về kỹ thuật)
+[LỜI NÓI]: (câu đáp lại Sếp, kèm code nếu có)`;
+          const raw2 = await callGeminiAdvanced(k2, m2, th2, sys2, inputTopic);
+          const res2 = parseAiThoughtAndSpeech(raw2);
+          r1 = res2.speech;
+          appendChatMessage("Huy", res2.thought, res2.speech, "a2");
+          setAgentBubble(2, res2.speech);
+        } else if (primarySpeaker === 3) {
+          CHARACTERS.a3.tx = SPOTS_3D.work[2].x; CHARACTERS.a3.tz = SPOTS_3D.work[2].z;
+          setAgentBubble(3, "Đang suy luận...");
+          const sys3 = `Bạn là Linh (QA Kiểm duyệt). Sếp vừa hỏi bạn: "${inputTopic}". Sắc sảo, thực tế, chu đáo.
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu nhận định chuyên môn)
+[LỜI NÓI]: (câu trả lời Sếp)`;
+          const raw3 = await callGeminiAdvanced(k3, m3, th3, sys3, inputTopic);
+          const res3 = parseAiThoughtAndSpeech(raw3);
+          r1 = res3.speech;
+          appendChatMessage("Linh", res3.thought, res3.speech, "a3");
+          setAgentBubble(3, res3.speech);
+        } else {
+          CHARACTERS.a1.tx = SPOTS_3D.work[0].x; CHARACTERS.a1.tz = SPOTS_3D.work[0].z;
+          setAgentBubble(1, "Đang suy luận...");
+          const sys1 = `Bạn là Minh (Trưởng nhóm R&D). Sếp vừa nói: "${inputTopic}". Điềm đạm, ấm áp, có tầm nhìn.
+BẮT BUỘC định dạng:
+[SUY LUẬN]: (1 câu suy nghĩ ngầm)
+[LỜI NÓI]: (câu trả lời Sếp)`;
+          const raw1 = await callGeminiAdvanced(k1, m1, th1, sys1, inputTopic);
+          const res1 = parseAiThoughtAndSpeech(raw1);
+          r1 = res1.speech;
+          appendChatMessage("Minh", res1.thought, res1.speech, "a1");
+          setAgentBubble(1, res1.speech);
+        }
+
+        await new Promise(r => setTimeout(r, 1000));
+
+        if (primarySpeaker !== 2) {
+          const sysHuy = `Bạn là Huy (Kỹ sư Luau). Vừa nghe: "${r1}". 
+ĐÁNH GIÁ: Nếu câu chuyện không cần bổ sung code, không liên quan đến bạn hoặc mọi thứ đã rõ ràng, hãy trả lời đúng duy nhất: [IM LẶNG]. 
+Nếu thấy cần lên tiếng hoặc viết code, hãy định dạng:
+[SUY LUẬN]: (suy nghĩ)
+[LỜI NÓI]: (câu nói)`;
+          const rawH = await callGeminiAdvanced(k2, m2, th2, sysHuy, r1);
+          const resH = parseAiThoughtAndSpeech(rawH);
+          if (resH.speech) {
+            appendChatMessage("Huy", resH.thought, resH.speech, "a2");
+            setAgentBubble(2, resH.speech);
+            r1 = resH.speech;
+            await new Promise(r => setTimeout(r, 1000));
+          }
+        }
+
+        if (primarySpeaker !== 3) {
+          const sysLinh = `Bạn là Linh (QA). Vừa nghe đồng nghiệp nói: "${r1}". 
+ĐÁNH GIÁ: Nếu không có code cần soi, không có nguy cơ lỗi hoặc không có gì quan trọng cần nhắc nhở, hãy trả lời đúng duy nhất: [IM LẶNG]. 
+Nếu cần thẩm định/bắt lỗi/nhắc nhở an toàn app, hãy định dạng:
+[SUY LUẬN]: (nhận định an toàn)
+[LỜI NÓI]: (câu chốt hạ duyên dáng)`;
+          const rawL = await callGeminiAdvanced(k3, m3, th3, sysLinh, r1);
+          const resL = parseAiThoughtAndSpeech(rawL);
+          if (resL.speech) {
+            appendChatMessage("Linh", resL.thought, resL.speech, "a3");
+            setAgentBubble(3, resL.speech);
+          }
+        }
+
+        addXP(25);
+      } catch(e) {
+        appendChatMessage("Hệ thống", "", `Lỗi trao đổi: ${e.message}`, "sys");
+      } finally {
+        isProcessing = false;
+        document.getElementById('btn-send-chat').disabled = false;
+        if (hardWatchdog) clearTimeout(hardWatchdog);
+        if(isFlowActive) {
+          flowTimeout = setTimeout(runAutonomousDiscussion, Math.floor(Math.random() * 4000) + 12000);
+        }
+      }
+    }
+
+    function runAutonomousDiscussion() {
+      if(isProcessing || !isFlowActive) return;
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const lastMsg = studioData.chatHistory.length > 0 ? studioData.chatHistory[studioData.chatHistory.length - 1].text : "Một buổi chiều bình yên.";
+      const openTopic = `[Thời gian: ${timeStr} Giờ VN, Thời tiết: ${currentWeather.text}]. Bạn tự quan sát môi trường và tự khởi xướng ý tưởng/câu chuyện mới tiếp nối: "${lastMsg}".`;
+      executeChain(openTopic, true);
+    }
+
+    async function sendGroupMessage() {
+      const inp = document.getElementById('chat-input'), msg = inp.value.trim();
+      if(!msg) return;
+      if(isProcessing) {
+        alert("Nhân sự đang suy luận, bạn đợi vài giây nhé!");
+        return;
+      }
+      appendChatMessage("Sếp", "", msg, "user");
+      setAgentBubble('user', msg);
+      inp.value = '';
+      await executeChain(msg, false);
+    }
+
+    function toggleFlowMode() {
+      isFlowActive = !isFlowActive;
+      const btn = document.getElementById('btn-flow');
+      if(isFlowActive) {
+        btn.innerText = "🎙️ Tự đàm đạo: BẬT";
+        btn.classList.add('btn-active');
+        appendChatMessage("Hệ thống", "", "Đã bật chế độ Tự đàm đạo! Các bạn sẽ trao đổi khi thấy cần thiết.", "sys");
+        runAutonomousDiscussion();
+      } else {
+        btn.innerText = "🎙️ Tự đàm đạo: TẮT";
+        btn.classList.remove('btn-active');
+        if(flowTimeout) clearTimeout(flowTimeout);
+        appendChatMessage("Hệ thống", "", "Đã dừng đàm đạo tự do.", "sys");
+      }
+    }
+  </script>
+</body>
+</html>
